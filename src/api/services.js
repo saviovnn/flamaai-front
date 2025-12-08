@@ -3,30 +3,63 @@ import api from './axios'
 // Exemplo de serviços de API
 
 export const authService = {
-  // Login
+  // Login com email e senha (Better Auth)
   async login(credentials) {
     try {
-      const response = await api.post('/auth/login', credentials)
+      const response = await api.post('/auth/sign-in/email', {
+        email: credentials.email,
+        password: credentials.password,
+      })
       return response.data
     } catch (error) {
       throw error
     }
   },
 
-  // Registro
+  // Registro com email e senha (Better Auth)
   async register(userData) {
     try {
-      const response = await api.post('/auth/register', userData)
+      const response = await api.post('/auth/sign-up/email', {
+        email: userData.email,
+        password: userData.password,
+        name: userData.name,
+      })
       return response.data
     } catch (error) {
       throw error
     }
   },
 
-  // Logout
+  // Logout (Better Auth)
   async logout() {
     try {
-      const response = await api.post('/auth/logout')
+      const response = await api.post('/auth/sign-out')
+      return response.data
+    } catch (error) {
+      throw error
+    }
+  },
+
+  // Obter sessão atual (Better Auth)
+  async getSession() {
+    try {
+      const response = await api.get('/auth/get-session')
+      return response.data
+    } catch (error) {
+      throw error
+    }
+  },
+
+  // Login com Google (Better Auth)
+  async loginWithGoogle() {
+    try {
+      const response = await api.post('/auth/sign-in/social', {
+        provider: 'google'
+      })
+      // Redireciona o usuário para a URL do Google OAuth
+      if (response.data.url) {
+        window.location.href = response.data.url
+      }
       return response.data
     } catch (error) {
       throw error
