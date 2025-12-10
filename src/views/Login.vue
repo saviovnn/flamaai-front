@@ -3,7 +3,27 @@
     <!-- Container principal -->
     <div class="flex-1 overflow-hidden flex">
       
-      <!-- Left Side - Form Section -->
+      <!-- Left Side - Hero Section -->
+      <div class="hidden lg:flex lg:w-1/2 relative overflow-hidden">
+        <!-- Background Image - Full Height -->
+        <div 
+          class="absolute inset-0 bg-cover bg-center bg-no-repeat" 
+          :style="{ backgroundImage: `url(${abstractBg})` }">
+        </div>
+        
+        <!-- Gradient overlay for text readability -->
+        <div class="absolute inset-0 bg-gradient-to-b from-black/60 via-black/30 to-black/60"></div>
+        
+          <div class="absolute inset-0 flex flex-col justify-center px-16 z-10">
+            <h1 class="text-4xl font-bold text-white leading-tight mb-4">
+              Antecipe queimadas<br />
+              e tome decisões melhores<br />
+              com o poder do FlamaAI.
+            </h1>
+          </div>
+      </div>
+
+      <!-- Right Side - Form Section -->
       <div class="w-full lg:w-1/2 flex items-center justify-center p-8 lg:p-16 bg-gray-50">
         <div class="w-full max-w-md">
           
@@ -45,13 +65,48 @@
               </div>
               <input
                 v-model="formData.email"
+                @input="clearError('email')"
                 type="email"
                 placeholder="seu@email.com"
-                required
                 :disabled="loading"
-                class="w-full px-4 py-3.5 bg-white border-2 border-gray-200 rounded-xl text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-orange-500 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                :class="[
+                  'w-full px-4 py-3.5 bg-white border-2 rounded-xl text-gray-900 placeholder:text-gray-400 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed',
+                  errors.email ? 'border-red-500 focus:border-red-500' : 'border-gray-200 focus:border-orange-500'
+                ]"
               />
+              <Transition name="error-fade">
+                <p v-if="errors.email" class="mt-2 text-sm text-red-600">
+                  {{ errors.email }}
+                </p>
+              </Transition>
             </div>
+
+            <!-- Name Input (only for signup) -->
+            <Transition name="slide-fade" mode="out-in">
+              <div v-if="isSignUp" key="name-field">
+                <div class="h-6 mb-2">
+                  <label class="block text-gray-700 text-sm font-medium">
+                    Seu nome
+                  </label>
+                </div>
+                <input
+                  v-model="formData.name"
+                  @input="clearError('name')"
+                  type="text"
+                  placeholder="João Silva"
+                  :disabled="loading"
+                  :class="[
+                    'w-full px-4 py-3.5 bg-white border-2 rounded-xl text-gray-900 placeholder:text-gray-400 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed',
+                    errors.name ? 'border-red-500 focus:border-red-500' : 'border-gray-200 focus:border-orange-500'
+                  ]"
+                />
+                <Transition name="error-fade">
+                  <p v-if="errors.name" class="mt-2 text-sm text-red-600">
+                    {{ errors.name }}
+                  </p>
+                </Transition>
+              </div>
+            </Transition>
 
             <!-- Password Input (always visible) -->
             <div>
@@ -65,17 +120,20 @@
               <div class="relative">
                 <input
                   v-model="formData.password"
+                  @input="clearError('password')"
                   :type="showPassword ? 'text' : 'password'"
                   placeholder="••••••••••"
-                  required
                   :disabled="loading"
-                  class="w-full px-4 py-3.5 bg-white border-2 border-gray-200 rounded-xl text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-orange-500 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed pr-12"
+                  :class="[
+                    'w-full px-4 py-3.5 bg-white border-2 rounded-xl text-gray-900 placeholder:text-gray-400 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed pr-12',
+                    errors.password ? 'border-red-500 focus:border-red-500' : 'border-gray-200 focus:border-orange-500'
+                  ]"
                 />
                 <button
                   type="button"
                   @click="showPassword = !showPassword"
                   tabindex="-1"
-                  class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-orange-500 transition-all duration-300"
+                  class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-orange-500"
                 >
                   <Transition name="eye-fade" mode="out-in">
                     <Eye v-if="!showPassword" :size="20" key="eye-closed" class="eye-transition" />
@@ -83,6 +141,11 @@
                   </Transition>
                 </button>
               </div>
+              <Transition name="error-fade">
+                <p v-if="errors.password" class="mt-2 text-sm text-red-600">
+                  {{ errors.password }}
+                </p>
+              </Transition>
             </div>
 
             <!-- Submit Button -->
@@ -156,26 +219,6 @@
           </div>
         </div>
       </div>
-
-      <!-- Right Side - Hero Section -->
-      <div class="hidden lg:flex lg:w-1/2 relative overflow-hidden">
-        <!-- Background Image - Full Height -->
-        <div 
-          class="absolute inset-0 bg-cover bg-center bg-no-repeat" 
-          :style="{ backgroundImage: `url(${abstractBg})` }">
-        </div>
-        
-        <!-- Gradient overlay for text readability -->
-        <div class="absolute inset-0 bg-gradient-to-b from-black/60 via-black/30 to-black/60"></div>
-        
-          <div class="absolute inset-0 flex flex-col justify-center px-16 z-10">
-            <h1 class="text-4xl font-bold text-white leading-tight mb-4">
-              Antecipe queimadas<br />
-              e tome decisões melhores<br />
-              com o poder do FlamaAI.
-            </h1>
-          </div>
-      </div>
     </div>
   </div>
 </template>
@@ -189,31 +232,73 @@ import { useNotification } from '@/composables/useNotification'
 import abstractBg from '@/assets/abstract.jpg'
 
 const router = useRouter()
-const { notifySuccess, notifyError, notifyWarning } = useNotification()
+const { notifySuccess } = useNotification()
 
-const isSignUp = ref(true)
+const isSignUp = ref(false)
 const loading = ref(false)
 const showPassword = ref(false)
 
 const formData = reactive({
   email: '',
+  name: '',
   password: ''
 })
 
+const errors = reactive({
+  email: '',
+  name: '',
+  password: ''
+})
+
+const clearError = (field) => {
+  errors[field] = ''
+}
+
 const toggleMode = () => {
   isSignUp.value = !isSignUp.value
+  formData.name = ''
   formData.password = ''
   showPassword.value = false
+  errors.email = ''
+  errors.name = ''
+  errors.password = ''
 }
 
 const handleSubmit = async () => {
+  // Limpar erros anteriores
+  errors.email = ''
+  errors.name = ''
+  errors.password = ''
+  
+  // Validação dos campos
+  let hasError = false
+  
+  if (!formData.email || !formData.email.trim()) {
+    errors.email = 'Por favor, insira seu email'
+    hasError = true
+  }
+  
+  if (isSignUp.value && (!formData.name || !formData.name.trim())) {
+    errors.name = 'Por favor, insira seu nome'
+    hasError = true
+  }
+  
+  if (!formData.password || !formData.password.trim()) {
+    errors.password = 'Por favor, insira sua senha'
+    hasError = true
+  }
+  
+  if (hasError) {
+    return
+  }
+  
   loading.value = true
 
   try {
     if (isSignUp.value) {
       const response = await authService.register({
         email: formData.email,
-        name: formData.email.split('@')[0],
+        name: formData.name,
         password: formData.password
       })
       
@@ -239,14 +324,14 @@ const handleSubmit = async () => {
   } catch (error) {
     console.error('Erro ao fazer login/registro:', error)
     
-    const errorMsg = error.response?.data?.message || 'Ocorreu um erro. Tente novamente.'
-    
     if (error.response?.status === 401) {
-      notifyError('Email ou senha incorretos', 'Erro de Autenticação')
+      errors.email = 'Email ou senha incorretos'
+      errors.password = 'Email ou senha incorretos'
     } else if (error.response?.status === 409) {
-      notifyWarning('Este email já está cadastrado', 'Atenção')
+      errors.email = 'Este email já está cadastrado'
     } else {
-      notifyError(errorMsg, 'Erro')
+      const errorMsg = error.response?.data?.message || 'Ocorreu um erro. Tente novamente.'
+      errors.email = errorMsg
     }
   } finally {
     loading.value = false
@@ -254,6 +339,11 @@ const handleSubmit = async () => {
 }
 
 const handleGoogleLogin = async () => {
+  // Limpar erros anteriores
+  errors.email = ''
+  errors.name = ''
+  errors.password = ''
+  
   loading.value = true
 
   try {
@@ -261,7 +351,7 @@ const handleGoogleLogin = async () => {
     notifySuccess('Redirecionando para o Google...', 'Autenticação')
   } catch (error) {
     console.error('Erro ao fazer login com Google:', error)
-    notifyError('Erro ao conectar com Google. Tente novamente.', 'Erro de Conexão')
+    errors.email = 'Erro ao conectar com Google. Tente novamente.'
     loading.value = false
   }
 }
@@ -297,6 +387,22 @@ const handleGoogleLogin = async () => {
 
 .eye-transition {
   transition: all 0.2s ease;
+}
+
+/* Transição para mensagens de erro */
+.error-fade-enter-active,
+.error-fade-leave-active {
+  transition: all 0.2s ease;
+}
+
+.error-fade-enter-from {
+  opacity: 0;
+  transform: translateY(-4px);
+}
+
+.error-fade-leave-to {
+  opacity: 0;
+  transform: translateY(-4px);
 }
 
 /* Efeito de clique nos botões */
