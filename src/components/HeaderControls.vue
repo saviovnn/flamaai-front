@@ -1,10 +1,7 @@
 <template>
   <div class="flex items-center gap-2">
     <div class="flex items-center justify-center">
-      <div class="w-7 h-7 bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg flex items-center justify-center relative">
-        <Flame :size="16" class="text-white" />
-        <Sparkle :size="5" class="text-white fill-white absolute top-0.5 right-0.5" fill="currentColor" />
-      </div>
+      <img :src="logo" alt="FlamaAI" class="w-7 h-7" />
     </div>
     
     <div class="flex items-center gap-1 bg-white rounded-full border border-gray-200 p-0.5">
@@ -30,7 +27,8 @@
 </template>
 
 <script setup>
-import { Flame, Sparkle, Menu, BadgePlus, PanelLeft } from 'lucide-vue-next'
+import { BadgePlus, PanelLeft } from 'lucide-vue-next'
+import logo from '@/assets/logo.svg'
 import Tooltip from './Tooltip.vue'
 import { useGlobalStore } from '@/stores/global'
 

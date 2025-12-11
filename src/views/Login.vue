@@ -22,7 +22,9 @@
       <div class="w-full lg:w-1/2 flex items-center justify-center p-8 lg:p-16 bg-gray-50">
         <div class="w-full max-w-md">
           
-          <Logo />
+          <div class="flex justify-center mb-8">
+            <img :src="logo" alt="FlamaAI" class="w-16 h-16" />
+          </div>
 
           <div class="text-center mb-10">
             <div class="h-20 flex flex-col justify-center">
@@ -120,7 +122,7 @@ import { useRouter } from 'vue-router'
 import { authService } from '@/api/services'
 import { useNotification } from '@/composables/useNotification'
 import abstractBg from '@/assets/abstract.jpg'
-import Logo from '@/components/Logo.vue'
+import logo from '@/assets/logo.svg'
 import Input from '@/components/Input.vue'
 import Button from '@/components/Button.vue'
 import GovBrButton from '@/components/GovBrButton.vue'

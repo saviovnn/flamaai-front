@@ -7,10 +7,7 @@
       <div class="p-4">
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-2">
-            <div class="w-8 h-8 bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg flex items-center justify-center relative">
-              <Flame :size="18" class="text-white" />
-              <Sparkle :size="5" class="text-white fill-white absolute top-0.5 right-0.5" fill="currentColor" />
-            </div>
+            <img :src="logo" alt="FlamaAI" class="w-8 h-8" />
             <span class="text-lg font-semibold text-gray-900">FlamaAi</span>
           </div>
           <button
@@ -71,7 +68,8 @@
 
 <script setup>
 import { computed } from 'vue'
-import { Flame, Sparkle, BadgePlus, PanelRight } from 'lucide-vue-next'
+import { BadgePlus, PanelRight } from 'lucide-vue-next'
+import logo from '@/assets/logo.svg'
 import { useGlobalStore } from '@/stores/global'
 import { useAuthStore } from '@/stores/auth'
 import UserMenu from './UserMenu.vue'

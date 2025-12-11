@@ -20,10 +20,7 @@
         :style="mainContentStyle"
       >
         <div class="flex items-center gap-3 mb-9 transition-all duration-300 ease-in-out">
-          <div class="w-8 h-8 bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg flex items-center justify-center relative flex-shrink-0">
-            <Flame :size="20" class="text-white" />
-            <Sparkle :size="6" class="text-white fill-white absolute top-0.5 right-0.5" fill="currentColor" />
-          </div>
+          <img :src="logo" alt="FlamaAI" class="w-8 h-8 flex-shrink-0" />
           <h1 class="text-2xl font-semibold text-gray-900">
             Qual região vamos analizar?
           </h1>
@@ -47,7 +44,7 @@ import { ref, computed, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useGlobalStore } from '@/stores/global'
-import { Flame, Sparkle } from 'lucide-vue-next'
+import logo from '@/assets/logo.svg'
 import SearchInput from '@/components/SearchInput.vue'
 import HeaderControls from '@/components/HeaderControls.vue'
 import Sidebar from '@/components/Sidebar.vue'
