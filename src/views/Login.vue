@@ -1,17 +1,13 @@
 <template>
   <div class="min-h-screen flex">
-    <!-- Container principal -->
     <div class="flex-1 overflow-hidden flex">
       
-      <!-- Left Side - Hero Section -->
       <div class="hidden lg:flex lg:w-1/2 relative overflow-hidden">
-        <!-- Background Image - Full Height -->
         <div 
           class="absolute inset-0 bg-cover bg-center bg-no-repeat" 
           :style="{ backgroundImage: `url(${abstractBg})` }">
         </div>
         
-        <!-- Gradient overlay for text readability -->
         <div class="absolute inset-0 bg-gradient-to-b from-black/60 via-black/30 to-black/60"></div>
         
           <div class="absolute inset-0 flex flex-col justify-center px-16 z-10">
@@ -23,19 +19,11 @@
           </div>
       </div>
 
-      <!-- Right Side - Form Section -->
       <div class="w-full lg:w-1/2 flex items-center justify-center p-8 lg:p-16 bg-gray-50">
         <div class="w-full max-w-md">
           
-          <!-- Logo/Icon -->
-          <div class="flex justify-center mb-8">
-            <div class="w-16 h-16 bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl flex items-center justify-center shadow-lg relative">
-              <Flame :size="40" class="text-white" />
-              <Sparkle :size="10" class="text-white fill-white absolute top-3 right-3" fill="currentColor" />
-            </div>
-          </div>
+          <Logo />
 
-          <!-- Title Section -->
           <div class="text-center mb-10">
             <div class="h-20 flex flex-col justify-center">
               <Transition name="slide-fade" mode="out-in">
@@ -54,141 +42,61 @@
             </div>
           </div>
 
-          <!-- Form -->
           <form @submit.prevent="handleSubmit" class="space-y-5">
-            <!-- Email Input -->
-            <div>
-              <div class="h-6 mb-2">
-                <label class="block text-gray-700 text-sm font-medium">
-                  Seu email
-                </label>
-              </div>
-              <input
-                v-model="formData.email"
-                @input="clearError('email')"
-                type="email"
-                placeholder="seu@email.com"
-                :disabled="loading"
-                :class="[
-                  'w-full px-4 py-3.5 bg-white border-2 rounded-xl text-gray-900 placeholder:text-gray-400 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed',
-                  errors.email ? 'border-red-500 focus:border-red-500' : 'border-gray-200 focus:border-orange-500'
-                ]"
-              />
-              <Transition name="error-fade">
-                <p v-if="errors.email" class="mt-2 text-sm text-red-600">
-                  {{ errors.email }}
-                </p>
-              </Transition>
-            </div>
+            <Input
+              v-model="formData.email"
+              @update:modelValue="clearError('email')"
+              type="email"
+              label="Seu email"
+              placeholder="seu@email.com"
+              :disabled="loading"
+              :error="errors.email"
+            />
 
-            <!-- Name Input (only for signup) -->
             <Transition name="slide-fade" mode="out-in">
-              <div v-if="isSignUp" key="name-field">
-                <div class="h-6 mb-2">
-                  <label class="block text-gray-700 text-sm font-medium">
-                    Seu nome
-                  </label>
-                </div>
-                <input
-                  v-model="formData.name"
-                  @input="clearError('name')"
-                  type="text"
-                  placeholder="João Silva"
-                  :disabled="loading"
-                  :class="[
-                    'w-full px-4 py-3.5 bg-white border-2 rounded-xl text-gray-900 placeholder:text-gray-400 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed',
-                    errors.name ? 'border-red-500 focus:border-red-500' : 'border-gray-200 focus:border-orange-500'
-                  ]"
-                />
-                <Transition name="error-fade">
-                  <p v-if="errors.name" class="mt-2 text-sm text-red-600">
-                    {{ errors.name }}
-                  </p>
-                </Transition>
-              </div>
+              <Input
+                v-if="isSignUp"
+                key="name-field"
+                v-model="formData.name"
+                @update:modelValue="clearError('name')"
+                type="text"
+                label="Seu nome"
+                placeholder="João Silva"
+                :disabled="loading"
+                :error="errors.name"
+              />
             </Transition>
 
-            <!-- Password Input (always visible) -->
             <div>
-              <div class="h-6 mb-2">
-                <Transition name="slide-fade" mode="out-in">
-                  <label :key="isSignUp" class="block text-gray-700 text-sm font-medium">
-                    {{ isSignUp ? 'Crie uma senha' : 'Sua senha' }}
-                  </label>
-                </Transition>
-              </div>
-              <div class="relative">
-                <input
-                  v-model="formData.password"
-                  @input="clearError('password')"
-                  :type="showPassword ? 'text' : 'password'"
-                  placeholder="••••••••••"
-                  :disabled="loading"
-                  :class="[
-                    'w-full px-4 py-3.5 bg-white border-2 rounded-xl text-gray-900 placeholder:text-gray-400 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed pr-12',
-                    errors.password ? 'border-red-500 focus:border-red-500' : 'border-gray-200 focus:border-orange-500'
-                  ]"
-                />
-                <button
-                  type="button"
-                  @click="showPassword = !showPassword"
-                  tabindex="-1"
-                  class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-orange-500"
-                >
-                  <Transition name="eye-fade" mode="out-in">
-                    <Eye v-if="!showPassword" :size="20" key="eye-closed" class="eye-transition" />
-                    <EyeOff v-else :size="20" key="eye-open" class="eye-transition" />
-                  </Transition>
-                </button>
-              </div>
-              <Transition name="error-fade">
-                <p v-if="errors.password" class="mt-2 text-sm text-red-600">
-                  {{ errors.password }}
-                </p>
-              </Transition>
+              <Input
+                v-model="formData.password"
+                @update:modelValue="clearError('password')"
+                :label="isSignUp ? 'Crie uma senha' : 'Sua senha'"
+                placeholder="••••••••••"
+                :disabled="loading"
+                :error="errors.password"
+                secret
+              />
             </div>
 
-            <!-- Submit Button -->
-            <button
+            <Button
               type="submit"
+              :loading="loading"
               :disabled="loading"
-              class="w-full py-4 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-semibold rounded-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-orange-500/30 mt-8"
+              variant="primary"
+              class="mt-8"
             >
-              <span v-if="!loading">
-                {{ isSignUp ? 'Criar conta' : 'Entrar' }}
-              </span>
-              <span v-else class="flex items-center justify-center gap-2">
-                <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                Carregando...
-              </span>
-            </button>
+              {{ isSignUp ? 'Criar conta' : 'Entrar' }}
+            </Button>
           </form>
 
-          <!-- Divider -->
-          <div class="relative my-6">
-            <div class="absolute inset-0 flex items-center">
-              <div class="w-full border-t border-gray-200"></div>
-            </div>
-            <div class="relative flex justify-center text-sm">
-              <span class="px-4 bg-gray-50 text-gray-500">ou</span>
-            </div>
-          </div>
+          <Divider />
 
-          <!-- Gov.br Sign In Button -->
-          <button
-            type="button"
+          <GovBrButton
             @click="handleGovBrLogin"
             :disabled="loading"
-            class="w-full py-4 bg-[#F8F8F8] border-2 border-gray-200 hover:bg-[#D4DDED] hover:border-gray-300 font-semibold rounded-xl transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed group"
-          >
-            <span class="text-[#1451B4]">Entrar com</span>
-            <img :src="govbrLogo" alt="Gov.br" class="h-5 flex-shrink-0" />
-          </button>
+          />
 
-          <!-- Toggle Login/Signup -->
           <div class="text-center mt-6 ">
             <p class="text-gray-500 text-sm">
               {{ isSignUp ? 'Já tem uma conta?' : 'Não tem uma conta?' }}
@@ -210,17 +118,19 @@
 import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import { authService } from '@/api/services'
-import { Eye, EyeOff, Flame, Sparkle } from 'lucide-vue-next'
 import { useNotification } from '@/composables/useNotification'
 import abstractBg from '@/assets/abstract.jpg'
-import govbrLogo from '@/assets/govbr.png'
+import Logo from '@/components/Logo.vue'
+import Input from '@/components/Input.vue'
+import Button from '@/components/Button.vue'
+import GovBrButton from '@/components/GovBrButton.vue'
+import Divider from '@/components/Divider.vue'
 
 const router = useRouter()
 const { notifySuccess } = useNotification()
 
 const isSignUp = ref(false)
 const loading = ref(false)
-const showPassword = ref(false)
 
 const formData = reactive({
   email: '',
@@ -242,19 +152,16 @@ const toggleMode = () => {
   isSignUp.value = !isSignUp.value
   formData.name = ''
   formData.password = ''
-  showPassword.value = false
   errors.email = ''
   errors.name = ''
   errors.password = ''
 }
 
 const handleSubmit = async () => {
-  // Limpar erros anteriores
   errors.email = ''
   errors.name = ''
   errors.password = ''
   
-  // Validação dos campos
   let hasError = false
   
   if (!formData.email || !formData.email.trim()) {
@@ -323,7 +230,6 @@ const handleSubmit = async () => {
 }
 
 const handleGovBrLogin = async () => {
-  // Limpar erros anteriores
   errors.email = ''
   errors.name = ''
   errors.password = ''
@@ -342,7 +248,6 @@ const handleGovBrLogin = async () => {
 </script>
 
 <style scoped>
-/* Transições Vue - Slide Fade (login/cadastro) */
 .slide-fade-enter-active,
 .slide-fade-leave-active {
   transition: opacity 0.3s ease;
@@ -351,46 +256,5 @@ const handleGovBrLogin = async () => {
 .slide-fade-enter-from,
 .slide-fade-leave-to {
   opacity: 0;
-}
-
-/* Transição suave para o ícone do olho */
-.eye-fade-enter-active,
-.eye-fade-leave-active {
-  transition: all 0.2s ease;
-}
-
-.eye-fade-enter-from {
-  opacity: 0;
-  transform: scale(0.8);
-}
-
-.eye-fade-leave-to {
-  opacity: 0;
-  transform: scale(0.8);
-}
-
-.eye-transition {
-  transition: all 0.2s ease;
-}
-
-/* Transição para mensagens de erro */
-.error-fade-enter-active,
-.error-fade-leave-active {
-  transition: all 0.2s ease;
-}
-
-.error-fade-enter-from {
-  opacity: 0;
-  transform: translateY(-4px);
-}
-
-.error-fade-leave-to {
-  opacity: 0;
-  transform: translateY(-4px);
-}
-
-/* Efeito de clique nos botões */
-button:active {
-  transform: scale(0.98);
 }
 </style>
