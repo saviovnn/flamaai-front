@@ -250,7 +250,7 @@ const handleGovBrLogin = async () => {
 <style scoped>
 .slide-fade-enter-active,
 .slide-fade-leave-active {
-  transition: opacity 0.3s ease;
+  transition: opacity 0.5s ease;
 }
 
 .slide-fade-enter-from,

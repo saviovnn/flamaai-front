@@ -1,24 +1,150 @@
 <template>
-  <div>
-    <button @click="navigateTo('/')" class="bg-blue-500 text-white p-2 rounded-md">Home</button>
-    <h1>Dashboard FlamaAI</h1>
-    <p>{{ authStore.isAuthenticated }}</p>
-    
-    <!-- Componente de teste de notificações -->
-    <NotificationTest />
+  <div class="min-h-screen bg-gray-50 flex overflow-x-hidden">
+    <Sidebar
+      :userName="userName"
+      :userInitials="userInitials"
+    />
+
+    <div class="flex-1 flex flex-col">
+      <header 
+        class="p-6 flex items-center transition-all duration-300 ease-in-out"
+        :style="mainContentStyle"
+      >
+        <HeaderControls
+          @new-chat="handleNewChat"
+        />
+      </header>
+
+      <main 
+        class="flex-1 flex flex-col items-center justify-center px-6 pb-32 transition-all duration-300 ease-in-out"
+        :style="mainContentStyle"
+      >
+        <div class="flex items-center gap-3 mb-9 transition-all duration-300 ease-in-out">
+          <div class="w-8 h-8 bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg flex items-center justify-center relative flex-shrink-0">
+            <Flame :size="20" class="text-white" />
+            <Sparkle :size="6" class="text-white fill-white absolute top-0.5 right-0.5" fill="currentColor" />
+          </div>
+          <h1 class="text-2xl font-semibold text-gray-900">
+            Qual região vamos analizar?
+          </h1>
+        </div>
+        
+        <div class="w-full flex justify-center transition-all duration-300 ease-in-out">
+          <SearchInput
+            v-model="searchQuery"
+            placeholder="Digite o nome da cidade, endereço latitude e longitude..."
+            @submit="handleSearch"
+            @voice="handleVoiceInput"
+          />
+        </div>
+      </main>
+    </div>
   </div>
 </template>
 
 <script setup>
+import { ref, computed, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
-import NotificationTest from '@/components/NotificationTest.vue'
+import { useGlobalStore } from '@/stores/global'
+import { Flame, Sparkle } from 'lucide-vue-next'
+import SearchInput from '@/components/SearchInput.vue'
+import HeaderControls from '@/components/HeaderControls.vue'
+import Sidebar from '@/components/Sidebar.vue'
 
 const router = useRouter()
 const authStore = useAuthStore()
+const globalStore = useGlobalStore()
+
+const searchQuery = ref('')
+
+const userName = computed(() => {
+  return 'Sávio Vianna'
+})
+
+const userInitials = computed(() => {
+  const names = userName.value.split(' ')
+  if (names.length >= 2) {
+    return names[0][0].toUpperCase() + names[names.length - 1][0].toUpperCase()
+  }
+  return names[0][0].toUpperCase()
+})
 
 authStore.isAuthenticated = true
+
+const mainContentStyle = computed(() => {
+  const sidebarWidth = 267
+  if (globalStore.isSidebarOpen) {
+    return {
+      transform: `translateX(${sidebarWidth / 2}px)`
+    }
+  }
+  return {
+    transform: 'translateX(0)'
+  }
+})
+
+watch(() => globalStore.isSidebarOpen, (newValue) => {
+  if (newValue) {
+    console.log('Sidebar aberta')
+  } else {
+    console.log('Sidebar fechada')
+  }
+})
+
+watch(() => globalStore.selectedSearch, (newSearch) => {
+  if (newSearch) {
+    console.log('Pesquisa selecionada:', newSearch)
+    searchQuery.value = newSearch.location
+  }
+})
+
+const handleNewChat = () => {
+  searchQuery.value = ''
+  console.log('Nova conversa iniciada')
+}
+
+const addSearchToHistory = (location, searchData) => {
+  const today = new Date()
+  const dateStr = `${today.getDate()}-${today.getMonth() + 1}-${today.getFullYear()}`
+  const key = `${location}-${dateStr}`
+  
+  globalStore.searchHistory[key] = searchData
+}
+
+const handleSearch = (data) => {
+  console.log('Busca realizada:', data)
+  
+  const location = data.query.toLowerCase().replace(/\s+/g, '-')
+  
+  const searchData = {
+    risco: [],
+    humidade: [],
+    temperatura: [],
+    climaTempo: data.climaTempo,
+    qualidadeAr: data.qualidadeAr,
+    explicacao: 'Análise em andamento...'
+  }
+  
+  addSearchToHistory(location, searchData)
+  
+}
+
+const handleVoiceInput = () => {
+  console.log('Comando de voz ativado')
+}
+
 function navigateTo(path) {
   router.push(path)
 }
 </script>
+
+<style scoped>
+button {
+  transition: all 0.2s ease;
+}
+
+button:active {
+  transform: scale(0.98);
+}
+</style>

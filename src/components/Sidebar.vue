@@ -1,0 +1,224 @@
+<template>
+  <Transition name="sidebar">
+    <aside
+      v-if="globalStore.isSidebarOpen"
+      class="fixed left-0 top-0 h-full w-[16.7rem] bg-white border-r border-gray-200 flex flex-col z-40"
+    >
+      <div class="p-4">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <div class="w-8 h-8 bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg flex items-center justify-center relative">
+              <Flame :size="18" class="text-white" />
+              <Sparkle :size="5" class="text-white fill-white absolute top-0.5 right-0.5" fill="currentColor" />
+            </div>
+            <span class="text-lg font-semibold text-gray-900">FlamaAi</span>
+          </div>
+          <button
+            @click="closeSidebar()"
+            class="p-1.5 rounded-lg hover:bg-gray-100 transition-colors text-gray-600"
+            title="Fechar sidebar"
+          >
+            <PanelRight :size="18" />
+          </button>
+        </div>
+      </div>
+
+      <div class="px-3 py-4">
+        <button
+          @click="handleNewAnalysis()"
+          class="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-white border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+        >
+          <BadgePlus :size="18" />
+          Nova analise
+        </button>
+      </div>
+
+      <div class="flex-1 overflow-y-auto pb-4">
+        <div v-for="(group, period) in groupedSearches" :key="period" class="mb-4">
+          <div class="px-4 py-2">
+            <h3 class="text-xs font-medium text-gray-500">{{ period }}</h3>
+          </div>
+          
+          <div class="px-3">
+            <button
+              v-for="search in group"
+              :key="search.key"
+              @click="handleSelectSearch(search)"
+              class="w-full text-left px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors"
+            >
+              <p class="text-sm text-gray-900 truncate">
+                {{ search.location }}
+              </p>
+            </button>
+          </div>
+        </div>
+
+        <div v-if="Object.keys(globalStore.searchHistory).length === 0" class="px-4 py-8 text-center">
+          <p class="text-sm text-gray-500">Nenhuma análise ainda</p>
+        </div>
+      </div>
+      
+      <div class="relative">
+        <div class="absolute bottom-full left-0 right-0 h-20 pointer-events-none" style="background: linear-gradient(to top, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0) 100%);"></div>
+        
+        <div class="px-2 py-1.5 bg-white">
+          <UserMenu :userName="userName" :userInitials="userInitials" />
+        </div>
+      </div>
+    </aside>
+  </Transition>
+</template>
+
+<script setup>
+import { computed } from 'vue'
+import { Flame, Sparkle, BadgePlus, PanelRight } from 'lucide-vue-next'
+import { useGlobalStore } from '@/stores/global'
+import { useAuthStore } from '@/stores/auth'
+import UserMenu from './UserMenu.vue'
+
+const globalStore = useGlobalStore()
+const authStore = useAuthStore()
+
+const props = defineProps({
+  userName: {
+    type: String,
+    default: 'Usuário'
+  },
+  userInitials: {
+    type: String,
+    default: 'U'
+  }
+})
+
+const closeSidebar = () => {
+  globalStore.isSidebarOpen = false
+}
+
+const handleNewAnalysis = () => {
+  console.log('Nova análise clicada')
+  globalStore.selectedSearch = null
+  globalStore.isSidebarOpen = false
+}
+
+const handleSelectSearch = (search) => {
+  globalStore.selectedSearch = search
+  globalStore.isSidebarOpen = false
+}
+
+const parsedSearches = computed(() => {
+  const searches = []
+  
+  for (const [key, value] of Object.entries(globalStore.searchHistory)) {
+    const parts = key.split('-')
+    const day = parts[parts.length - 3]
+    const month = parts[parts.length - 2]
+    const year = parts[parts.length - 1]
+    const location = parts.slice(0, -3).join(' ')
+    
+    const dateObj = new Date(parseInt(year), parseInt(month) - 1, parseInt(day))
+    
+    searches.push({
+      key,
+      location: location.charAt(0).toUpperCase() + location.slice(1),
+      dateObj,
+      month: parseInt(month),
+      year: parseInt(year),
+      data: value
+    })
+  }
+  
+  // Sort by date (most recent first)
+  return searches.sort((a, b) => b.dateObj - a.dateObj)
+})
+
+// Group searches by month/year or special periods
+const groupedSearches = computed(() => {
+  const groups = {}
+  
+  const today = new Date()
+  const currentMonth = today.getMonth() + 1
+  const currentYear = today.getFullYear()
+  
+  const thirtyDaysAgo = new Date()
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
+  
+  parsedSearches.value.forEach(search => {
+    const searchDate = new Date(search.dateObj)
+    searchDate.setHours(0, 0, 0, 0)
+    const todayDate = new Date()
+    todayDate.setHours(0, 0, 0, 0)
+    
+    let groupKey
+    
+    if (search.month === currentMonth && search.year === currentYear) {
+      if (searchDate.getTime() === todayDate.getTime()) {
+        groupKey = 'Hoje'
+      } else if (searchDate >= thirtyDaysAgo) {
+        groupKey = '30 dias'
+      } else {
+        groupKey = `${String(search.month).padStart(2, '0')}-${search.year}`
+      }
+    } else {
+      groupKey = `${String(search.month).padStart(2, '0')}-${search.year}`
+    }
+    
+    if (!groups[groupKey]) {
+      groups[groupKey] = []
+    }
+    groups[groupKey].push(search)
+  })
+  
+  const sortedGroups = {}
+  const groupOrder = ['Hoje', '30 dias']
+  
+  groupOrder.forEach(key => {
+    if (groups[key]) {
+      sortedGroups[key] = groups[key]
+    }
+  })
+  
+  Object.keys(groups)
+    .filter(key => !groupOrder.includes(key))
+    .sort((a, b) => {
+      const [monthA, yearA] = a.split('-').map(Number)
+      const [monthB, yearB] = b.split('-').map(Number)
+      if (yearB !== yearA) return yearB - yearA
+      return monthB - monthA
+    })
+    .forEach(key => {
+      sortedGroups[key] = groups[key]
+    })
+  
+  return sortedGroups
+})
+
+</script>
+
+<style scoped>
+.sidebar-enter-active,
+.sidebar-leave-active {
+  transition: transform 0.3s ease;
+}
+
+.sidebar-enter-from,
+.sidebar-leave-to {
+  transform: translateX(-100%);
+}
+
+.overflow-y-auto::-webkit-scrollbar {
+  width: 6px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 3px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af;
+}
+</style>

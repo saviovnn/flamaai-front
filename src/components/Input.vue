@@ -91,7 +91,6 @@ const togglePasswordVisibility = () => {
 </script>
 
 <style scoped>
-/* Transição suave para o ícone do olho */
 .eye-fade-enter-active,
 .eye-fade-leave-active {
   transition: all 0.2s ease;
@@ -111,7 +110,6 @@ const togglePasswordVisibility = () => {
   transition: all 0.2s ease;
 }
 
-/* Transição para mensagens de erro */
 .error-fade-enter-active,
 .error-fade-leave-active {
   transition: all 0.2s ease;
