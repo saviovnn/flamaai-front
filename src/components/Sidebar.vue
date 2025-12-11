@@ -8,7 +8,7 @@
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-2">
             <img :src="logo" alt="FlamaAI" class="w-8 h-8" />
-            <span class="text-lg font-semibold text-gray-900">FlamaAi</span>
+            <span class="text-lg font-semibold text-gray-900">FlamaAI</span>
           </div>
           <button
             @click="closeSidebar()"
