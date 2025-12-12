@@ -43,7 +43,14 @@
               @click="handleSelectSearch(search)"
               class="w-full text-left px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors"
             >
-              <p class="text-sm text-gray-900 truncate">
+              <p class="text-sm text-gray-900 truncate flex items-center gap-1.5">
+                <Tooltip :text="getRiscoTooltip(search.data.risco_medio)" position="right">
+                  <img 
+                    :src="getRiscoLogo(search.data.risco_medio)" 
+                    :alt="search.data.risco_medio"
+                    class="w-4 h-4 flex-shrink-0 cursor-pointer"
+                  />
+                </Tooltip>
                 {{ search.location }}
               </p>
             </button>
@@ -70,9 +77,33 @@
 import { computed } from 'vue'
 import { BadgePlus, PanelRight } from 'lucide-vue-next'
 import logo from '@/assets/logo.svg'
+import logoAlto from '@/assets/logo-alto.svg'
+import logoMedio from '@/assets/logo-medio.svg'
+import logoBaixo from '@/assets/logo-baixo.svg'
 import { useGlobalStore } from '@/stores/global'
 import { useAuthStore } from '@/stores/auth'
 import UserMenu from './UserMenu.vue'
+import Tooltip from './Tooltip.vue'
+
+const riscoLogos = {
+  alto: logoAlto,
+  medio: logoMedio,
+  baixo: logoBaixo
+}
+
+const riscoTooltips = {
+  alto: 'Risco acima de 80%',
+  medio: 'Risco entre 30% e 80%',
+  baixo: 'Risco abaixo de 30%'
+}
+
+const getRiscoLogo = (riscoMedio) => {
+  return riscoLogos[riscoMedio] || logoBaixo
+}
+
+const getRiscoTooltip = (riscoMedio) => {
+  return riscoTooltips[riscoMedio] || riscoTooltips.baixo
+}
 
 const globalStore = useGlobalStore()
 const authStore = useAuthStore()
