@@ -10,9 +10,9 @@
           @click="closeModal"
         ></div>
         
-        <div class="relative bg-white rounded-2xl shadow-xl w-full max-w-2xl mx-4 flex overflow-hidden" style="height: 420px;">
+        <div class="relative bg-white dark:bg-card rounded-2xl shadow-xl w-full max-w-2xl mx-4 flex overflow-hidden" style="height: 420px;">
           <div class="w-48 p-4 flex flex-col gap-1">
-            <h2 class="text-lg font-semibold text-gray-900 mb-4">Configurações</h2>
+            <h2 class="text-lg font-semibold text-gray-900 dark:text-foreground mb-4">Configurações</h2>
             
             <button
               v-for="tab in tabs"
@@ -21,8 +21,8 @@
               :class="[
                 'flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors text-left',
                 activeTab === tab.id 
-                  ? 'bg-gray-100 text-gray-900 font-medium' 
-                  : 'text-gray-600 hover:bg-gray-50'
+                  ? 'bg-gray-100 dark:bg-accent text-gray-900 dark:text-foreground font-medium' 
+                  : 'text-gray-600 dark:text-muted-foreground hover:bg-gray-50 dark:hover:bg-secondary'
               ]"
             >
               <component :is="tab.icon" :size="18" />
@@ -33,17 +33,17 @@
           <div class="flex-1 px-6 py-12 overflow-y-auto">
             <button 
               @click="closeModal"
-              class="absolute top-4 right-4 p-1.5 rounded-lg hover:bg-gray-100 transition-colors text-gray-500"
+              class="absolute top-4 right-4 p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-accent transition-colors text-gray-500 dark:text-muted-foreground"
             >
               <X :size="20" />
             </button>
             
             <div v-if="activeTab === 'geral'">
               <div class="mb-6 mt-4">
-                <h3 class="text-sm font-medium text-gray-700 mb-3">Tema</h3>
+                <h3 class="text-sm font-medium text-gray-700 dark:text-muted-foreground mb-3">Tema</h3>
                 <div class="flex gap-3">
                   <ThemeButton 
-                    :active="theme === 'light'"
+                    :active="globalStore.theme === 'light'"
                     @click="setTheme('light')"
                     label="Claro"
                     class="flex-1"
@@ -52,7 +52,7 @@
                   </ThemeButton>
                   
                   <ThemeButton 
-                    :active="theme === 'dark'"
+                    :active="globalStore.theme === 'dark'"
                     @click="setTheme('dark')"
                     label="Escuro"
                     class="flex-1"
@@ -61,7 +61,7 @@
                   </ThemeButton>
                   
                   <ThemeButton 
-                    :active="theme === 'system'"
+                    :active="globalStore.theme === 'system'"
                     @click="setTheme('system')"
                     label="Sistema"
                     class="flex-1"
@@ -73,21 +73,21 @@
             </div>
             
             <div v-if="activeTab === 'perfil'" class="space-y-0">
-              <div class="flex items-center justify-between py-4 border-b border-gray-100">
-                <span class="text-sm text-gray-700">Nome</span>
-                <span class="text-sm text-gray-900">{{ userName }}</span>
+              <div class="flex items-center justify-between py-4 border-b border-gray-100 dark:border-border">
+                <span class="text-sm text-gray-700 dark:text-muted-foreground">Nome</span>
+                <span class="text-sm text-gray-900 dark:text-foreground">{{ userName }}</span>
               </div>
               
-              <div class="flex items-center justify-between py-4 border-b border-gray-100">
-                <span class="text-sm text-gray-700">Endereço de e-mail</span>
-                <span class="text-sm text-gray-900">{{ userEmail }}</span>
+              <div class="flex items-center justify-between py-4 border-b border-gray-100 dark:border-border">
+                <span class="text-sm text-gray-700 dark:text-muted-foreground">Endereço de e-mail</span>
+                <span class="text-sm text-gray-900 dark:text-foreground">{{ userEmail }}</span>
               </div>
               
               <div class="flex items-center justify-between py-4">
-                <span class="text-sm text-gray-700">Sair de todos os dispositivos</span>
+                <span class="text-sm text-gray-700 dark:text-muted-foreground">Sair de todos os dispositivos</span>
                 <button 
                   @click="handleLogout"
-                  class="px-4 py-1.5 text-sm text-red-500 border border-red-300 rounded-full hover:bg-red-50 transition-colors"
+                  class="px-4 py-1.5 text-sm text-red-500 border border-red-300 dark:border-red-500/50 rounded-full hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors"
                 >
                   Sair
                 </button>
@@ -95,21 +95,21 @@
             </div>
             
             <div v-if="activeTab === 'sobre'" class="space-y-0">
-              <div class="flex items-center justify-between py-4 border-b border-gray-100">
-                <span class="text-sm text-gray-700">Termos de Uso</span>
+              <div class="flex items-center justify-between py-4 border-b border-gray-100 dark:border-border">
+                <span class="text-sm text-gray-700 dark:text-muted-foreground">Termos de Uso</span>
                 <button 
                   @click="openTermos"
-                  class="px-4 py-1.5 text-sm text-gray-700 border border-gray-300 rounded-full hover:bg-gray-50 transition-colors"
+                  class="px-4 py-1.5 text-sm text-gray-700 dark:text-muted-foreground border border-gray-300 dark:border-border rounded-full hover:bg-gray-50 dark:hover:bg-secondary transition-colors"
                 >
                   Ver
                 </button>
               </div>
               
               <div class="flex items-center justify-between py-4">
-                <span class="text-sm text-gray-700">Política de Privacidade</span>
+                <span class="text-sm text-gray-700 dark:text-muted-foreground">Política de Privacidade</span>
                 <button 
                   @click="openPrivacidade"
-                  class="px-4 py-1.5 text-sm text-gray-700 border border-gray-300 rounded-full hover:bg-gray-50 transition-colors"
+                  class="px-4 py-1.5 text-sm text-gray-700 dark:text-muted-foreground border border-gray-300 dark:border-border rounded-full hover:bg-gray-50 dark:hover:bg-secondary transition-colors"
                 >
                   Ver
                 </button>
@@ -135,7 +135,6 @@ const authStore = useAuthStore()
 const router = useRouter()
 
 const activeTab = ref('geral')
-const theme = ref('light')
 
 const userName = 'Sávio Vianna'
 const userEmail = 'sav*****ev@gmail.com'
@@ -151,8 +150,7 @@ const closeModal = () => {
 }
 
 const setTheme = (newTheme) => {
-  theme.value = newTheme
-  console.log('Tema alterado para:', newTheme)
+  globalStore.setTheme(newTheme)
 }
 
 const handleLogout = () => {

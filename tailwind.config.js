@@ -7,6 +7,11 @@ export default {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        comfortaa: ['Comfortaa', 'cursive'],
+        averia: ['"Averia Serif Libre"', 'serif'],
+        tektur: ['Tektur', 'sans-serif'],
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",

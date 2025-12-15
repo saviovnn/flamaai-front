@@ -11,14 +11,14 @@
       <div
         v-if="showTooltip"
         :class="[
-          'absolute z-50 px-2 py-1 text-xs text-white bg-gray-800 rounded-lg whitespace-nowrap pointer-events-none',
+          'absolute z-50 px-2 py-1 text-xs text-white bg-gray-800 dark:bg-gray-700 rounded-lg whitespace-nowrap pointer-events-none',
           positionClasses
         ]"
       >
         {{ text }}
         <div 
           :class="[
-            'absolute w-2 h-2 bg-gray-700 transform rotate-45',
+            'absolute w-2 h-2 bg-gray-700 dark:bg-gray-600 transform rotate-45',
             arrowClasses
           ]"
         />

@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-gray-50 flex overflow-x-hidden">
+  <div class="min-h-screen bg-gray-50 dark:bg-background flex overflow-x-hidden">
     <Sidebar
       :userName="userName"
       :userInitials="userInitials"
@@ -21,7 +21,7 @@
       >
         <div class="flex items-center gap-3 mb-9 transition-all duration-300 ease-in-out">
           <img :src="logo" alt="FlamaAI" class="w-8 h-8 flex-shrink-0" />
-          <h1 class="text-2xl font-semibold text-gray-900">
+          <h1 class="text-2xl font-semibold text-gray-900 dark:text-foreground">
             Qual região vamos analizar?
           </h1>
         </div>
@@ -44,7 +44,8 @@ import { ref, computed, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useGlobalStore } from '@/stores/global'
-import logo from '@/assets/logo.svg'
+import logoLight from '@/assets/logo.svg'
+import logoDark from '@/assets/logo-dark.svg'
 import SearchInput from '@/components/SearchInput.vue'
 import HeaderControls from '@/components/HeaderControls.vue'
 import Sidebar from '@/components/Sidebar.vue'
@@ -54,6 +55,8 @@ const authStore = useAuthStore()
 const globalStore = useGlobalStore()
 
 const searchQuery = ref('')
+
+const logo = computed(() => globalStore.isDark ? logoDark : logoLight)
 
 const userName = computed(() => {
   return 'Sávio Vianna'

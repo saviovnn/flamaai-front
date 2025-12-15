@@ -19,7 +19,7 @@
           </div>
       </div>
 
-      <div class="w-full lg:w-1/2 flex items-center justify-center p-8 lg:p-16 bg-gray-50">
+      <div class="w-full lg:w-1/2 flex items-center justify-center p-8 lg:p-16 bg-gray-50 dark:bg-background">
         <div class="w-full max-w-md">
           
           <div class="flex justify-center mb-8">
@@ -30,10 +30,10 @@
             <div class="h-20 flex flex-col justify-center">
               <Transition name="slide-fade" mode="out-in">
                 <div :key="isSignUp">
-                  <h2 class="text-3xl font-bold text-gray-900 mb-2">
+                  <h2 class="text-3xl font-bold text-gray-900 dark:text-foreground mb-2">
                     {{ isSignUp ? 'Começar' : 'Bem-vindo de volta' }}
                   </h2>
-                  <p class="text-gray-500">
+                  <p class="text-gray-500 dark:text-muted-foreground">
                     {{ isSignUp 
                       ? 'Bem-vindo ao FlamaAI, vamos prever as queimadas' 
                       : 'Entre para continuar na sua conta' 
@@ -100,11 +100,11 @@
           />
 
           <div class="text-center mt-6 ">
-            <p class="text-gray-500 text-sm">
+            <p class="text-gray-500 dark:text-muted-foreground text-sm">
               {{ isSignUp ? 'Já tem uma conta?' : 'Não tem uma conta?' }}
               <span
                 @click="toggleMode"
-                class="text-gray-900 font-semibold hover:text-orange-600 underline ml-1 transition-colors cursor-pointer"
+                class="text-gray-900 dark:text-foreground font-semibold hover:text-orange-600 underline ml-1 transition-colors cursor-pointer"
               >
                 {{ isSignUp ? 'Entrar' : 'Cadastrar' }}
               </span>
@@ -117,12 +117,14 @@
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue'
+import { ref, reactive, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { authService } from '@/api/services'
 import { useNotification } from '@/composables/useNotification'
 import abstractBg from '@/assets/abstract.jpg'
-import logo from '@/assets/logo.svg'
+import logoLight from '@/assets/logo.svg'
+import logoDark from '@/assets/logo-dark.svg'
+import { useGlobalStore } from '@/stores/global'
 import Input from '@/components/Input.vue'
 import Button from '@/components/Button.vue'
 import GovBrButton from '@/components/GovBrButton.vue'
@@ -130,6 +132,9 @@ import Divider from '@/components/Divider.vue'
 
 const router = useRouter()
 const { notifySuccess } = useNotification()
+const globalStore = useGlobalStore()
+
+const logo = computed(() => globalStore.isDark ? logoDark : logoLight)
 
 const isSignUp = ref(false)
 const loading = ref(false)

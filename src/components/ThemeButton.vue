@@ -4,8 +4,8 @@
     :class="[
       'flex flex-col items-center justify-center gap-2 py-4 rounded-xl border-2 transition-all',
       active 
-        ? 'border-orange-500 bg-orange-50 text-orange-600' 
-        : 'border-gray-200 bg-white text-gray-600 hover:border-gray-300 hover:bg-gray-50'
+        ? 'border-orange-500 bg-orange-50 dark:bg-orange-500/10 text-orange-600 dark:text-orange-400' 
+        : 'border-gray-200 dark:border-border bg-white dark:bg-card text-gray-600 dark:text-muted-foreground hover:border-gray-300 dark:hover:border-border hover:bg-gray-50 dark:hover:bg-secondary'
     ]"
   >
     <slot />

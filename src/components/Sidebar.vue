@@ -2,28 +2,29 @@
   <Transition name="sidebar">
     <aside
       v-if="globalStore.isSidebarOpen"
-      class="fixed left-0 top-0 h-full w-[16.7rem] bg-white border-r border-gray-200 flex flex-col z-40"
+      class="fixed left-0 top-0 h-full w-[16.7rem] bg-white dark:bg-card border-r border-gray-200 dark:border-border flex flex-col z-40"
     >
       <div class="p-4">
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-2">
             <img :src="logo" alt="FlamaAI" class="w-8 h-8" />
-            <span class="text-lg font-semibold text-gray-900">FlamaAI</span>
+            <span class="text-2xl font-bold text-gray-900 dark:text-foreground font-comfortaa">FlamaAi</span>
           </div>
-          <button
-            @click="closeSidebar()"
-            class="p-1.5 rounded-lg hover:bg-gray-100 transition-colors text-gray-600"
-            title="Fechar sidebar"
-          >
-            <PanelRight :size="18" />
-          </button>
+          <Tooltip text="Fechar barra lateral" position="bottom">
+            <button
+              @click="closeSidebar()"
+              class="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-accent transition-colors text-gray-600 dark:text-muted-foreground"
+            >
+              <PanelRight :size="18" />
+            </button>
+          </Tooltip>
         </div>
       </div>
 
       <div class="px-3 py-4">
         <button
           @click="handleNewAnalysis()"
-          class="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-white border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+          class="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-white dark:bg-card border border-gray-200 dark:border-border rounded-lg text-sm font-medium text-gray-700 dark:text-muted-foreground hover:bg-gray-50 dark:hover:bg-secondary transition-colors"
         >
           <BadgePlus :size="18" />
           Nova analise
@@ -33,7 +34,7 @@
       <div class="flex-1 overflow-y-auto pb-4">
         <div v-for="(group, period) in groupedSearches" :key="period" class="mb-4">
           <div class="px-4 py-2">
-            <h3 class="text-xs font-medium text-gray-500">{{ period }}</h3>
+            <h3 class="text-xs font-medium text-gray-500 dark:text-muted-foreground">{{ period }}</h3>
           </div>
           
           <div class="px-3">
@@ -41,9 +42,9 @@
               v-for="search in group"
               :key="search.key"
               @click="handleSelectSearch(search)"
-              class="w-full text-left px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors"
+              class="w-full text-left px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-accent transition-colors"
             >
-              <p class="text-sm text-gray-900 truncate flex items-center gap-1.5">
+              <p class="text-sm text-gray-900 dark:text-foreground truncate flex items-center gap-1.5">
                 <Tooltip :text="getRiscoTooltip(search.data.risco_medio)" position="right">
                   <img 
                     :src="getRiscoLogo(search.data.risco_medio)" 
@@ -58,14 +59,14 @@
         </div>
 
         <div v-if="Object.keys(globalStore.searchHistory).length === 0" class="px-4 py-8 text-center">
-          <p class="text-sm text-gray-500">Nenhuma análise ainda</p>
+          <p class="text-sm text-gray-500 dark:text-muted-foreground">Nenhuma análise ainda</p>
         </div>
       </div>
       
       <div class="relative">
-        <div class="absolute bottom-full left-0 right-0 h-20 pointer-events-none" style="background: linear-gradient(to top, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0) 100%);"></div>
+        <div class="absolute bottom-full left-0 right-0 h-20 pointer-events-none sidebar-gradient"></div>
         
-        <div class="px-2 py-1.5 bg-white">
+        <div class="px-2 py-1.5 bg-white dark:bg-card">
           <UserMenu :userName="userName" :userInitials="userInitials" />
         </div>
       </div>
@@ -76,19 +77,29 @@
 <script setup>
 import { computed } from 'vue'
 import { BadgePlus, PanelRight } from 'lucide-vue-next'
-import logo from '@/assets/logo.svg'
+import logoLight from '@/assets/logo.svg'
+import logoDark from '@/assets/logo-dark.svg'
 import logoAlto from '@/assets/logo-alto.svg'
+import logoAltoDark from '@/assets/logo-alto-dark.svg'
 import logoMedio from '@/assets/logo-medio.svg'
+import logoMedioDark from '@/assets/logo-medio-dark.svg'
 import logoBaixo from '@/assets/logo-baixo.svg'
+import logoBaixoDark from '@/assets/logo-baixo-dark.svg'
 import { useGlobalStore } from '@/stores/global'
 import { useAuthStore } from '@/stores/auth'
 import UserMenu from './UserMenu.vue'
 import Tooltip from './Tooltip.vue'
 
-const riscoLogos = {
+const riscoLogosLight = {
   alto: logoAlto,
   medio: logoMedio,
   baixo: logoBaixo
+}
+
+const riscoLogosDark = {
+  alto: logoAltoDark,
+  medio: logoMedioDark,
+  baixo: logoBaixoDark
 }
 
 const riscoTooltips = {
@@ -97,16 +108,20 @@ const riscoTooltips = {
   baixo: 'Risco abaixo de 30%'
 }
 
+const globalStore = useGlobalStore()
+const authStore = useAuthStore()
+
 const getRiscoLogo = (riscoMedio) => {
-  return riscoLogos[riscoMedio] || logoBaixo
+  const logos = globalStore.isDark ? riscoLogosDark : riscoLogosLight
+  const fallback = globalStore.isDark ? logoBaixoDark : logoBaixo
+  return logos[riscoMedio] || fallback
 }
 
 const getRiscoTooltip = (riscoMedio) => {
   return riscoTooltips[riscoMedio] || riscoTooltips.baixo
 }
 
-const globalStore = useGlobalStore()
-const authStore = useAuthStore()
+const logo = computed(() => globalStore.isDark ? logoDark : logoLight)
 
 const props = defineProps({
   userName: {
@@ -234,6 +249,14 @@ const groupedSearches = computed(() => {
   transform: translateX(-100%);
 }
 
+.sidebar-gradient {
+  background: linear-gradient(to top, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0) 100%);
+}
+
+:root.dark .sidebar-gradient {
+  background: linear-gradient(to top, hsl(220, 13%, 13%) 0%, transparent 100%);
+}
+
 .overflow-y-auto::-webkit-scrollbar {
   width: 6px;
 }
@@ -249,5 +272,13 @@ const groupedSearches = computed(() => {
 
 .overflow-y-auto::-webkit-scrollbar-thumb:hover {
   background: #9ca3af;
+}
+
+:root.dark .overflow-y-auto::-webkit-scrollbar-thumb {
+  background: hsl(220, 13%, 25%);
+}
+
+:root.dark .overflow-y-auto::-webkit-scrollbar-thumb:hover {
+  background: hsl(220, 13%, 35%);
 }
 </style>

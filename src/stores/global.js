@@ -1,9 +1,67 @@
-import { ref } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { defineStore } from 'pinia'
 
 export const useGlobalStore = defineStore('global', () => {
   const isSidebarOpen = ref(false)
   const isSettingsOpen = ref(false)
+  
+  // Theme management
+  const theme = ref('system') // 'light' | 'dark' | 'system'
+  
+  // Computed para verificar o tema efetivo (considerando system)
+  const effectiveTheme = computed(() => {
+    if (theme.value === 'system') {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+    }
+    return theme.value
+  })
+  
+  const isDark = computed(() => effectiveTheme.value === 'dark')
+  
+  // Aplica o tema no documento
+  const applyTheme = () => {
+    const favicon = document.getElementById('favicon')
+    
+    if (isDark.value) {
+      document.documentElement.classList.add('dark')
+      if (favicon) favicon.href = '/logo-dark.svg'
+    } else {
+      document.documentElement.classList.remove('dark')
+      if (favicon) favicon.href = '/logo.svg'
+    }
+  }
+  
+  // Inicializa o tema (chama no App.vue)
+  const initTheme = () => {
+    // Recupera o tema salvo no localStorage, ou usa 'system' como padrão
+    const savedTheme = localStorage.getItem('theme')
+    if (savedTheme && ['light', 'dark', 'system'].includes(savedTheme)) {
+      theme.value = savedTheme
+    } else {
+      theme.value = 'system'
+    }
+    
+    applyTheme()
+    
+    // Escuta mudanças na preferência do sistema
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+      if (theme.value === 'system') {
+        applyTheme()
+      }
+    })
+  }
+  
+  // Define o tema
+  const setTheme = (newTheme) => {
+    theme.value = newTheme
+    localStorage.setItem('theme', newTheme)
+    applyTheme()
+  }
+  
+  // Watch para aplicar o tema quando mudar
+  watch(theme, () => {
+    applyTheme()
+  })
   const searchHistory = ref({
     'taubate-12-01-2025': {
       risco: ['alto', 'medio'],
@@ -180,6 +238,11 @@ export const useGlobalStore = defineStore('global', () => {
     isSidebarOpen,
     isSettingsOpen,
     searchHistory,
-    selectedSearch
+    selectedSearch,
+    theme,
+    effectiveTheme,
+    isDark,
+    initTheme,
+    setTheme
   }
 })
