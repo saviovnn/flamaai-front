@@ -1,15 +1,15 @@
 <template>
   <div class="relative inline-block">
     <div 
-      @mouseenter="showTooltip = true"
-      @mouseleave="showTooltip = false"
+      @mouseenter="handleMouseEnter"
+      @mouseleave="handleMouseLeave"
     >
       <slot />
     </div>
     
     <Transition name="tooltip">
       <div
-        v-if="showTooltip"
+        v-if="showTooltip && !isMobile"
         :class="[
           'absolute z-50 px-2 py-1 text-xs text-white bg-gray-800 dark:bg-gray-700 rounded-lg whitespace-nowrap pointer-events-none',
           positionClasses
@@ -28,7 +28,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 
 const props = defineProps({
   text: {
@@ -43,6 +43,36 @@ const props = defineProps({
 })
 
 const showTooltip = ref(false)
+const isMobile = ref(false)
+
+const checkIsMobile = () => {
+  if (typeof window === 'undefined') return false
+  // Considera mobile se a largura for menor que 640px (breakpoint sm do Tailwind)
+  return window.innerWidth < 640 || 'ontouchstart' in window
+}
+
+const handleResize = () => {
+  isMobile.value = checkIsMobile()
+}
+
+const handleMouseEnter = () => {
+  if (!isMobile.value) {
+    showTooltip.value = true
+  }
+}
+
+const handleMouseLeave = () => {
+  showTooltip.value = false
+}
+
+onMounted(() => {
+  isMobile.value = checkIsMobile()
+  window.addEventListener('resize', handleResize)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('resize', handleResize)
+})
 
 const positionClasses = computed(() => {
   const positions = {
