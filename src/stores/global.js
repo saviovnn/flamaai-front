@@ -233,16 +233,51 @@ export const useGlobalStore = defineStore('global', () => {
     }
   })
   const selectedSearch = ref(null)
+  
+  // Search query
+  const searchQuery = ref('')
+  
+  const setSearchQuery = (query) => {
+    searchQuery.value = query
+  }
+  
+  // Voice recognition
+  const isRecording = ref(false)
+  const transcribedText = ref('')
+  
+  const startRecording = () => {
+    isRecording.value = true
+  }
+  
+  const stopRecording = () => {
+    isRecording.value = false
+  }
+  
+  const setTranscribedText = (text) => {
+    transcribedText.value = text
+  }
+  
+  const clearTranscribedText = () => {
+    transcribedText.value = ''
+  }
 
   return {
     isSidebarOpen,
     isSettingsOpen,
     searchHistory,
     selectedSearch,
+    searchQuery,
+    setSearchQuery,
     theme,
     effectiveTheme,
     isDark,
     initTheme,
-    setTheme
+    setTheme,
+    isRecording,
+    transcribedText,
+    startRecording,
+    stopRecording,
+    setTranscribedText,
+    clearTranscribedText
   }
 })

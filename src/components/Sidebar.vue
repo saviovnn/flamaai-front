@@ -139,7 +139,6 @@ const closeSidebar = () => {
 }
 
 const handleNewAnalysis = () => {
-  console.log('Nova análise clicada')
   globalStore.selectedSearch = null
   globalStore.isSidebarOpen = false
 }

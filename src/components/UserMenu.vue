@@ -80,13 +80,11 @@ const closeMenu = () => {
 }
 
 const handleConfiguracao = () => {
-  console.log('Configurações clicado')
   closeMenu()
   globalStore.isSettingsOpen = true
 }
 
 const handleSair = () => {
-  console.log('Sair clicado')
   closeMenu()
   authStore.logout()
   router.push('/login')

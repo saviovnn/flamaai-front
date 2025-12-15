@@ -28,10 +28,8 @@
         
         <div class="w-full flex justify-center transition-all duration-300 ease-in-out">
           <SearchInput
-            v-model="searchQuery"
             placeholder="Digite o nome da cidade, endereço latitude e longitude..."
             @submit="handleSearch"
-            @voice="handleVoiceInput"
           />
         </div>
       </main>
@@ -53,8 +51,6 @@ import Sidebar from '@/components/Sidebar.vue'
 const router = useRouter()
 const authStore = useAuthStore()
 const globalStore = useGlobalStore()
-
-const searchQuery = ref('')
 
 const logo = computed(() => globalStore.isDark ? logoDark : logoLight)
 
@@ -86,22 +82,18 @@ const mainContentStyle = computed(() => {
 
 watch(() => globalStore.isSidebarOpen, (newValue) => {
   if (newValue) {
-    console.log('Sidebar aberta')
   } else {
-    console.log('Sidebar fechada')
   }
 })
 
 watch(() => globalStore.selectedSearch, (newSearch) => {
   if (newSearch) {
-    console.log('Pesquisa selecionada:', newSearch)
-    searchQuery.value = newSearch.location
+    globalStore.setSearchQuery(newSearch.location)
   }
 })
 
 const handleNewChat = () => {
-  searchQuery.value = ''
-  console.log('Nova conversa iniciada')
+  globalStore.setSearchQuery('')
 }
 
 const addSearchToHistory = (location, searchData) => {
@@ -113,7 +105,6 @@ const addSearchToHistory = (location, searchData) => {
 }
 
 const handleSearch = (data) => {
-  console.log('Busca realizada:', data)
   
   const location = data.query.toLowerCase().replace(/\s+/g, '-')
   
@@ -130,9 +121,6 @@ const handleSearch = (data) => {
   
 }
 
-const handleVoiceInput = () => {
-  console.log('Comando de voz ativado')
-}
 
 function navigateTo(path) {
   router.push(path)
