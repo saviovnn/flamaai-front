@@ -10,7 +10,7 @@
           @click="closeModal"
         ></div>
         
-        <div class="relative bg-white dark:bg-card rounded-xl sm:rounded-2xl shadow-xl w-full max-w-2xl mx-2 sm:mx-4 flex flex-col sm:flex-row overflow-hidden max-h-[90vh] sm:max-h-[85vh] sm:h-[420px]">
+        <div class="relative bg-white dark:bg-card rounded-xl sm:rounded-2xl shadow-xl w-full max-w-2xl mx-2 sm:mx-4 flex flex-col sm:flex-row overflow-hidden max-h-[90vh] sm:max-h-[85vh] min-h-[455px] sm:min-h-0 sm:h-[420px]">
           <div class="w-full sm:w-48 border-b sm:border-b-0 sm:border-r border-gray-200 dark:border-border p-3 sm:p-4 flex flex-col gap-1">
             <div class="flex items-center justify-between mb-3 sm:mb-4">
               <h2 class="text-base sm:text-lg font-semibold text-gray-900 dark:text-foreground">Configurações</h2>
