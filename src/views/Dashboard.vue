@@ -7,7 +7,7 @@
 
     <div class="flex-1 flex flex-col">
       <header 
-        class="p-6 flex items-center transition-all duration-300 ease-in-out"
+        class="p-3 sm:p-4 md:p-6 flex items-center transition-all duration-300 ease-in-out"
         :style="mainContentStyle"
       >
         <HeaderControls
@@ -16,12 +16,12 @@
       </header>
 
       <main 
-        class="flex-1 flex flex-col items-center justify-center px-6 pb-32 transition-all duration-300 ease-in-out"
+        class="flex-1 flex flex-col items-center justify-center px-3 sm:px-4 md:px-6 pb-20 sm:pb-32 transition-all duration-300 ease-in-out"
         :style="mainContentStyle"
       >
-        <div class="flex items-center gap-3 mb-9 transition-all duration-300 ease-in-out">
-          <img :src="logo" alt="FlamaAI" class="w-8 h-8 flex-shrink-0" />
-          <h1 class="text-2xl font-semibold text-gray-900 dark:text-foreground">
+        <div class="flex items-center gap-2 sm:gap-3 mb-6 sm:mb-9 transition-all duration-300 ease-in-out px-2 sm:px-0">
+          <img :src="logo" alt="FlamaAI" class="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0" />
+          <h1 class="text-lg sm:text-xl md:text-2xl font-semibold text-gray-900 dark:text-foreground">
             Qual região vamos analizar?
           </h1>
         </div>

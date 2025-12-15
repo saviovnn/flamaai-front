@@ -1,35 +1,35 @@
 <template>
-  <div class="w-full max-w-3xl">
+  <div class="w-full max-w-3xl px-2 sm:px-0">
     <div 
-      class="relative bg-white dark:bg-card rounded-3xl border p-3 transition-colors"
+      class="relative bg-white dark:bg-card rounded-2xl sm:rounded-3xl border p-2.5 sm:p-3 transition-colors"
       :class="globalStore.isRecording 
         ? 'border-orange-500 dark:border-orange-500' 
         : 'border-gray-200 dark:border-border'"
     >
-      <div class="mb-4">
+      <div class="mb-3 sm:mb-4">
         <input
           v-model="query"
           type="text"
-          :placeholder="placeholder"
-          class="w-full px-3.5 py-1.5 text-[15px] text-gray-900 dark:text-foreground placeholder:text-gray-400 dark:placeholder:text-muted-foreground focus:outline-none bg-transparent"
+          :placeholder="responsivePlaceholder"
+          class="w-full px-2.5 sm:px-3.5 py-1.5 text-sm sm:text-[15px] text-gray-900 dark:text-foreground placeholder:text-gray-400 dark:placeholder:text-muted-foreground focus:outline-none bg-transparent"
           @keypress.enter="handleSubmit"
         />
       </div>
       
-      <div class="flex items-center justify-between">
-        <div class="flex items-center gap-1.5">
+      <div class="flex items-center justify-between flex-wrap gap-2">
+        <div class="flex items-center gap-1 sm:gap-1.5">
           <Tooltip text="Complementar análise com dados de clima e tempo" position="bottom">
             <button
               @click="selectClimaTempo"
               :class="[
-                'flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[14px] transition-all duration-200',
+                'flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1.5 rounded-full text-xs sm:text-[14px] transition-all duration-200',
                 climaTempo 
                   ? 'bg-orange-50 dark:bg-orange-500/10 text-orange-600 dark:text-orange-400 border border-orange-300 dark:border-orange-500/50' 
                   : 'bg-gray-50 dark:bg-secondary text-gray-600 dark:text-muted-foreground border border-gray-200 dark:border-border hover:bg-gray-100 dark:hover:bg-accent'
               ]"
             >
-              <Cloudy :size="15" />
-              Clima e Tempo
+              <Cloudy :size="14" class="sm:w-[15px] sm:h-[15px] flex-shrink-0" />
+              <span class="hidden sm:inline">Clima e Tempo</span>
             </button>
           </Tooltip>
           
@@ -38,45 +38,45 @@
             <button
               @click="selectQualidadeAr"
               :class="[
-                'flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[14px] transition-all duration-200',
+                'flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1.5 rounded-full text-xs sm:text-[14px] transition-all duration-200',
                 qualidadeAr 
                   ? 'bg-orange-50 dark:bg-orange-500/10 text-orange-600 dark:text-orange-400 border border-orange-300 dark:border-orange-500/50' 
                   : 'bg-gray-50 dark:bg-secondary text-gray-600 dark:text-muted-foreground border border-gray-200 dark:border-border hover:bg-gray-100 dark:hover:bg-accent'
               ]"
             >
-              <Wind :size="15" />
-              Qualidade do Ar
+              <Wind :size="14" class="sm:w-[15px] sm:h-[15px] flex-shrink-0" />
+              <span class="hidden sm:inline">Qualidade do Ar</span>
             </button>
           </Tooltip>
         </div>
         
          
-        <div class="flex items-center gap-2">
-          <Tooltip text="Usar localização atual" position="bottom">
+        <div class="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
+          <Tooltip text="Usar localização atual" position="bottom" mobile-position="right">
             <button
               @click="handleLocation"
-              class="p-2 text-gray-400 dark:text-muted-foreground hover:text-gray-600 dark:hover:text-foreground transition-colors"
+              class="p-1.5 sm:p-2 text-gray-400 dark:text-muted-foreground hover:text-gray-600 dark:hover:text-foreground transition-colors"
             >
-              <MapPin :size="18" />
+              <MapPin :size="16" class="sm:w-[18px] sm:h-[18px]" />
             </button>
           </Tooltip>
 
           <Tooltip 
             v-if="hasSpeechRecognition()"
             :text="globalStore.isRecording ? 'Parar gravação' : 'Transcrever mensagem com voz'" 
-            position="bottom"
+            position="bottom" mobile-position="right"
           >
             <button
               @click="handleVoiceInput"
               :class="[
-                'p-2 transition-colors',
+                'p-1.5 sm:p-2 transition-colors',
                 globalStore.isRecording 
                   ? 'text-red-500 animate-pulse' 
                   : 'text-gray-400 dark:text-muted-foreground hover:text-gray-600 dark:hover:text-foreground'
               ]"
             >
-              <CircleStop v-if="globalStore.isRecording" :size="18" />
-              <Mic v-else :size="18" />
+              <CircleStop v-if="globalStore.isRecording" :size="16" class="sm:w-[18px] sm:h-[18px]" />
+              <Mic v-else :size="16" class="sm:w-[18px] sm:h-[18px]" />
             </button>
           </Tooltip>
           
@@ -85,13 +85,13 @@
               @click="handleSubmit"
               :disabled="!query.trim()"
               :class="[
-                'p-2 rounded-xl transition-all duration-200',
+                'p-1.5 sm:p-2 rounded-lg sm:rounded-xl transition-all duration-200',
                 query.trim() 
                   ? 'bg-orange-500 text-white hover:bg-orange-600' 
                   : 'bg-gray-100 dark:bg-accent text-gray-400 dark:text-muted-foreground cursor-not-allowed'
               ]"
             >
-              <ArrowUp :size="18" />
+              <ArrowUp :size="16" class="sm:w-[18px] sm:h-[18px]" />
             </button>
           </Tooltip>
         </div>
@@ -109,6 +109,17 @@ import micInSound from '@/assets/mic-in.wav'
 import micOutSound from '@/assets/mic-out.wav'
 
 const globalStore = useGlobalStore()
+
+const windowWidth = ref(typeof window !== 'undefined' ? window.innerWidth : 640)
+
+let handleResize = null
+
+onMounted(() => {
+  handleResize = () => {
+    windowWidth.value = window.innerWidth
+  }
+  window.addEventListener('resize', handleResize)
+})
 
 // Web Speech API
 let recognition = null
@@ -141,6 +152,21 @@ const query = computed({
   get: () => globalStore.searchQuery,
   set: (value) => globalStore.setSearchQuery(value)
 })
+
+// Placeholder responsivo - mais curto em telas pequenas
+const responsivePlaceholder = computed(() => {
+  if (windowWidth.value < 640) {
+    // Placeholder curto para mobile
+    if (props.placeholder.includes('cidade')) {
+      return 'Digite cidade ou coordenadas...'
+    }
+    return props.placeholder.length > 30 
+      ? props.placeholder.substring(0, 30) + '...'
+      : props.placeholder
+  }
+  return props.placeholder
+})
+
 const climaTempo = ref(true)
 const qualidadeAr = ref(false)
 
@@ -411,6 +437,9 @@ onUnmounted(() => {
     try {
       recognition.stop()
     } catch (e) {}
+  }
+  if (handleResize) {
+    window.removeEventListener('resize', handleResize)
   }
   globalStore.stopRecording()
   globalStore.clearTranscribedText()

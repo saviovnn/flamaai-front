@@ -10,84 +10,94 @@
           @click="closeModal"
         ></div>
         
-        <div class="relative bg-white dark:bg-card rounded-2xl shadow-xl w-full max-w-2xl mx-4 flex overflow-hidden" style="height: 420px;">
-          <div class="w-48 p-4 flex flex-col gap-1">
-            <h2 class="text-lg font-semibold text-gray-900 dark:text-foreground mb-4">Configurações</h2>
+        <div class="relative bg-white dark:bg-card rounded-xl sm:rounded-2xl shadow-xl w-full max-w-2xl mx-2 sm:mx-4 flex flex-col sm:flex-row overflow-hidden max-h-[90vh] sm:max-h-[85vh] sm:h-[420px]">
+          <div class="w-full sm:w-48 border-b sm:border-b-0 sm:border-r border-gray-200 dark:border-border p-3 sm:p-4 flex flex-col gap-1">
+            <div class="flex items-center justify-between mb-3 sm:mb-4">
+              <h2 class="text-base sm:text-lg font-semibold text-gray-900 dark:text-foreground">Configurações</h2>
+              <button 
+                @click="closeModal"
+                class="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-accent transition-colors text-gray-500 dark:text-muted-foreground sm:hidden"
+              >
+                <X :size="18" />
+              </button>
+            </div>
             
-            <button
-              v-for="tab in tabs"
-              :key="tab.id"
-              @click="activeTab = tab.id"
-              :class="[
-                'flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors text-left',
-                activeTab === tab.id 
-                  ? 'bg-gray-100 dark:bg-accent text-gray-900 dark:text-foreground font-medium' 
-                  : 'text-gray-600 dark:text-muted-foreground hover:bg-gray-50 dark:hover:bg-secondary'
-              ]"
-            >
-              <component :is="tab.icon" :size="18" />
-              {{ tab.label }}
-            </button>
+            <div class="flex flex-row sm:flex-col gap-1 overflow-x-auto sm:overflow-x-visible">
+              <button
+                v-for="tab in tabs"
+                :key="tab.id"
+                @click="activeTab = tab.id"
+                :class="[
+                  'flex items-center gap-2 sm:gap-3 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm transition-colors text-left whitespace-nowrap',
+                  activeTab === tab.id 
+                    ? 'bg-gray-100 dark:bg-accent text-gray-900 dark:text-foreground font-medium' 
+                    : 'text-gray-600 dark:text-muted-foreground hover:bg-gray-50 dark:hover:bg-secondary'
+                ]"
+              >
+                <component :is="tab.icon" :size="16" class="sm:w-[18px] sm:h-[18px]" />
+                {{ tab.label }}
+              </button>
+            </div>
           </div>
           
-          <div class="flex-1 px-6 py-12 overflow-y-auto">
+          <div class="flex-1 px-4 sm:px-6 py-6 sm:py-12 overflow-y-auto relative">
             <button 
               @click="closeModal"
-              class="absolute top-4 right-4 p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-accent transition-colors text-gray-500 dark:text-muted-foreground"
+              class="hidden sm:block absolute top-4 right-4 p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-accent transition-colors text-gray-500 dark:text-muted-foreground z-10"
             >
               <X :size="20" />
             </button>
             
             <div v-if="activeTab === 'geral'">
-              <div class="mb-6 mt-4">
-                <h3 class="text-sm font-medium text-gray-700 dark:text-muted-foreground mb-3">Tema</h3>
-                <div class="flex gap-3">
+              <div class="mb-4 sm:mb-6 mt-0 sm:mt-4">
+                <h3 class="text-xs sm:text-sm font-medium text-gray-700 dark:text-muted-foreground mb-2 sm:mb-3">Tema</h3>
+                <div class="flex flex-col sm:flex-row gap-2 sm:gap-3">
                   <ThemeButton 
                     :active="globalStore.theme === 'light'"
                     @click="setTheme('light')"
                     label="Claro"
-                    class="flex-1"
+                    class="w-full sm:flex-1"
                   >
-                    <Sun :size="20" />
+                    <Sun :size="18" class="sm:w-5 sm:h-5" />
                   </ThemeButton>
                   
                   <ThemeButton 
                     :active="globalStore.theme === 'dark'"
                     @click="setTheme('dark')"
                     label="Escuro"
-                    class="flex-1"
+                    class="w-full sm:flex-1"
                   >
-                    <Moon :size="20" />
+                    <Moon :size="18" class="sm:w-5 sm:h-5" />
                   </ThemeButton>
                   
                   <ThemeButton 
                     :active="globalStore.theme === 'system'"
                     @click="setTheme('system')"
                     label="Sistema"
-                    class="flex-1"
+                    class="w-full sm:flex-1"
                   >
-                    <Monitor :size="20" />
+                    <Monitor :size="18" class="sm:w-5 sm:h-5" />
                   </ThemeButton>
                 </div>
               </div>
             </div>
             
             <div v-if="activeTab === 'perfil'" class="space-y-0">
-              <div class="flex items-center justify-between py-4 border-b border-gray-100 dark:border-border">
-                <span class="text-sm text-gray-700 dark:text-muted-foreground">Nome</span>
-                <span class="text-sm text-gray-900 dark:text-foreground">{{ userName }}</span>
+              <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between py-3 sm:py-4 border-b border-gray-100 dark:border-border gap-1 sm:gap-0">
+                <span class="text-xs sm:text-sm text-gray-700 dark:text-muted-foreground">Nome</span>
+                <span class="text-xs sm:text-sm text-gray-900 dark:text-foreground break-words">{{ userName }}</span>
               </div>
               
-              <div class="flex items-center justify-between py-4 border-b border-gray-100 dark:border-border">
-                <span class="text-sm text-gray-700 dark:text-muted-foreground">Endereço de e-mail</span>
-                <span class="text-sm text-gray-900 dark:text-foreground">{{ userEmail }}</span>
+              <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between py-3 sm:py-4 border-b border-gray-100 dark:border-border gap-1 sm:gap-0">
+                <span class="text-xs sm:text-sm text-gray-700 dark:text-muted-foreground">Endereço de e-mail</span>
+                <span class="text-xs sm:text-sm text-gray-900 dark:text-foreground break-all">{{ userEmail }}</span>
               </div>
               
-              <div class="flex items-center justify-between py-4">
-                <span class="text-sm text-gray-700 dark:text-muted-foreground">Sair de todos os dispositivos</span>
+              <div class="flex items-center justify-between py-3 sm:py-4">
+                <span class="text-xs sm:text-sm text-gray-700 dark:text-muted-foreground">Sair de todos os dispositivos</span>
                 <button 
                   @click="handleLogout"
-                  class="px-4 py-1.5 text-sm text-red-500 border border-red-300 dark:border-red-500/50 rounded-full hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors"
+                  class="px-3 sm:px-4 py-1.5 text-xs sm:text-sm text-red-500 border border-red-300 dark:border-red-500/50 rounded-full hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors"
                 >
                   Sair
                 </button>
@@ -95,21 +105,21 @@
             </div>
             
             <div v-if="activeTab === 'sobre'" class="space-y-0">
-              <div class="flex items-center justify-between py-4 border-b border-gray-100 dark:border-border">
-                <span class="text-sm text-gray-700 dark:text-muted-foreground">Termos de Uso</span>
+              <div class="flex items-center justify-between py-3 sm:py-4 border-b border-gray-100 dark:border-border">
+                <span class="text-xs sm:text-sm text-gray-700 dark:text-muted-foreground">Termos de Uso</span>
                 <button 
                   @click="openTermos"
-                  class="px-4 py-1.5 text-sm text-gray-700 dark:text-muted-foreground border border-gray-300 dark:border-border rounded-full hover:bg-gray-50 dark:hover:bg-secondary transition-colors"
+                  class="px-3 sm:px-4 py-1.5 text-xs sm:text-sm text-gray-700 dark:text-muted-foreground border border-gray-300 dark:border-border rounded-full hover:bg-gray-50 dark:hover:bg-secondary transition-colors"
                 >
                   Ver
                 </button>
               </div>
               
-              <div class="flex items-center justify-between py-4">
-                <span class="text-sm text-gray-700 dark:text-muted-foreground">Política de Privacidade</span>
+              <div class="flex items-center justify-between py-3 sm:py-4">
+                <span class="text-xs sm:text-sm text-gray-700 dark:text-muted-foreground">Política de Privacidade</span>
                 <button 
                   @click="openPrivacidade"
-                  class="px-4 py-1.5 text-sm text-gray-700 dark:text-muted-foreground border border-gray-300 dark:border-border rounded-full hover:bg-gray-50 dark:hover:bg-secondary transition-colors"
+                  class="px-3 sm:px-4 py-1.5 text-xs sm:text-sm text-gray-700 dark:text-muted-foreground border border-gray-300 dark:border-border rounded-full hover:bg-gray-50 dark:hover:bg-secondary transition-colors"
                 >
                   Ver
                 </button>

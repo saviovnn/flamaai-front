@@ -2,13 +2,13 @@
   <Transition name="sidebar">
     <aside
       v-if="globalStore.isSidebarOpen"
-      class="fixed left-0 top-0 h-full w-[16.7rem] bg-white dark:bg-card border-r border-gray-200 dark:border-border flex flex-col z-40"
+      class="fixed left-0 top-0 h-full w-[16.7rem] sm:w-[16.7rem] bg-white dark:bg-card border-r border-gray-200 dark:border-border flex flex-col z-40"
     >
-      <div class="p-4">
+      <div class="p-3 sm:p-4">
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-2">
-            <img :src="logo" alt="FlamaAI" class="w-8 h-8" />
-            <span class="text-2xl font-bold text-gray-900 dark:text-foreground font-comfortaa">FlamaAi</span>
+            <img :src="logo" alt="FlamaAI" class="w-7 h-7 sm:w-8 sm:h-8 flex-shrink-0" />
+            <span class="text-xl sm:text-2xl font-bold text-gray-900 dark:text-foreground font-comfortaa">FlamaAi</span>
           </div>
           <Tooltip text="Fechar barra lateral" position="bottom">
             <button
@@ -21,35 +21,35 @@
         </div>
       </div>
 
-      <div class="px-3 py-4">
+      <div class="px-2 sm:px-3 py-3 sm:py-4">
         <button
           @click="handleNewAnalysis()"
-          class="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-white dark:bg-card border border-gray-200 dark:border-border rounded-lg text-sm font-medium text-gray-700 dark:text-muted-foreground hover:bg-gray-50 dark:hover:bg-secondary transition-colors"
+          class="w-full flex items-center justify-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5 bg-white dark:bg-card border border-gray-200 dark:border-border rounded-lg text-xs sm:text-sm font-medium text-gray-700 dark:text-muted-foreground hover:bg-gray-50 dark:hover:bg-secondary transition-colors"
         >
-          <BadgePlus :size="18" />
+          <BadgePlus :size="16" class="sm:w-[18px] sm:h-[18px]" />
           Nova analise
         </button>
       </div>
 
       <div class="flex-1 overflow-y-auto pb-4">
-        <div v-for="(group, period) in groupedSearches" :key="period" class="mb-4">
-          <div class="px-4 py-2">
-            <h3 class="text-xs font-medium text-gray-500 dark:text-muted-foreground">{{ period }}</h3>
+        <div v-for="(group, period) in groupedSearches" :key="period" class="mb-3 sm:mb-4">
+          <div class="px-3 sm:px-4 py-1.5 sm:py-2">
+            <h3 class="text-[10px] sm:text-xs font-medium text-gray-500 dark:text-muted-foreground">{{ period }}</h3>
           </div>
           
-          <div class="px-3">
+          <div class="px-2 sm:px-3">
             <button
               v-for="search in group"
               :key="search.key"
               @click="handleSelectSearch(search)"
-              class="w-full text-left px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-accent transition-colors"
+              class="w-full text-left px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-accent transition-colors"
             >
-              <p class="text-sm text-gray-900 dark:text-foreground truncate flex items-center gap-1.5">
+              <p class="text-xs sm:text-sm text-gray-900 dark:text-foreground truncate flex items-center gap-1.5">
                 <Tooltip :text="getRiscoTooltip(search.data.risco_medio)" position="right">
                   <img 
                     :src="getRiscoLogo(search.data.risco_medio)" 
                     :alt="search.data.risco_medio"
-                    class="w-4 h-4 flex-shrink-0 cursor-pointer"
+                    class="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0 cursor-pointer"
                   />
                 </Tooltip>
                 {{ search.location }}
@@ -58,15 +58,15 @@
           </div>
         </div>
 
-        <div v-if="Object.keys(globalStore.searchHistory).length === 0" class="px-4 py-8 text-center">
-          <p class="text-sm text-gray-500 dark:text-muted-foreground">Nenhuma análise ainda</p>
+        <div v-if="Object.keys(globalStore.searchHistory).length === 0" class="px-3 sm:px-4 py-6 sm:py-8 text-center">
+          <p class="text-xs sm:text-sm text-gray-500 dark:text-muted-foreground">Nenhuma análise ainda</p>
         </div>
       </div>
       
       <div class="relative">
         <div class="absolute bottom-full left-0 right-0 h-20 pointer-events-none sidebar-gradient"></div>
         
-        <div class="px-2 py-1.5 bg-white dark:bg-card">
+        <div class="px-2 sm:px-2 py-1.5 bg-white dark:bg-card">
           <UserMenu :userName="userName" :userInitials="userInitials" />
         </div>
       </div>
