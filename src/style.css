@@ -162,6 +162,17 @@ button:focus-visible {
   }
 }
 
+/* Seleção de texto personalizada */
+::selection {
+  background-color: #159cfa;
+  color: white;
+}
+
+::-moz-selection {
+  background-color: #159cfa;
+  color: white;
+}
+
 /* Notivue Custom Styles - Tema Light com Outline */
 .Notivue__notification {
   background: white !important;
