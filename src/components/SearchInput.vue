@@ -54,7 +54,7 @@
         <div class="flex items-center gap-2">
           <Tooltip text="Usar localização atual" position="bottom">
             <button
-              @click="$emit('voice')"
+              @click="handleLocation"
               class="p-2 text-gray-400 dark:text-muted-foreground hover:text-gray-600 dark:hover:text-foreground transition-colors"
             >
               <MapPin :size="18" />
@@ -152,6 +152,22 @@ const selectClimaTempo = () => {
 const selectQualidadeAr = () => {
   qualidadeAr.value = true
   climaTempo.value = false
+}
+
+const handleLocation = () => {
+  navigator.geolocation.getCurrentPosition((position) => {
+    const latitude = position.coords.latitude.toFixed(2)
+    const longitude = position.coords.longitude.toFixed(2)
+    const coords = `latitude: ${latitude}, longitude: ${longitude}`
+    globalStore.setSearchQuery(coords)
+  }, (error) => {
+    console.error('Erro ao obter localização:', error)
+    alert('Não foi possível obter sua localização. Verifique se a permissão de localização está habilitada.')
+  }, {
+    timeout: 5000,
+    maximumAge: 0,
+    enableHighAccuracy: true
+  })
 }
 
 const handleSubmit = () => {
