@@ -154,18 +154,15 @@ const setTheme = (newTheme) => {
 }
 
 const handleLogout = () => {
-  console.log('Logout clicado')
   closeModal()
   authStore.logout()
   router.push('/login')
 }
 
 const openTermos = () => {
-  console.log('Termos de Uso clicado')
 }
 
 const openPrivacidade = () => {
-  console.log('Política de Privacidade clicada')
 }
 </script>
 
