@@ -48,38 +48,6 @@ export const authService = {
     } catch (error) {
       throw error
     }
-  },
-
-  // Login com Google (Better Auth)
-  async loginWithGoogle() {
-    try {
-      const response = await api.post('/auth/sign-in/social', {
-        provider: 'google'
-      })
-      // Redireciona o usuário para a URL do Google OAuth
-      if (response.data.url) {
-        window.location.href = response.data.url
-      }
-      return response.data
-    } catch (error) {
-      throw error
-    }
-  },
-
-  // Login com Gov.br (Better Auth)
-  async loginWithGovBr() {
-    try {
-      const response = await api.post('/auth/sign-in/social', {
-        provider: 'govbr'
-      })
-      // Redireciona o usuário para a URL do Gov.br OAuth
-      if (response.data.url) {
-        window.location.href = response.data.url
-      }
-      return response.data
-    } catch (error) {
-      throw error
-    }
   }
 }
 

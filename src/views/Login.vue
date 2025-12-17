@@ -92,13 +92,6 @@
             </Button>
           </form>
 
-          <Divider />
-
-          <GovBrButton
-            @click="handleGovBrLogin"
-            :disabled="loading"
-          />
-
           <div class="text-center mt-6 ">
             <p class="text-gray-500 dark:text-muted-foreground text-sm">
               {{ isSignUp ? 'Já tem uma conta?' : 'Não tem uma conta?' }}
@@ -127,8 +120,6 @@ import logoDark from '@/assets/logo-dark.svg'
 import { useGlobalStore } from '@/stores/global'
 import Input from '@/components/Input.vue'
 import Button from '@/components/Button.vue'
-import GovBrButton from '@/components/GovBrButton.vue'
-import Divider from '@/components/Divider.vue'
 
 const router = useRouter()
 const { notifySuccess } = useNotification()
@@ -232,23 +223,6 @@ const handleSubmit = async () => {
       errors.email = errorMsg
     }
   } finally {
-    loading.value = false
-  }
-}
-
-const handleGovBrLogin = async () => {
-  errors.email = ''
-  errors.name = ''
-  errors.password = ''
-  
-  loading.value = true
-
-  try {
-    await authService.loginWithGovBr()
-    notifySuccess('Redirecionando para o Gov.br...', 'Autenticação')
-  } catch (error) {
-    console.error('Erro ao fazer login com Gov.br:', error)
-    errors.email = 'Erro ao conectar com Gov.br. Tente novamente.'
     loading.value = false
   }
 }
