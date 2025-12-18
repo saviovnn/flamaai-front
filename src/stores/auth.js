@@ -79,6 +79,62 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
   
+  // Code Verification actions
+  const codeVerificationSubmit = ref(false)
+  const codeVerificationResend = ref(false)
+  const codeVerificationClearError = ref(false)
+  
+  const triggerCodeVerificationSubmit = () => {
+    codeVerificationSubmit.value = !codeVerificationSubmit.value
+  }
+  
+  const triggerCodeVerificationResend = () => {
+    codeVerificationResend.value = !codeVerificationResend.value
+  }
+  
+  const triggerCodeVerificationClearError = () => {
+    codeVerificationClearError.value = !codeVerificationClearError.value
+  }
+  
+  // Forgot Password Email actions
+  const forgotPasswordEmailSubmit = ref(false)
+  const forgotPasswordEmailBack = ref(false)
+  const forgotPasswordEmailClearError = ref(false)
+  
+  const triggerForgotPasswordEmailSubmit = () => {
+    forgotPasswordEmailSubmit.value = !forgotPasswordEmailSubmit.value
+  }
+  
+  const triggerForgotPasswordEmailBack = () => {
+    forgotPasswordEmailBack.value = !forgotPasswordEmailBack.value
+  }
+  
+  const triggerForgotPasswordEmailClearError = () => {
+    forgotPasswordEmailClearError.value = !forgotPasswordEmailClearError.value
+  }
+  
+  // Reset Password actions
+  const resetPasswordSubmit = ref(false)
+  const resetPasswordCancel = ref(false)
+  const resetPasswordClearError = ref(null)
+  const resetPasswordConfirmPassword = ref('')
+  
+  const triggerResetPasswordSubmit = () => {
+    resetPasswordSubmit.value = !resetPasswordSubmit.value
+  }
+  
+  const triggerResetPasswordCancel = () => {
+    resetPasswordCancel.value = !resetPasswordCancel.value
+  }
+  
+  const triggerResetPasswordClearError = (field) => {
+    resetPasswordClearError.value = field
+  }
+  
+  const setResetPasswordConfirmPassword = (value) => {
+    resetPasswordConfirmPassword.value = value
+  }
+  
   return {
     isAuthenticated,
     forgotPassword,
@@ -94,6 +150,29 @@ export const useAuthStore = defineStore('auth', () => {
     setRegisterEmail,
     setRegisterName,
     setRegisterPassword,
-    resetRegister
+    resetRegister,
+    // Code Verification
+    codeVerificationSubmit,
+    codeVerificationResend,
+    codeVerificationClearError,
+    triggerCodeVerificationSubmit,
+    triggerCodeVerificationResend,
+    triggerCodeVerificationClearError,
+    // Forgot Password Email
+    forgotPasswordEmailSubmit,
+    forgotPasswordEmailBack,
+    forgotPasswordEmailClearError,
+    triggerForgotPasswordEmailSubmit,
+    triggerForgotPasswordEmailBack,
+    triggerForgotPasswordEmailClearError,
+    // Reset Password
+    resetPasswordSubmit,
+    resetPasswordCancel,
+    resetPasswordClearError,
+    resetPasswordConfirmPassword,
+    triggerResetPasswordSubmit,
+    triggerResetPasswordCancel,
+    triggerResetPasswordClearError,
+    setResetPasswordConfirmPassword
   }
 })

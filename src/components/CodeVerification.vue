@@ -51,7 +51,7 @@
       <p class="text-gray-500 dark:text-muted-foreground text-sm">
         Não recebeu nenhum código?
         <span
-          @click="$emit('resend')"
+          @click="handleResend"
           class="resend-link font-semibold underline ml-1 transition-colors cursor-pointer"
         >
           Reenviar código
@@ -63,6 +63,7 @@
 
 <script setup>
 import { ref, watch, nextTick } from "vue";
+import { useAuthStore } from "@/stores/auth";
 import Button from "@/components/Button.vue";
 
 const props = defineProps({
@@ -80,7 +81,7 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(["submit", "update:code", "resend", "clear-error"]);
+const authStore = useAuthStore();
 
 const codeDigits = ref(["", "", "", "", "", ""]);
 const inputRefs = ref([]);
@@ -95,6 +96,7 @@ watch(
   }
 );
 
+
 const handleCodeInput = (index, event) => {
   const value = event.target.value.replace(/[^0-9]/g, "");
   codeDigits.value[index] = value;
@@ -106,10 +108,10 @@ const handleCodeInput = (index, event) => {
     }
   }
 
-  // Atualiza o código completo
+  // Atualiza o código completo no store
   const fullCode = codeDigits.value.join("");
-  emit("update:code", fullCode);
-  emit("clear-error");
+  authStore.setForgotPasswordCode(fullCode);
+  authStore.triggerCodeVerificationClearError();
 };
 
 const handleCodeKeydown = (index, event) => {
@@ -154,12 +156,16 @@ const handleCodePaste = async (event) => {
   }
 
   const fullCode = codeDigits.value.join("");
-  emit("update:code", fullCode);
-  emit("clear-error");
+  authStore.setForgotPasswordCode(fullCode);
+  authStore.triggerCodeVerificationClearError();
 };
 
 const handleSubmit = () => {
-  emit("submit");
+  authStore.triggerCodeVerificationSubmit();
+};
+
+const handleResend = () => {
+  authStore.triggerCodeVerificationResend();
 };
 </script>
 

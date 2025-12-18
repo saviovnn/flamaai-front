@@ -30,10 +30,6 @@
               :email="authStore.forgotPassword.email"
               :loading="loading"
               :error="errors.forgotEmail"
-              @update:email="handleEmailUpdate"
-              @submit="handleForgotPasswordEmail"
-              @back="backToLogin"
-              @clear-error="clearError('forgotEmail')"
             />
 
             <!-- Forgot Password - Code Verification Step -->
@@ -42,24 +38,14 @@
               :code="authStore.forgotPassword.code"
               :loading="loading"
               :error="errors.forgotCode"
-              @update:code="handleCodeUpdate"
-              @submit="handleVerifyCode"
-              @resend="resendCode"
-              @clear-error="clearError('forgotCode')"
             />
 
             <!-- Forgot Password - Reset Password Step -->
             <ResetPassword
               v-else-if="forgotPasswordStep === 'reset'"
               :newPassword="authStore.forgotPassword.newPassword"
-              :confirmPassword="confirmPassword"
               :loading="loading"
               :errors="resetErrors"
-              @update:newPassword="handleNewPasswordUpdate"
-              @update:confirmPassword="handleConfirmPasswordUpdate"
-              @submit="handleResetPassword"
-              @cancel="backToLogin"
-              @clear-error="clearResetError"
             />
           </Transition>
         </div>
@@ -69,7 +55,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed } from "vue";
+import { ref, reactive, computed, watch } from "vue";
 import { useRouter } from "vue-router";
 import { authService } from "@/api/services";
 import { useNotification } from "@/composables/useNotification";
@@ -93,7 +79,6 @@ const logo = computed(() => (globalStore.isDark ? logoDark : logoLight));
 const isSignUp = ref(false);
 const loading = ref(false);
 const forgotPasswordStep = ref(null); // null, 'email', 'code', 'reset'
-const confirmPassword = ref("");
 
 const loginErrors = reactive({
   email: "",
@@ -112,6 +97,88 @@ const resetErrors = computed(() => ({
   newPassword: errors.newPassword,
   confirmPassword: errors.confirmPassword,
 }));
+
+// Watch para detectar mudanças no código de verificação
+watch(
+  () => authStore.forgotPassword.code,
+  (newCode) => {
+    // Atualiza quando o código muda
+  }
+);
+
+// Watch para detectar quando o submit do código é acionado
+watch(
+  () => authStore.codeVerificationSubmit,
+  () => {
+    handleVerifyCode();
+  }
+);
+
+// Watch para detectar quando o resend do código é acionado
+watch(
+  () => authStore.codeVerificationResend,
+  () => {
+    resendCode();
+  }
+);
+
+// Watch para detectar quando limpar erro do código é acionado
+watch(
+  () => authStore.codeVerificationClearError,
+  () => {
+    clearError("forgotCode");
+  }
+);
+
+// Watch para detectar quando o submit do email é acionado
+watch(
+  () => authStore.forgotPasswordEmailSubmit,
+  () => {
+    handleForgotPasswordEmail();
+  }
+);
+
+// Watch para detectar quando o back do email é acionado
+watch(
+  () => authStore.forgotPasswordEmailBack,
+  () => {
+    backToLogin();
+  }
+);
+
+// Watch para detectar quando limpar erro do email é acionado
+watch(
+  () => authStore.forgotPasswordEmailClearError,
+  () => {
+    clearError("forgotEmail");
+  }
+);
+
+// Watch para detectar quando o submit da senha é acionado
+watch(
+  () => authStore.resetPasswordSubmit,
+  () => {
+    handleResetPassword();
+  }
+);
+
+// Watch para detectar quando o cancel da senha é acionado
+watch(
+  () => authStore.resetPasswordCancel,
+  () => {
+    backToLogin();
+  }
+);
+
+// Watch para detectar quando limpar erro da senha é acionado
+watch(
+  () => authStore.resetPasswordClearError,
+  (field) => {
+    if (field) {
+      clearResetError(field);
+    }
+  }
+);
 
 const clearLoginError = (field) => {
   loginErrors[field] = "";
@@ -148,26 +215,10 @@ const startForgotPassword = () => {
 const backToLogin = () => {
   forgotPasswordStep.value = null;
   authStore.resetForgotPassword();
-  confirmPassword.value = "";
+  authStore.setResetPasswordConfirmPassword("");
   Object.keys(errors).forEach((key) => {
     errors[key] = "";
   });
-};
-
-const handleEmailUpdate = (value) => {
-  authStore.setForgotPasswordEmail(value);
-};
-
-const handleCodeUpdate = (value) => {
-  authStore.setForgotPasswordCode(value);
-};
-
-const handleNewPasswordUpdate = (value) => {
-  authStore.setForgotPasswordNewPassword(value);
-};
-
-const handleConfirmPasswordUpdate = (value) => {
-  confirmPassword.value = value;
 };
 
 const handleForgotPasswordEmail = async () => {
@@ -259,7 +310,7 @@ const handleResetPassword = async () => {
     hasError = true;
   }
 
-  if (!confirmPassword.value || !confirmPassword.value.trim()) {
+  if (!authStore.resetPasswordConfirmPassword || !authStore.resetPasswordConfirmPassword.trim()) {
     errors.confirmPassword = "Por favor, confirme sua senha";
     hasError = true;
   }
@@ -269,7 +320,7 @@ const handleResetPassword = async () => {
   }
 
   if (
-    authStore.forgotPassword.newPassword !== confirmPassword.value
+    authStore.forgotPassword.newPassword !== authStore.resetPasswordConfirmPassword
   ) {
     errors.confirmPassword = "As senhas não coincidem";
     return;

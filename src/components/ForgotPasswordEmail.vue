@@ -34,7 +34,7 @@
     <div class="text-center mt-6">
       <p class="text-gray-500 dark:text-muted-foreground text-sm">
         <span
-          @click="$emit('back')"
+          @click="handleBack"
           class="text-gray-900 dark:text-foreground font-semibold hover:text-orange-600 underline transition-colors cursor-pointer"
         >
           ← Voltar para login
@@ -45,6 +45,7 @@
 </template>
 
 <script setup>
+import { useAuthStore } from "@/stores/auth";
 import Input from "@/components/Input.vue";
 import Button from "@/components/Button.vue";
 
@@ -63,15 +64,20 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(["submit", "update:email", "back", "clear-error"]);
+const authStore = useAuthStore();
+
 
 const handleEmailUpdate = (value) => {
-  emit("update:email", value);
-  emit("clear-error");
+  authStore.setForgotPasswordEmail(value);
+  authStore.triggerForgotPasswordEmailClearError();
 };
 
 const handleSubmit = () => {
-  emit("submit");
+  authStore.triggerForgotPasswordEmailSubmit();
+};
+
+const handleBack = () => {
+  authStore.triggerForgotPasswordEmailBack();
 };
 </script>
 

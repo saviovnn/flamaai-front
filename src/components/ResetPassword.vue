@@ -21,7 +21,7 @@
       />
 
       <Input
-        :modelValue="confirmPassword"
+        :modelValue="authStore.resetPasswordConfirmPassword"
         @update:modelValue="handleConfirmPasswordUpdate"
         label="Confirme sua senha"
         placeholder="Confirme sua senha"
@@ -42,7 +42,7 @@
     </form>
 
     <div class="text-center mt-6">
-      <Button @click="$emit('cancel')" variant="secondary" class="w-full">
+      <Button @click="handleCancel" variant="secondary" class="w-full">
         Cancelar
       </Button>
     </div>
@@ -50,15 +50,12 @@
 </template>
 
 <script setup>
+import { useAuthStore } from "@/stores/auth";
 import Input from "@/components/Input.vue";
 import Button from "@/components/Button.vue";
 
 const props = defineProps({
   newPassword: {
-    type: String,
-    default: "",
-  },
-  confirmPassword: {
     type: String,
     default: "",
   },
@@ -75,26 +72,25 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits([
-  "submit",
-  "update:newPassword",
-  "update:confirmPassword",
-  "cancel",
-  "clear-error",
-]);
+const authStore = useAuthStore();
+
 
 const handleNewPasswordUpdate = (value) => {
-  emit("update:newPassword", value);
-  emit("clear-error", "newPassword");
+  authStore.setForgotPasswordNewPassword(value);
+  authStore.triggerResetPasswordClearError("newPassword");
 };
 
 const handleConfirmPasswordUpdate = (value) => {
-  emit("update:confirmPassword", value);
-  emit("clear-error", "confirmPassword");
+  authStore.setResetPasswordConfirmPassword(value);
+  authStore.triggerResetPasswordClearError("confirmPassword");
 };
 
 const handleSubmit = () => {
-  emit("submit");
+  authStore.triggerResetPasswordSubmit();
+};
+
+const handleCancel = () => {
+  authStore.triggerResetPasswordCancel();
 };
 </script>
 
