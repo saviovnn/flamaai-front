@@ -1,9 +1,6 @@
 import api from './axios'
 
-// Exemplo de serviços de API
-
 export const authService = {
-  // Login com email e senha (Better Auth)
   async login(credentials) {
     try {
       const response = await api.post('/auth/sign-in/email', {
@@ -16,7 +13,6 @@ export const authService = {
     }
   },
 
-  // Registro com email e senha (Better Auth)
   async register(userData) {
     try {
       const response = await api.post('/auth/sign-up/email', {
@@ -30,7 +26,6 @@ export const authService = {
     }
   },
 
-  // Logout (Better Auth)
   async logout() {
     try {
       const response = await api.post('/auth/sign-out')
@@ -40,17 +35,6 @@ export const authService = {
     }
   },
 
-  // Obter sessão atual (Better Auth)
-  async getSession() {
-    try {
-      const response = await api.get('/auth/get-session')
-      return response.data
-    } catch (error) {
-      throw error
-    }
-  },
-
-  // Esqueci minha senha
   async forgotPassword(email) {
     try {
       const response = await api.post('/auth/forgot-password', {
@@ -62,7 +46,6 @@ export const authService = {
     }
   },
 
-  // Redefinir senha
   async resetPassword(email, code, newPassword) {
     try {
       const response = await api.post('/auth/reset-password', {
@@ -70,71 +53,6 @@ export const authService = {
         code: code,
         newPassword: newPassword,
       })
-      return response.data
-    } catch (error) {
-      throw error
-    }
-  }
-}
-
-export const userService = {
-  // Obter perfil do usuário
-  async getProfile() {
-    try {
-      const response = await api.get('/user/profile')
-      return response.data
-    } catch (error) {
-      throw error
-    }
-  },
-
-  // Atualizar perfil
-  async updateProfile(userData) {
-    try {
-      const response = await api.put('/user/profile', userData)
-      return response.data
-    } catch (error) {
-      throw error
-    }
-  }
-}
-
-// Adicione mais serviços conforme necessário
-export const dataService = {
-  // Exemplo: buscar lista de items
-  async getItems() {
-    try {
-      const response = await api.get('/items')
-      return response.data
-    } catch (error) {
-      throw error
-    }
-  },
-
-  // Exemplo: criar item
-  async createItem(itemData) {
-    try {
-      const response = await api.post('/items', itemData)
-      return response.data
-    } catch (error) {
-      throw error
-    }
-  },
-
-  // Exemplo: atualizar item
-  async updateItem(id, itemData) {
-    try {
-      const response = await api.put(`/items/${id}`, itemData)
-      return response.data
-    } catch (error) {
-      throw error
-    }
-  },
-
-  // Exemplo: deletar item
-  async deleteItem(id) {
-    try {
-      const response = await api.delete(`/items/${id}`)
       return response.data
     } catch (error) {
       throw error

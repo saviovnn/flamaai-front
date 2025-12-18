@@ -38,7 +38,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useGlobalStore } from '@/stores/global'
@@ -52,18 +52,39 @@ const router = useRouter()
 const authStore = useAuthStore()
 const globalStore = useGlobalStore()
 
+onMounted(() => {
+  // Verifica se há token no localStorage
+  const token = localStorage.getItem('token')
+  if (token) {
+    authStore.setToken(token)
+  }
+
+  // Verifica se há user no localStorage
+  const userStr = localStorage.getItem('user')
+  if (userStr) {
+    try {
+      const user = JSON.parse(userStr)
+      globalStore.setUser(user)
+    } catch (error) {
+      console.error('Erro ao parsear user do localStorage:', error)
+      localStorage.removeItem('user')
+    }
+  }
+})
+
 const logo = computed(() => globalStore.isDark ? logoDark : logoLight)
 
 const userName = computed(() => {
-  return 'Sávio Vianna'
+  return globalStore.user?.name || 'Usuário'
 })
 
 const userInitials = computed(() => {
-  const names = userName.value.split(' ')
+  const name = userName.value
+  const names = name.split(' ')
   if (names.length >= 2) {
     return names[0][0].toUpperCase() + names[names.length - 1][0].toUpperCase()
   }
-  return names[0][0].toUpperCase()
+  return name[0]?.toUpperCase() || 'U'
 })
 
 authStore.isAuthenticated = true

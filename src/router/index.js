@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { requireAuth, requireGuest } from './guards'
 
 const routes = [
   {
@@ -9,14 +10,15 @@ const routes = [
   {
     path: '/login',
     name: 'Login',
-    component: () => import('@/views/Login.vue')
+    component: () => import('@/views/Login.vue'),
+    beforeEnter: requireGuest
   },
   {
     path: '/dashboard',
     name: 'Dashboard',
-    component: () => import('@/views/Dashboard.vue')
+    component: () => import('@/views/Dashboard.vue'),
+    beforeEnter: requireAuth
   },
-  // Adicione mais rotas aqui
 ]
 
 const router = createRouter({

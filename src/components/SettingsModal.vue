@@ -85,12 +85,12 @@
             <div v-if="activeTab === 'perfil'" class="space-y-0">
               <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between py-3 sm:py-4 border-b border-gray-100 dark:border-border gap-1 sm:gap-0">
                 <span class="text-xs sm:text-sm text-gray-700 dark:text-muted-foreground">Nome</span>
-                <span class="text-xs sm:text-sm text-gray-900 dark:text-foreground break-words">{{ userName }}</span>
+                <span class="text-xs sm:text-sm text-gray-900 dark:text-foreground break-words">{{ globalStore.user.name }}</span>
               </div>
               
               <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between py-3 sm:py-4 border-b border-gray-100 dark:border-border gap-1 sm:gap-0">
                 <span class="text-xs sm:text-sm text-gray-700 dark:text-muted-foreground">Endereço de e-mail</span>
-                <span class="text-xs sm:text-sm text-gray-900 dark:text-foreground break-all">{{ userEmail }}</span>
+                <span class="text-xs sm:text-sm text-gray-900 dark:text-foreground break-all">{{ globalStore.user.email }}</span>
               </div>
               
               <div class="flex items-center justify-between py-3 sm:py-4">
@@ -146,9 +146,6 @@ const router = useRouter()
 
 const activeTab = ref('geral')
 
-const userName = 'Sávio Vianna'
-const userEmail = 'sav*****ev@gmail.com'
-
 const tabs = [
   { id: 'geral', label: 'Geral', icon: markRaw(Settings) },
   { id: 'perfil', label: 'Perfil', icon: markRaw(User) },
@@ -163,9 +160,15 @@ const setTheme = (newTheme) => {
   globalStore.setTheme(newTheme)
 }
 
-const handleLogout = () => {
+const handleLogout = async () => {
   closeModal()
-  authStore.logout()
+  
+  try {
+    await authStore.logout()
+  } catch (error) {
+    console.warn('Erro ao fazer logout:', error)
+  }
+  
   router.push('/login')
 }
 

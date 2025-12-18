@@ -402,8 +402,18 @@ const handleSubmit = async () => {
 
       const response = await authService.register(registerData);
 
-      if (response.token) {
-        localStorage.setItem("token", response.token);
+      const token = response.token || response.session?.token;
+      if (token) {
+        authStore.setToken(token);
+      }
+
+      if (response.user) {
+        const userData = {
+          name: response.user.name,
+          email: response.user.email
+        };
+        globalStore.setUser(userData);
+        authStore.setUser(userData);
       }
 
       notifySuccess("Bem-vindo", "Conta criada com sucesso!");
@@ -459,8 +469,18 @@ const handleSubmit = async () => {
 
       const response = await authService.login(loginData);
 
-      if (response.token) {
-        localStorage.setItem("token", response.token);
+      const token = response.token || response.session?.token;
+      if (token) {
+        authStore.setToken(token);
+      }
+
+      if (response.user) {
+        const userData = {
+          name: response.user.name,
+          email: response.user.email
+        };
+        globalStore.setUser(userData);
+        authStore.setUser(userData);
       }
 
       notifySuccess("Bem-vindo de volta", "Login realizado com sucesso!");

@@ -27,7 +27,7 @@
         </button>
         
         <button
-          @click="handleSair"
+          @click="handleLogout"
           class="w-full flex items-center gap-2.5 px-3 py-2 hover:bg-gray-50 dark:hover:bg-secondary transition-colors text-left"
         >
           <LogOut :size="16" class="text-gray-600 dark:text-muted-foreground" />
@@ -84,9 +84,15 @@ const handleConfiguracao = () => {
   globalStore.isSettingsOpen = true
 }
 
-const handleSair = () => {
+const handleLogout = async () => {
   closeMenu()
-  authStore.logout()
+  
+  try {
+    await authStore.logout()
+  } catch (error) {
+    console.warn('Erro ao fazer logout:', error)
+  }
+  
   router.push('/login')
 }
 </script>

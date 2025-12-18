@@ -1,10 +1,81 @@
 import { defineStore } from 'pinia'
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 
 export const useAuthStore = defineStore('auth', () => {
   const isAuthenticated = ref(false)
 
-  // Forgot password state
+  const checkAuth = () => {
+    const token = localStorage.getItem('token')
+    isAuthenticated.value = !!token
+    return !!token
+  }
+
+  checkAuth()
+
+  const setupStorageWatcher = () => {
+    window.addEventListener('storage', (e) => {
+      if (e.key === 'token') {
+        checkAuth()
+      }
+    })
+
+    window.addEventListener('localStorageChange', (e) => {
+      if (e.detail?.key === 'token') {
+        checkAuth()
+      }
+    })
+  }
+
+  const dispatchStorageEvent = (key, newValue) => {
+    window.dispatchEvent(
+      new CustomEvent('localStorageChange', {
+        detail: { key, newValue },
+      })
+    )
+  }
+
+  setupStorageWatcher()
+
+  const logout = async () => {
+    try {
+      const { authService } = await import('@/api/services')
+      await authService.logout()
+    } catch (error) {
+      console.warn('Erro ao fazer logout no backend:', error)
+    }
+    
+    localStorage.removeItem('token')
+    localStorage.removeItem('user')
+    dispatchStorageEvent('token', null)
+    dispatchStorageEvent('user', null)
+    isAuthenticated.value = false
+    
+    // Limpa os dados do usuário no store global
+    const { useGlobalStore } = await import('@/stores/global')
+    const globalStore = useGlobalStore()
+    globalStore.clearUser()
+  }
+
+  const setToken = (token) => {
+    if (token) {
+      localStorage.setItem('token', token)
+      dispatchStorageEvent('token', token)
+      isAuthenticated.value = true
+    } else {
+      logout()
+    }
+  }
+
+  const setUser = (user) => {
+    if (user) {
+      localStorage.setItem('user', JSON.stringify(user))
+      dispatchStorageEvent('user', user)
+    } else {
+      localStorage.removeItem('user')
+      dispatchStorageEvent('user', null)
+    }
+  }
+
   const forgotPassword = ref({
     email: '',
     code: '',
@@ -31,7 +102,6 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  // Login state
   const login = ref({
     email: '',
     password: ''
@@ -52,7 +122,6 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  // Register state
   const register = ref({
     email: '',
     name: '',
@@ -137,6 +206,10 @@ export const useAuthStore = defineStore('auth', () => {
   
   return {
     isAuthenticated,
+    checkAuth,
+    logout,
+    setToken,
+    setUser,
     forgotPassword,
     setForgotPasswordEmail,
     setForgotPasswordCode,

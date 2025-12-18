@@ -261,6 +261,28 @@ export const useGlobalStore = defineStore('global', () => {
     transcribedText.value = ''
   }
   
+  // User information
+  const user = ref({
+    name: null,
+    email: null
+  })
+  
+  const setUser = (userData) => {
+    if (userData) {
+      user.value = {
+        name: userData.name || null,
+        email: userData.email || null
+      }
+    }
+  }
+  
+  const clearUser = () => {
+    user.value = {
+      name: null,
+      email: null
+    }
+  }
+  
   return {
     isSidebarOpen,
     isSettingsOpen,
@@ -278,6 +300,9 @@ export const useGlobalStore = defineStore('global', () => {
     startRecording,
     stopRecording,
     setTranscribedText,
-    clearTranscribedText
+    clearTranscribedText,
+    user,
+    setUser,
+    clearUser
   }
 })
