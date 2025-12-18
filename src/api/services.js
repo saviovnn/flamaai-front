@@ -48,6 +48,32 @@ export const authService = {
     } catch (error) {
       throw error
     }
+  },
+
+  // Esqueci minha senha
+  async forgotPassword(email) {
+    try {
+      const response = await api.post('/auth/forgot-password', {
+        email: email,
+      })
+      return response.data
+    } catch (error) {
+      throw error
+    }
+  },
+
+  // Redefinir senha
+  async resetPassword(email, code, newPassword) {
+    try {
+      const response = await api.post('/auth/reset-password', {
+        email: email,
+        code: code,
+        newPassword: newPassword,
+      })
+      return response.data
+    } catch (error) {
+      throw error
+    }
   }
 }
 

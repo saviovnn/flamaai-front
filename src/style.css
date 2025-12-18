@@ -187,3 +187,24 @@ button:focus-visible {
   color: hsl(210, 20%, 95%) !important;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2) !important;
 }
+
+/* Garantir que o texto das notificações seja visível no tema dark */
+.dark .Notivue__notification * {
+  color: hsl(210, 20%, 95%) !important;
+}
+
+.dark .Notivue__content-title {
+  color: hsl(210, 20%, 98%) !important;
+}
+
+.dark .Notivue__content-message {
+  color: hsl(210, 20%, 90%) !important;
+}
+
+.dark .Notivue__icon {
+  color: hsl(210, 20%, 95%) !important;
+}
+
+.dark .Notivue__close-icon {
+  color: hsl(210, 20%, 85%) !important;
+}

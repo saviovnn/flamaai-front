@@ -1,108 +1,67 @@
 <template>
   <div class="min-h-screen flex">
     <div class="flex-1 overflow-hidden flex">
-      
-      <div class="hidden lg:flex lg:w-1/2 relative overflow-hidden">
-        <div 
-          class="absolute inset-0 bg-cover bg-center bg-no-repeat" 
-          :style="{ backgroundImage: `url(${abstractBg})` }">
-        </div>
-        
-        <div class="absolute inset-0 bg-gradient-to-b from-black/60 via-black/30 to-black/60"></div>
-        
-          <div class="absolute inset-0 flex flex-col justify-center px-16 z-10">
-            <h1 class="text-4xl font-bold text-white leading-tight mb-4">
-              Antecipe queimadas<br />
-              e tome decisões melhores<br />
-              com o poder do FlamaAI.
-            </h1>
-          </div>
-      </div>
+      <LoginSidebar />
 
-      <div class="w-full lg:w-1/2 flex items-center justify-center p-8 lg:p-16 bg-gray-50 dark:bg-background">
+      <div
+        class="w-full lg:w-1/2 flex items-center justify-center p-8 lg:p-16 bg-gray-50 dark:bg-background"
+      >
         <div class="w-full max-w-md">
-          
           <div class="flex justify-center mb-8">
             <img :src="logo" alt="FlamaAI" class="w-16 h-16" />
           </div>
 
-          <div class="text-center mb-10">
-            <div class="h-20 flex flex-col justify-center">
-              <Transition name="slide-fade" mode="out-in">
-                <div :key="isSignUp">
-                  <h2 class="text-3xl font-bold text-gray-900 dark:text-foreground mb-2">
-                    {{ isSignUp ? 'Começar' : 'Bem-vindo de volta' }}
-                  </h2>
-                  <p class="text-gray-500 dark:text-muted-foreground">
-                    {{ isSignUp 
-                      ? 'Bem-vindo ao FlamaAI, vamos prever as queimadas' 
-                      : 'Entre para continuar na sua conta' 
-                    }}
-                  </p>
-                </div>
-              </Transition>
-            </div>
-          </div>
-
-          <form @submit.prevent="handleSubmit" class="space-y-5">
-            <Input
-              v-model="formData.email"
-              @update:modelValue="clearError('email')"
-              type="email"
-              label="Seu email"
-              placeholder="seu@email.com"
-              :disabled="loading"
-              :error="errors.email"
+          <!-- Login/Signup Form -->
+          <Transition name="slide-fade" mode="out-in">
+            <LoginForm
+              v-if="!forgotPasswordStep"
+              :isSignUp="isSignUp"
+              :loading="loading"
+              :errors="loginErrors"
+              @submit="handleSubmit"
+              @toggle-mode="toggleMode"
+              @forgot-password="startForgotPassword"
+              @clear-error="clearLoginError"
             />
 
-            <Transition name="slide-fade" mode="out-in">
-              <Input
-                v-if="isSignUp"
-                key="name-field"
-                v-model="formData.name"
-                @update:modelValue="clearError('name')"
-                type="text"
-                label="Seu nome"
-                placeholder="João Silva"
-                :disabled="loading"
-                :error="errors.name"
-              />
-            </Transition>
-
-            <div>
-              <Input
-                v-model="formData.password"
-                @update:modelValue="clearError('password')"
-                :label="isSignUp ? 'Crie uma senha' : 'Sua senha'"
-                placeholder="••••••••••"
-                :disabled="loading"
-                :error="errors.password"
-                secret
-              />
-            </div>
-
-            <Button
-              type="submit"
+            <!-- Forgot Password - Email Step -->
+            <ForgotPasswordEmail
+              v-else-if="forgotPasswordStep === 'email'"
+              :email="authStore.forgotPassword.email"
               :loading="loading"
-              :disabled="loading"
-              variant="primary"
-              class="mt-8"
-            >
-              {{ isSignUp ? 'Criar conta' : 'Entrar' }}
-            </Button>
-          </form>
+              :error="errors.forgotEmail"
+              @update:email="handleEmailUpdate"
+              @submit="handleForgotPasswordEmail"
+              @back="backToLogin"
+              @clear-error="clearError('forgotEmail')"
+            />
 
-          <div class="text-center mt-6 ">
-            <p class="text-gray-500 dark:text-muted-foreground text-sm">
-              {{ isSignUp ? 'Já tem uma conta?' : 'Não tem uma conta?' }}
-              <span
-                @click="toggleMode"
-                class="text-gray-900 dark:text-foreground font-semibold hover:text-orange-600 underline ml-1 transition-colors cursor-pointer"
-              >
-                {{ isSignUp ? 'Entrar' : 'Cadastrar' }}
-              </span>
-            </p>
-          </div>
+            <!-- Forgot Password - Code Verification Step -->
+            <CodeVerification
+              v-else-if="forgotPasswordStep === 'code'"
+              :code="authStore.forgotPassword.code"
+              :loading="loading"
+              :error="errors.forgotCode"
+              @update:code="handleCodeUpdate"
+              @submit="handleVerifyCode"
+              @resend="resendCode"
+              @clear-error="clearError('forgotCode')"
+            />
+
+            <!-- Forgot Password - Reset Password Step -->
+            <ResetPassword
+              v-else-if="forgotPasswordStep === 'reset'"
+              :newPassword="authStore.forgotPassword.newPassword"
+              :confirmPassword="confirmPassword"
+              :loading="loading"
+              :errors="resetErrors"
+              @update:newPassword="handleNewPasswordUpdate"
+              @update:confirmPassword="handleConfirmPasswordUpdate"
+              @submit="handleResetPassword"
+              @cancel="backToLogin"
+              @clear-error="clearResetError"
+            />
+          </Transition>
         </div>
       </div>
     </div>
@@ -110,122 +69,369 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed } from 'vue'
-import { useRouter } from 'vue-router'
-import { authService } from '@/api/services'
-import { useNotification } from '@/composables/useNotification'
-import abstractBg from '@/assets/abstract.jpg'
-import logoLight from '@/assets/logo.svg'
-import logoDark from '@/assets/logo-dark.svg'
-import { useGlobalStore } from '@/stores/global'
-import Input from '@/components/Input.vue'
-import Button from '@/components/Button.vue'
+import { ref, reactive, computed } from "vue";
+import { useRouter } from "vue-router";
+import { authService } from "@/api/services";
+import { useNotification } from "@/composables/useNotification";
+import logoLight from "@/assets/logo.svg";
+import logoDark from "@/assets/logo-dark.svg";
+import { useGlobalStore } from "@/stores/global";
+import { useAuthStore } from "@/stores/auth";
+import LoginForm from "@/components/LoginForm.vue";
+import LoginSidebar from "@/components/LoginSidebar.vue";
+import ForgotPasswordEmail from "@/components/ForgotPasswordEmail.vue";
+import CodeVerification from "@/components/CodeVerification.vue";
+import ResetPassword from "@/components/ResetPassword.vue";
 
-const router = useRouter()
-const { notifySuccess } = useNotification()
-const globalStore = useGlobalStore()
+const router = useRouter();
+const { notifySuccess, notifyError } = useNotification();
+const globalStore = useGlobalStore();
+const authStore = useAuthStore();
 
-const logo = computed(() => globalStore.isDark ? logoDark : logoLight)
+const logo = computed(() => (globalStore.isDark ? logoDark : logoLight));
 
-const isSignUp = ref(false)
-const loading = ref(false)
+const isSignUp = ref(false);
+const loading = ref(false);
+const forgotPasswordStep = ref(null); // null, 'email', 'code', 'reset'
+const confirmPassword = ref("");
 
-const formData = reactive({
-  email: '',
-  name: '',
-  password: ''
-})
+const loginErrors = reactive({
+  email: "",
+  name: "",
+  password: "",
+});
 
 const errors = reactive({
-  email: '',
-  name: '',
-  password: ''
-})
+  forgotEmail: "",
+  forgotCode: "",
+  newPassword: "",
+  confirmPassword: "",
+});
+
+const resetErrors = computed(() => ({
+  newPassword: errors.newPassword,
+  confirmPassword: errors.confirmPassword,
+}));
+
+const clearLoginError = (field) => {
+  loginErrors[field] = "";
+};
 
 const clearError = (field) => {
-  errors[field] = ''
-}
+  errors[field] = "";
+};
+
+const clearResetError = (field) => {
+  if (field) {
+    errors[field] = "";
+  }
+};
 
 const toggleMode = () => {
-  isSignUp.value = !isSignUp.value
-  formData.name = ''
-  formData.password = ''
-  errors.email = ''
-  errors.name = ''
-  errors.password = ''
-}
+  isSignUp.value = !isSignUp.value;
+  if (isSignUp.value) {
+    authStore.resetRegister();
+  } else {
+    authStore.resetLogin();
+  }
+  loginErrors.email = "";
+  loginErrors.name = "";
+  loginErrors.password = "";
+};
 
-const handleSubmit = async () => {
-  errors.email = ''
-  errors.name = ''
-  errors.password = ''
-  
-  let hasError = false
-  
-  if (!formData.email || !formData.email.trim()) {
-    errors.email = 'Por favor, insira seu email'
-    hasError = true
+const startForgotPassword = () => {
+  forgotPasswordStep.value = "email";
+  authStore.resetForgotPassword();
+  errors.forgotEmail = "";
+};
+
+const backToLogin = () => {
+  forgotPasswordStep.value = null;
+  authStore.resetForgotPassword();
+  confirmPassword.value = "";
+  Object.keys(errors).forEach((key) => {
+    errors[key] = "";
+  });
+};
+
+const handleEmailUpdate = (value) => {
+  authStore.setForgotPasswordEmail(value);
+};
+
+const handleCodeUpdate = (value) => {
+  authStore.setForgotPasswordCode(value);
+};
+
+const handleNewPasswordUpdate = (value) => {
+  authStore.setForgotPasswordNewPassword(value);
+};
+
+const handleConfirmPasswordUpdate = (value) => {
+  confirmPassword.value = value;
+};
+
+const handleForgotPasswordEmail = async () => {
+  errors.forgotEmail = "";
+
+  const email = authStore.forgotPassword.email?.trim() || "";
+
+  if (!email) {
+    errors.forgotEmail = "Por favor, insira seu email";
+    return;
   }
-  
-  if (isSignUp.value && (!formData.name || !formData.name.trim())) {
-    errors.name = 'Por favor, insira seu nome'
-    hasError = true
+
+  // Validação customizada de email
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    errors.forgotEmail = `Inclua um "@" no endereço de e-mail. "${email}" está com um "@" faltando.`;
+    return;
   }
-  
-  if (!formData.password || !formData.password.trim()) {
-    errors.password = 'Por favor, insira sua senha'
-    hasError = true
-  }
-  
-  if (hasError) {
-    return
-  }
-  
-  loading.value = true
+
+  loading.value = true;
 
   try {
-    if (isSignUp.value) {
-      const response = await authService.register({
-        email: formData.email,
-        name: formData.name,
-        password: formData.password
-      })
-      
-      if (response.token) {
-        localStorage.setItem('token', response.token)
-      }
-      
-      notifySuccess('Conta criada com sucesso!', 'Bem-vindo')
-      router.push('/dashboard')
-    } else {
-      const response = await authService.login({
-        email: formData.email,
-        password: formData.password
-      })
-      
-      if (response.token) {
-        localStorage.setItem('token', response.token)
-      }
-      
-      notifySuccess('Login realizado com sucesso!', 'Bem-vindo de volta')
-      router.push('/dashboard')
-    }
+    await authService.forgotPassword(authStore.forgotPassword.email);
+    notifySuccess(
+      "Verifique seu email para o código de verificação",
+      "Código enviado!"
+    );
+    forgotPasswordStep.value = "code";
+    authStore.setForgotPasswordCode("");
   } catch (error) {
-    console.error('Erro ao fazer login/registro:', error)
-    
-    if (error.response?.status === 401) {
-      errors.email = 'Email ou senha incorretos'
-      errors.password = 'Email ou senha incorretos'
-    } else if (error.response?.status === 409) {
-      errors.email = 'Este email já está cadastrado'
-    } else {
-      const errorMsg = error.response?.data?.message || 'Ocorreu um erro. Tente novamente.'
-      errors.email = errorMsg
-    }
+    console.error("Erro ao enviar código:", error);
+    const errorMsg =
+      error.response?.data?.error ||
+      error.response?.data?.message ||
+      "Ocorreu um erro. Tente novamente.";
+    errors.forgotEmail = errorMsg;
+    notifyError(errorMsg, "Erro");
   } finally {
-    loading.value = false
+    loading.value = false;
   }
-}
+};
+
+const handleVerifyCode = async () => {
+  errors.forgotCode = "";
+
+  const code = authStore.forgotPassword.code;
+  if (code.length !== 6) {
+    errors.forgotCode = "Por favor, insira o código completo de 6 dígitos";
+    return;
+  }
+
+  forgotPasswordStep.value = "reset";
+};
+
+const resendCode = async () => {
+  if (!authStore.forgotPassword.email) {
+    notifyError("Email não encontrado. Volte para a etapa anterior.", "Erro");
+    return;
+  }
+
+  loading.value = true;
+  try {
+    await authService.forgotPassword(authStore.forgotPassword.email);
+    notifySuccess("Verifique seu email novamente", "Código reenviado!");
+    authStore.setForgotPasswordCode("");
+  } catch (error) {
+    console.error("Erro ao reenviar código:", error);
+    const errorMsg =
+      error.response?.data?.error ||
+      error.response?.data?.message ||
+      "Ocorreu um erro. Tente novamente.";
+    notifyError(errorMsg, "Erro");
+  } finally {
+    loading.value = false;
+  }
+};
+
+const handleResetPassword = async () => {
+  errors.newPassword = "";
+  errors.confirmPassword = "";
+
+  let hasError = false;
+
+  if (
+    !authStore.forgotPassword.newPassword ||
+    !authStore.forgotPassword.newPassword.trim()
+  ) {
+    errors.newPassword = "Por favor, insira sua nova senha";
+    hasError = true;
+  }
+
+  if (!confirmPassword.value || !confirmPassword.value.trim()) {
+    errors.confirmPassword = "Por favor, confirme sua senha";
+    hasError = true;
+  }
+
+  if (hasError) {
+    return;
+  }
+
+  if (
+    authStore.forgotPassword.newPassword !== confirmPassword.value
+  ) {
+    errors.confirmPassword = "As senhas não coincidem";
+    return;
+  }
+
+  loading.value = true;
+
+  try {
+    await authService.resetPassword(
+      authStore.forgotPassword.email,
+      authStore.forgotPassword.code,
+      authStore.forgotPassword.newPassword
+    );
+
+    notifySuccess(
+      "Sua senha foi alterada com sucesso",
+      "Senha redefinida!"
+    );
+    backToLogin();
+  } catch (error) {
+    console.error("Erro ao redefinir senha:", error);
+    const errorMsg =
+      error.response?.data?.error ||
+      error.response?.data?.message ||
+      "Ocorreu um erro. Tente novamente.";
+    errors.newPassword = errorMsg;
+    notifyError(errorMsg, "Erro");
+  } finally {
+    loading.value = false;
+  }
+};
+
+const handleSubmit = async () => {
+  loginErrors.email = "";
+  loginErrors.name = "";
+  loginErrors.password = "";
+
+  let hasError = false;
+
+  if (isSignUp.value) {
+    const email = authStore.register.email?.trim() || "";
+    const name = authStore.register.name?.trim() || "";
+    const password = authStore.register.password?.trim() || "";
+
+    if (!email) {
+      loginErrors.email = "Por favor, insira seu email";
+      hasError = true;
+    } else {
+      // Validação customizada de email
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        loginErrors.email = `Inclua um "@" no endereço de e-mail. "${email}" está com um "@" faltando.`;
+        hasError = true;
+      }
+    }
+
+    if (!name) {
+      loginErrors.name = "Por favor, insira seu nome";
+      hasError = true;
+    }
+
+    if (!password) {
+      loginErrors.password = "Por favor, insira sua senha";
+      hasError = true;
+    }
+
+    if (hasError) {
+      return;
+    }
+
+    loading.value = true;
+
+    try {
+      const registerData = {
+        email: authStore.register.email,
+        name: authStore.register.name,
+        password: authStore.register.password,
+      };
+
+      const response = await authService.register(registerData);
+
+      if (response.token) {
+        localStorage.setItem("token", response.token);
+      }
+
+      notifySuccess("Bem-vindo", "Conta criada com sucesso!");
+      router.push("/dashboard");
+    } catch (error) {
+      console.error("Erro ao fazer registro:", error);
+
+      if (error.response?.status === 401) {
+        loginErrors.email = "Email ou senha incorretos";
+        loginErrors.password = "Email ou senha incorretos";
+      } else if (error.response?.status === 409) {
+        loginErrors.email = "Este email já está cadastrado";
+      } else {
+        const errorMsg =
+          error.response?.data?.message || "Ocorreu um erro. Tente novamente.";
+        loginErrors.email = errorMsg;
+      }
+    } finally {
+      loading.value = false;
+    }
+  } else {
+    const email = authStore.login.email?.trim() || "";
+    const password = authStore.login.password?.trim() || "";
+
+    if (!email) {
+      loginErrors.email = "Por favor, insira seu email";
+      hasError = true;
+    } else {
+      // Validação customizada de email
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        loginErrors.email = `Inclua um "@" no endereço de e-mail. "${email}" está com um "@" faltando.`;
+        hasError = true;
+      }
+    }
+
+    if (!password) {
+      loginErrors.password = "Por favor, insira sua senha";
+      hasError = true;
+    }
+
+    if (hasError) {
+      return;
+    }
+
+    loading.value = true;
+
+    try {
+      const loginData = {
+        email: authStore.login.email,
+        password: authStore.login.password,
+      };
+
+      const response = await authService.login(loginData);
+
+      if (response.token) {
+        localStorage.setItem("token", response.token);
+      }
+
+      notifySuccess("Bem-vindo de volta", "Login realizado com sucesso!");
+      router.push("/dashboard");
+    } catch (error) {
+      console.error("Erro ao fazer login:", error);
+
+      if (error.response?.status === 401) {
+        loginErrors.email = "Email ou senha incorretos";
+        loginErrors.password = "Email ou senha incorretos";
+      } else if (error.response?.status === 409) {
+        loginErrors.email = "Este email já está cadastrado";
+      } else {
+        const errorMsg =
+          error.response?.data?.message || "Ocorreu um erro. Tente novamente.";
+        loginErrors.email = errorMsg;
+      }
+    } finally {
+      loading.value = false;
+    }
+  }
+};
 </script>
 
 <style scoped>

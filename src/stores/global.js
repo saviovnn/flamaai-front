@@ -260,7 +260,7 @@ export const useGlobalStore = defineStore('global', () => {
   const clearTranscribedText = () => {
     transcribedText.value = ''
   }
-
+  
   return {
     isSidebarOpen,
     isSettingsOpen,

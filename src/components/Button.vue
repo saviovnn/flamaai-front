@@ -52,7 +52,7 @@ defineEmits(['click'])
 
 const variantClasses = computed(() => {
   const variants = {
-    primary: 'bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white shadow-lg shadow-orange-500/30',
+    primary: 'bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white',
     secondary: 'bg-gray-100 dark:bg-secondary hover:bg-gray-200 dark:hover:bg-accent text-gray-900 dark:text-foreground',
     outline: 'bg-white dark:bg-card border-2 border-gray-200 dark:border-border hover:bg-gray-50 dark:hover:bg-secondary hover:border-gray-300 dark:hover:border-border text-gray-900 dark:text-foreground'
   }
