@@ -105,6 +105,7 @@ import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import { Cloudy, Wind, MapPin, Mic, CircleStop, ArrowUp } from 'lucide-vue-next'
 import Tooltip from './Tooltip.vue'
 import { useGlobalStore } from '@/stores/global'
+import { geocodingService, weatherService } from '@/api/services'
 import micInSound from '@/assets/mic-in.wav'
 import micOutSound from '@/assets/mic-out.wav'
 
@@ -144,8 +145,6 @@ const props = defineProps({
     default: ''
   }
 })
-
-const emit = defineEmits(['submit'])
 
 // Usa o query do store ao invés de props
 const query = computed({
@@ -196,13 +195,43 @@ const handleLocation = () => {
   })
 }
 
-const handleSubmit = () => {
+const handleSubmit = async () => {
   if (query.value.trim()) {
-    emit('submit', {
-      query: query.value,
-      climaTempo: climaTempo.value,
-      qualidadeAr: qualidadeAr.value
-    })
+    globalStore.setSearchLoading(true)
+    
+    try {
+      // Primeiro POST: geocoding search
+      const geocodingResponse = await geocodingService.search(query.value)
+      globalStore.setResponseSearchInput(geocodingResponse)
+      
+      // Valida se tem lat, lng, ibge_id e cidade
+      if (geocodingResponse?.lat && geocodingResponse?.lng && geocodingResponse?.ibge_id && geocodingResponse?.cidade) {
+        // Segundo POST: weather by coordinates
+        const weatherResponse = await weatherService.getByCoordinates(
+          geocodingResponse.lat,
+          geocodingResponse.lng,
+          'all'
+        )
+        globalStore.setWeatherResponse(weatherResponse)
+      } else {
+        console.warn('Dados de geocodificação incompletos:', geocodingResponse)
+      }
+      
+      globalStore.setSearchSubmitData({
+        query: query.value,
+        climaTempo: climaTempo.value,
+        qualidadeAr: qualidadeAr.value
+      })
+    } catch (error) {
+      console.error('Erro ao buscar dados:', error)
+      globalStore.setSearchSubmitData({
+        query: query.value,
+        climaTempo: climaTempo.value,
+        qualidadeAr: qualidadeAr.value
+      })
+    } finally {
+      globalStore.setSearchLoading(false)
+    }
   }
 }
 

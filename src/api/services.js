@@ -60,3 +60,31 @@ export const authService = {
   }
 }
 
+export const geocodingService = {
+  async search(query) {
+    try {
+      const response = await api.post('/geocoding/search', {
+        query: query,
+      })
+      return response.data
+    } catch (error) {
+      throw error
+    }
+  }
+}
+
+export const weatherService = {
+  async getByCoordinates(lat, lng, type = 'all') {
+    try {
+      const response = await api.post('/weather/by-coordinates', {
+        lat: lat,
+        lng: lng,
+        type: type,
+      })
+      return response.data
+    } catch (error) {
+      throw error
+    }
+  }
+}
+

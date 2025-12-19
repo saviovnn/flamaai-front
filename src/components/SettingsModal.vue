@@ -94,7 +94,7 @@
               </div>
               
               <div class="flex items-center justify-between py-3 sm:py-4">
-                <span class="text-xs sm:text-sm text-gray-700 dark:text-muted-foreground">Sair de todos os dispositivos</span>
+                <span class="text-xs sm:text-sm text-gray-700 dark:text-muted-foreground">Sair</span>
                 <button 
                   @click="handleLogout"
                   class="px-3 sm:px-4 py-1.5 text-xs sm:text-sm text-red-500 border border-red-300 dark:border-red-500/50 rounded-full hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors"

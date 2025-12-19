@@ -241,6 +241,58 @@ export const useGlobalStore = defineStore('global', () => {
     searchQuery.value = query
   }
   
+  // Response from geocoding search
+  const responseSearchInput = ref(null)
+  
+  const setResponseSearchInput = (data) => {
+    responseSearchInput.value = data
+  }
+  
+  // Search submit data
+  const searchSubmitData = ref({
+    query: null,
+    climaTempo: false,
+    qualidadeAr: false
+  })
+  
+  const setSearchSubmitData = (data) => {
+    searchSubmitData.value = {
+      query: data?.query || null,
+      climaTempo: data?.climaTempo || false,
+      qualidadeAr: data?.qualidadeAr || false
+    }
+  }
+  
+  // Weather response data
+  const weatherResponse = ref(null)
+  
+  const setWeatherResponse = (data) => {
+    weatherResponse.value = data
+  }
+  
+  // Loading state for search
+  const isSearchLoading = ref(false)
+  
+  const setSearchLoading = (loading) => {
+    isSearchLoading.value = loading
+  }
+  
+  // Dashboard state - true when both responses are available
+  const dashboard = ref(false)
+  
+  const setDashboard = (value) => {
+    dashboard.value = value
+  }
+  
+  // Watch para atualizar dashboard quando ambas as respostas estiverem disponíveis
+  watch([responseSearchInput, weatherResponse], ([geocoding, weather]) => {
+    if (geocoding && weather) {
+      dashboard.value = true
+    } else {
+      dashboard.value = false
+    }
+  }, { deep: true })
+  
   // Voice recognition
   const isRecording = ref(false)
   const transcribedText = ref('')
@@ -290,6 +342,16 @@ export const useGlobalStore = defineStore('global', () => {
     selectedSearch,
     searchQuery,
     setSearchQuery,
+    responseSearchInput,
+    setResponseSearchInput,
+    searchSubmitData,
+    setSearchSubmitData,
+    weatherResponse,
+    setWeatherResponse,
+    isSearchLoading,
+    setSearchLoading,
+    dashboard,
+    setDashboard,
     theme,
     effectiveTheme,
     isDark,

@@ -19,18 +19,28 @@
         class="flex-1 flex flex-col items-center justify-center px-3 sm:px-4 md:px-6 pb-20 sm:pb-32 transition-all duration-300 ease-in-out"
         :style="mainContentStyle"
       >
-        <div class="flex items-center gap-2 sm:gap-3 mb-6 sm:mb-9 transition-all duration-300 ease-in-out px-2 sm:px-0">
-          <img :src="logo" alt="FlamaAI" class="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0" />
-          <h1 class="text-lg sm:text-xl md:text-2xl font-semibold text-gray-900 dark:text-foreground">
-            Qual região vamos analizar?
-          </h1>
-        </div>
+        <template v-if="!globalStore.dashboard">
+          <div v-if="!globalStore.isSearchLoading" class="flex items-center gap-2 sm:gap-3 mb-6 sm:mb-9 transition-all duration-300 ease-in-out px-2 sm:px-0">
+            <img :src="logo" alt="FlamaAI" class="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0" />
+            <h1 class="text-lg sm:text-xl md:text-2xl font-semibold text-gray-900 dark:text-foreground">
+              Qual região vamos analizar?
+            </h1>
+          </div>
+          
+          <div class="w-full flex justify-center transition-all duration-300 ease-in-out">
+            <SearchInput
+              v-if="!globalStore.isSearchLoading"
+              placeholder="Digite o nome da cidade, endereço latitude e longitude..."
+            />
+            <Loading v-else class="w-full h-full" />
+          </div>
+        </template>
         
-        <div class="w-full flex justify-center transition-all duration-300 ease-in-out">
-          <SearchInput
-            placeholder="Digite o nome da cidade, endereço latitude e longitude..."
-            @submit="handleSearch"
-          />
+        <div v-if="globalStore.dashboard" class="w-full max-w-4xl px-4">
+          <pre class="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg overflow-auto text-xs">{{ JSON.stringify({
+            responseSearchInput: globalStore.responseSearchInput,
+            weatherResponse: globalStore.weatherResponse
+          }, null, 2) }}</pre>
         </div>
       </main>
     </div>
@@ -47,6 +57,7 @@ import logoDark from '@/assets/logo-dark.svg'
 import SearchInput from '@/components/SearchInput.vue'
 import HeaderControls from '@/components/HeaderControls.vue'
 import Sidebar from '@/components/Sidebar.vue'
+import Loading from '@/components/Loading.vue'
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -112,6 +123,12 @@ watch(() => globalStore.selectedSearch, (newSearch) => {
     globalStore.setSearchQuery(newSearch.location)
   }
 })
+
+watch(() => globalStore.searchSubmitData, (newData) => {
+  if (newData && newData.query) {
+    handleSearch(newData)
+  }
+}, { deep: true })
 
 const handleNewChat = () => {
   globalStore.setSearchQuery('')

@@ -8,7 +8,7 @@
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-2">
             <img :src="logo" alt="FlamaAI" class="w-7 h-7 sm:w-8 sm:h-8 flex-shrink-0" />
-            <span class="text-xl sm:text-2xl font-bold text-gray-900 dark:text-foreground font-comfortaa">FlamaAi</span>
+            <span class="text-lg sm:text-2xl font-bold text-gray-900 dark:text-foreground font-inter">FlamaAI</span>
           </div>
           <Tooltip text="Fechar barra lateral" position="bottom">
             <button
