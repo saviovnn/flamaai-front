@@ -66,10 +66,16 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  const setUser = (user) => {
-    if (user) {
-      localStorage.setItem('user', JSON.stringify(user))
-      dispatchStorageEvent('user', user)
+  const setUser = (userData) => {
+    if (userData) {
+      // Garante que o id está presente
+      const userToSave = {
+        id: userData.id || null,
+        name: userData.name || null,
+        email: userData.email || null
+      }
+      localStorage.setItem('user', JSON.stringify(userToSave))
+      dispatchStorageEvent('user', userToSave)
     } else {
       localStorage.removeItem('user')
       dispatchStorageEvent('user', null)

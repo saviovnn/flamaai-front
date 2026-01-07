@@ -60,29 +60,24 @@ export const authService = {
   }
 }
 
-export const geocodingService = {
-  async search(query) {
+export const orchestratorService = {
+  async search(query, userId, preference = 'weather') {
     try {
-      const response = await api.post('/geocoding/search', {
-        query: query,
-      })
+      const body = {
+        query: String(query).trim(),
+        userId: String(userId).trim(),
+        preference: preference === 'air' ? 'air' : 'weather',
+      }
+      
+      console.log('Orchestrator service - Enviando body:', body)
+      
+      const response = await api.post('/orchestrator/search', body)
       return response.data
     } catch (error) {
-      throw error
-    }
-  }
-}
-
-export const weatherService = {
-  async getByCoordinates(lat, lng, type = 'all') {
-    try {
-      const response = await api.post('/weather/by-coordinates', {
-        lat: lat,
-        lng: lng,
-        type: type,
-      })
-      return response.data
-    } catch (error) {
+      console.error('Orchestrator service - Erro:', error)
+      if (error.response) {
+        console.error('Response data:', error.response.data)
+      }
       throw error
     }
   }

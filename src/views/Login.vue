@@ -402,6 +402,8 @@ const handleSubmit = async () => {
 
       const response = await authService.register(registerData);
 
+      console.log('Register response:', response);
+
       const token = response.token || response.session?.token;
       if (token) {
         authStore.setToken(token);
@@ -409,11 +411,15 @@ const handleSubmit = async () => {
 
       if (response.user) {
         const userData = {
+          id: response.user.id,
           name: response.user.name,
           email: response.user.email
         };
+        console.log('Salvando user data:', userData);
         globalStore.setUser(userData);
         authStore.setUser(userData);
+      } else {
+        console.warn('Response não contém user:', response);
       }
 
       notifySuccess("Bem-vindo", "Conta criada com sucesso!");
@@ -469,6 +475,8 @@ const handleSubmit = async () => {
 
       const response = await authService.login(loginData);
 
+      console.log('Login response:', response);
+
       const token = response.token || response.session?.token;
       if (token) {
         authStore.setToken(token);
@@ -476,11 +484,15 @@ const handleSubmit = async () => {
 
       if (response.user) {
         const userData = {
+          id: response.user.id,
           name: response.user.name,
           email: response.user.email
         };
+        console.log('Salvando user data:', userData);
         globalStore.setUser(userData);
         authStore.setUser(userData);
+      } else {
+        console.warn('Response não contém user:', response);
       }
 
       notifySuccess("Bem-vindo de volta", "Login realizado com sucesso!");

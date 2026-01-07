@@ -241,11 +241,13 @@ export const useGlobalStore = defineStore('global', () => {
     searchQuery.value = query
   }
   
-  // Response from geocoding search
-  const responseSearchInput = ref(null)
+  // Preference: 'weather' | 'air' - default é 'weather'
+  const preference = ref('weather')
   
-  const setResponseSearchInput = (data) => {
-    responseSearchInput.value = data
+  const setPreference = (pref) => {
+    if (pref === 'weather' || pref === 'air') {
+      preference.value = pref
+    }
   }
   
   // Search submit data
@@ -263,11 +265,11 @@ export const useGlobalStore = defineStore('global', () => {
     }
   }
   
-  // Weather response data
-  const weatherResponse = ref(null)
+  // Orchestrator response data (complete response)
+  const orchestratorResponse = ref(null)
   
-  const setWeatherResponse = (data) => {
-    weatherResponse.value = data
+  const setOrchestratorResponse = (data) => {
+    orchestratorResponse.value = data
   }
   
   // Loading state for search
@@ -277,16 +279,16 @@ export const useGlobalStore = defineStore('global', () => {
     isSearchLoading.value = loading
   }
   
-  // Dashboard state - true when both responses are available
+  // Dashboard state - true when orchestrator response is available
   const dashboard = ref(false)
   
   const setDashboard = (value) => {
     dashboard.value = value
   }
   
-  // Watch para atualizar dashboard quando ambas as respostas estiverem disponíveis
-  watch([responseSearchInput, weatherResponse], ([geocoding, weather]) => {
-    if (geocoding && weather) {
+  // Watch para atualizar dashboard quando a resposta do orchestrator estiver disponível
+  watch(orchestratorResponse, (response) => {
+    if (response) {
       dashboard.value = true
     } else {
       dashboard.value = false
@@ -315,6 +317,7 @@ export const useGlobalStore = defineStore('global', () => {
   
   // User information
   const user = ref({
+    id: null,
     name: null,
     email: null
   })
@@ -322,17 +325,96 @@ export const useGlobalStore = defineStore('global', () => {
   const setUser = (userData) => {
     if (userData) {
       user.value = {
+        id: userData.id || null,
         name: userData.name || null,
         email: userData.email || null
       }
+      // Salva no localStorage também
+      localStorage.setItem('user', JSON.stringify(user.value))
     }
   }
   
   const clearUser = () => {
     user.value = {
+      id: null,
       name: null,
       email: null
     }
+    localStorage.removeItem('user')
+  }
+  
+  // Função para carregar user do localStorage
+  const loadUserFromStorage = () => {
+    if (typeof window !== 'undefined') {
+      const userStr = localStorage.getItem('user')
+      if (userStr) {
+        try {
+          const userData = JSON.parse(userStr)
+          if (userData && userData.id) {
+            user.value = {
+              id: userData.id || null,
+              name: userData.name || null,
+              email: userData.email || null
+            }
+          }
+        } catch (error) {
+          console.error('Erro ao parsear user do localStorage:', error)
+          localStorage.removeItem('user')
+        }
+      }
+    }
+  }
+  
+  // Inicializa carregando user do localStorage
+  loadUserFromStorage()
+  
+  // Watch para detectar mudanças no localStorage do user
+  if (typeof window !== 'undefined') {
+    // Escuta mudanças no localStorage (de outras abas/contextos)
+    window.addEventListener('storage', (e) => {
+      if (e.key === 'user') {
+        if (e.newValue) {
+          try {
+            const userData = JSON.parse(e.newValue)
+            if (userData && userData.id) {
+              user.value = {
+                id: userData.id || null,
+                name: userData.name || null,
+                email: userData.email || null
+              }
+            }
+          } catch (error) {
+            console.error('Erro ao parsear user do storage event:', error)
+          }
+        } else {
+          clearUser()
+        }
+      }
+    })
+    
+    // Escuta eventos customizados de mudança no localStorage
+    window.addEventListener('localStorageChange', (e) => {
+      if (e.detail?.key === 'user') {
+        if (e.detail?.newValue) {
+          try {
+            const userData = typeof e.detail.newValue === 'string' 
+              ? JSON.parse(e.detail.newValue) 
+              : e.detail.newValue
+            if (userData && userData.id) {
+              user.value = {
+                id: userData.id || null,
+                name: userData.name || null,
+                email: userData.email || null
+              }
+            }
+          } catch (error) {
+            console.error('Erro ao parsear user do localStorageChange event:', error)
+          }
+        } else {
+          clearUser()
+        }
+      }
+    })
   }
   
   return {
@@ -342,12 +424,12 @@ export const useGlobalStore = defineStore('global', () => {
     selectedSearch,
     searchQuery,
     setSearchQuery,
-    responseSearchInput,
-    setResponseSearchInput,
+    preference,
+    setPreference,
     searchSubmitData,
     setSearchSubmitData,
-    weatherResponse,
-    setWeatherResponse,
+    orchestratorResponse,
+    setOrchestratorResponse,
     isSearchLoading,
     setSearchLoading,
     dashboard,

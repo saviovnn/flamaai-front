@@ -37,10 +37,7 @@
         </template>
         
         <div v-if="globalStore.dashboard" class="w-full max-w-4xl px-4">
-          <pre class="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg overflow-auto text-xs">{{ JSON.stringify({
-            responseSearchInput: globalStore.responseSearchInput,
-            weatherResponse: globalStore.weatherResponse
-          }, null, 2) }}</pre>
+          <pre class="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg overflow-auto text-xs">{{ JSON.stringify(globalStore.orchestratorResponse, null, 2) }}</pre>
         </div>
       </main>
     </div>
@@ -70,12 +67,15 @@ onMounted(() => {
     authStore.setToken(token)
   }
 
-  // Verifica se há user no localStorage
+  // O store global já carrega o user do localStorage automaticamente
+  // Mas vamos garantir que está sincronizado
   const userStr = localStorage.getItem('user')
   if (userStr) {
     try {
       const user = JSON.parse(userStr)
-      globalStore.setUser(user)
+      if (user && user.id) {
+        globalStore.setUser(user)
+      }
     } catch (error) {
       console.error('Erro ao parsear user do localStorage:', error)
       localStorage.removeItem('user')

@@ -105,11 +105,13 @@ import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import { Cloudy, Wind, MapPin, Mic, CircleStop, ArrowUp } from 'lucide-vue-next'
 import Tooltip from './Tooltip.vue'
 import { useGlobalStore } from '@/stores/global'
-import { geocodingService, weatherService } from '@/api/services'
+import { useAuthStore } from '@/stores/auth'
+import { orchestratorService } from '@/api/services'
 import micInSound from '@/assets/mic-in.wav'
 import micOutSound from '@/assets/mic-out.wav'
 
 const globalStore = useGlobalStore()
+const authStore = useAuthStore()
 
 const windowWidth = ref(typeof window !== 'undefined' ? window.innerWidth : 640)
 
@@ -166,17 +168,16 @@ const responsivePlaceholder = computed(() => {
   return props.placeholder
 })
 
-const climaTempo = ref(true)
-const qualidadeAr = ref(false)
+// Usa preference do store, default é 'weather'
+const climaTempo = computed(() => globalStore.preference === 'weather')
+const qualidadeAr = computed(() => globalStore.preference === 'air')
 
 const selectClimaTempo = () => {
-  climaTempo.value = true
-  qualidadeAr.value = false
+  globalStore.setPreference('weather')
 }
 
 const selectQualidadeAr = () => {
-  qualidadeAr.value = true
-  climaTempo.value = false
+  globalStore.setPreference('air')
 }
 
 const handleLocation = () => {
@@ -195,35 +196,77 @@ const handleLocation = () => {
   })
 }
 
+// Função auxiliar para obter o userId
+const getUserId = () => {
+  // Tenta pegar do store global primeiro
+  let userId = globalStore.user?.id
+  
+  // Se não tiver no store, tenta pegar do localStorage
+  if (!userId) {
+    const userStr = localStorage.getItem('user')
+    if (userStr) {
+      try {
+        const user = JSON.parse(userStr)
+        userId = user?.id
+        // Se encontrou o userId no localStorage, atualiza o store
+        if (userId) {
+          globalStore.setUser(user)
+        }
+      } catch (e) {
+        console.warn('Erro ao parsear user do localStorage:', e)
+      }
+    }
+  }
+  
+  // Valida se o userId é válido (não null, undefined, ou string vazia)
+  if (!userId || userId === 'null' || userId === 'undefined' || String(userId).trim() === '') {
+    console.warn('UserId não encontrado. Verifique se está logado corretamente.')
+    // Não usa 'anonymous' - exige que o usuário esteja logado
+    throw new Error('Usuário não autenticado. Por favor, faça login novamente.')
+  }
+  
+  // Garante que userId é uma string válida
+  return String(userId).trim()
+}
+
 const handleSubmit = async () => {
   if (query.value.trim()) {
     globalStore.setSearchLoading(true)
     
     try {
-      // Primeiro POST: geocoding search
-      const geocodingResponse = await geocodingService.search(query.value)
-      globalStore.setResponseSearchInput(geocodingResponse)
+      const userId = getUserId()
+      const searchQuery = query.value.trim()
       
-      // Valida se tem lat, lng, ibge_id e cidade
-      if (geocodingResponse?.lat && geocodingResponse?.lng && geocodingResponse?.ibge_id && geocodingResponse?.cidade) {
-        // Segundo POST: weather by coordinates
-        const weatherResponse = await weatherService.getByCoordinates(
-          geocodingResponse.lat,
-          geocodingResponse.lng,
-          'all'
-        )
-        globalStore.setWeatherResponse(weatherResponse)
-      } else {
-        console.warn('Dados de geocodificação incompletos:', geocodingResponse)
+      // Valida se query e userId são válidos
+      if (!searchQuery || searchQuery.length === 0) {
+        throw new Error('Query não pode estar vazia')
       }
       
+      if (!userId || userId.length === 0) {
+        throw new Error('UserId não pode estar vazio')
+      }
+      
+      console.log('Enviando busca:', { query: searchQuery, userId, preference: globalStore.preference })
+      
+      // POST único para /api/orchestrator/search
+      const orchestratorResponse = await orchestratorService.search(searchQuery, userId, globalStore.preference)
+      globalStore.setOrchestratorResponse(orchestratorResponse)
+      
       globalStore.setSearchSubmitData({
-        query: query.value,
+        query: searchQuery,
         climaTempo: climaTempo.value,
         qualidadeAr: qualidadeAr.value
       })
     } catch (error) {
       console.error('Erro ao buscar dados:', error)
+      if (error.response) {
+        console.error('Response status:', error.response.status)
+        console.error('Response data:', error.response.data)
+      }
+      // Mostra mensagem de erro ao usuário se for erro de autenticação
+      if (error.message && error.message.includes('autenticado')) {
+        alert(error.message)
+      }
       globalStore.setSearchSubmitData({
         query: query.value,
         climaTempo: climaTempo.value,
