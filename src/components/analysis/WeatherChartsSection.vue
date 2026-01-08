@@ -1,29 +1,29 @@
 <template>
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
     <!-- Card 1: Qualidade do Ar / Histórico Climático -->
-    <div class="bg-white dark:bg-card rounded-2xl sm:rounded-3xl p-8 border border-gray-200 dark:border-border">
-      <div class="flex items-center gap-4 mb-8">
+    <div class="bg-white dark:bg-card rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 border border-gray-200 dark:border-border">
+      <div class="flex items-center gap-3 sm:gap-4 mb-4 sm:mb-6 lg:mb-8">
         <div
-          class="w-12 h-12 rounded-2xl flex items-center justify-center"
+          class="w-10 h-10 sm:w-11 sm:h-11 lg:w-12 lg:h-12 rounded-xl sm:rounded-2xl flex items-center justify-center flex-shrink-0"
           :class="preference === 'air' ? 'bg-emerald-100 dark:bg-emerald-900/30' : 'bg-amber-100 dark:bg-amber-900/30'"
         >
-          <component :is="preference === 'air' ? Wind : Sun" :size="24" :class="preference === 'air' ? 'text-emerald-500' : ' text-amber-500'" />
+          <component :is="preference === 'air' ? Wind : Sun" :size="18" class="sm:w-5 sm:h-5 lg:w-6 lg:h-6" :class="preference === 'air' ? 'text-emerald-500' : ' text-amber-500'" />
         </div>
-        <div>
-          <h3 class="text-lg font-black text-gray-800 dark:text-white tracking-tight">
+        <div class="min-w-0">
+          <h3 class="text-base sm:text-lg font-black text-gray-800 dark:text-white tracking-tight">
             {{ preference === 'air' ? 'Qualidade do Ar' : 'Histórico Climático' }}
           </h3>
-          <div v-if="preference === 'air'" class="flex items-center gap-2">
-            <span class="text-xs font-bold" :class="aqiColorClass">AQI {{ aqiValue }}</span>
-            <span class="text-[10px] text-gray-400 dark:text-muted-foreground font-bold uppercase tracking-widest">{{ aqiLabel }}</span>
+          <div v-if="preference === 'air'" class="flex items-center gap-1.5 sm:gap-2">
+            <span class="text-[11px] sm:text-xs font-bold" :class="aqiColorClass">AQI {{ aqiValue }}</span>
+            <span class="text-[9px] sm:text-[10px] text-gray-400 dark:text-muted-foreground font-bold uppercase tracking-widest">{{ aqiLabel }}</span>
           </div>
-          <p v-else class="text-xs font-bold text-gray-400 dark:text-muted-foreground uppercase tracking-widest">Passado e Previsão</p>
+          <p v-else class="text-[10px] sm:text-xs font-bold text-gray-400 dark:text-muted-foreground uppercase tracking-widest">Passado e Previsão</p>
         </div>
       </div>
 
       <apexchart
         type="line"
-        height="240"
+        :height="chartHeight"
         :options="preference === 'air' ? refinedAirChartOptions : refinedWeatherHistoryOptions"
         :series="preference === 'air' ? airQualityChartSeries : weatherHistorySeries"
       />
@@ -31,19 +31,19 @@
     </div>
 
     <!-- Card 2: Tendência de Partículas / Chuva -->
-    <div class="bg-white dark:bg-card rounded-2xl sm:rounded-3xl p-8 border border-gray-200 dark:border-border">
-      <div class="flex items-center gap-4 mb-8">
+    <div class="bg-white dark:bg-card rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 border border-gray-200 dark:border-border">
+      <div class="flex items-center gap-3 sm:gap-4 mb-4 sm:mb-6 lg:mb-8">
         <div
-          class="w-12 h-12 rounded-2xl flex items-center justify-center"
+          class="w-10 h-10 sm:w-11 sm:h-11 lg:w-12 lg:h-12 rounded-xl sm:rounded-2xl flex items-center justify-center flex-shrink-0"
           :class="preference === 'air' ? 'bg-violet-100 dark:bg-violet-900/30' : 'bg-blue-50 dark:bg-blue-900/20'"
         >
-          <component :is="preference === 'air' ? Activity : CloudRain" :size="24" :class="preference === 'air' ? 'text-violet-500' : 'text-blue-500'" />
+          <component :is="preference === 'air' ? Activity : CloudRain" :size="18" class="sm:w-5 sm:h-5 lg:w-6 lg:h-6" :class="preference === 'air' ? 'text-violet-500' : 'text-blue-500'" />
         </div>
-        <div>
-          <h3 class="text-lg font-black text-gray-800 dark:text-white tracking-tight">
+        <div class="min-w-0">
+          <h3 class="text-base sm:text-lg font-black text-gray-800 dark:text-white tracking-tight">
             {{ preference === 'air' ? 'Tendência de Partículas' : 'Chuva (próximos dias)' }}
           </h3> 
-          <p class="text-xs font-bold text-gray-400 dark:text-muted-foreground uppercase tracking-widest">
+          <p class="text-[10px] sm:text-xs font-bold text-gray-400 dark:text-muted-foreground uppercase tracking-widest">
             {{ preference === 'air' ? 'PM2.5 / PM10' : 'Acumulado diário' }}
           </p>
         </div>
@@ -51,7 +51,7 @@
 
       <apexchart
         :type="preference === 'air' ? 'area' : 'bar'"
-        height="240"
+        :height="chartHeight"
         :options="preference === 'air' ? refinedAirTrendOptions : refinedPrecipOptions"
         :series="preference === 'air' ? airTrendSeries : precipSeries"
       />
@@ -60,12 +60,30 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, ref, onMounted, onUnmounted } from 'vue'
 import apexchart from 'vue3-apexcharts'
 import { CloudRain, Wind, Activity, Sun } from 'lucide-vue-next'
 import { useGlobalStore } from '@/stores/global'
 
 const globalStore = useGlobalStore()
+
+// Responsive chart height
+const windowWidth = ref(typeof window !== 'undefined' ? window.innerWidth : 1024)
+
+const chartHeight = computed(() => {
+  if (windowWidth.value < 640) return 180
+  if (windowWidth.value < 1024) return 210
+  return 240
+})
+
+let resizeHandler = null
+onMounted(() => {
+  resizeHandler = () => { windowWidth.value = window.innerWidth }
+  window.addEventListener('resize', resizeHandler)
+})
+onUnmounted(() => {
+  if (resizeHandler) window.removeEventListener('resize', resizeHandler)
+})
 
 // Dados do store
 const weatherResult = computed(() => globalStore.orchestratorResponse?.weatherResult)

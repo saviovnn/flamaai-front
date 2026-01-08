@@ -1,19 +1,19 @@
 <template>
-  <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
     <div 
       v-for="stat in factorStats"
       :key="stat.label"
-      class="bg-white dark:bg-card rounded-2xl sm:rounded-3xl p-6 border border-gray-200 dark:border-border"
+      class="bg-white dark:bg-card rounded-xl sm:rounded-2xl lg:rounded-3xl p-3 sm:p-4 lg:p-6 border border-gray-200 dark:border-border"
     >
-      <div class="flex items-center gap-3 mb-4">
-        <div :class="`w-10 h-10 rounded-xl flex items-center justify-center ${stat.bg}`">
-          <component :is="stat.icon" :size="18" :class="stat.color" />
+      <div class="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3 lg:mb-4">
+        <div :class="`w-8 h-8 sm:w-9 sm:h-9 lg:w-10 lg:h-10 rounded-lg sm:rounded-xl flex items-center justify-center flex-shrink-0 ${stat.bg}`">
+          <component :is="stat.icon" :size="14" class="sm:w-4 sm:h-4 lg:w-[18px] lg:h-[18px]" :class="stat.color" />
         </div>
-        <span class="text-[10px] font-bold text-gray-400 dark:text-muted-foreground uppercase tracking-widest">{{ stat.label }}</span>
+        <span class="text-[9px] sm:text-[10px] font-bold text-gray-400 dark:text-muted-foreground uppercase tracking-widest truncate">{{ stat.label }}</span>
       </div>
       <div class="flex items-baseline gap-1">
-        <span class="text-2xl font-black text-gray-800 dark:text-white tracking-tight">{{ stat.value }}</span>
-        <span class="text-xs font-bold text-gray-400 dark:text-muted-foreground">{{ stat.unit }}</span>
+        <span class="text-lg sm:text-xl lg:text-2xl font-black text-gray-800 dark:text-white tracking-tight">{{ stat.value }}</span>
+        <span class="text-[10px] sm:text-xs font-bold text-gray-400 dark:text-muted-foreground">{{ stat.unit }}</span>
       </div>
     </div>
   </div>

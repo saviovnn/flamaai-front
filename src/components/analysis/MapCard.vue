@@ -1,35 +1,35 @@
 <template>
-  <div class="lg:col-span-4 bg-white dark:bg-card rounded-2xl sm:rounded-3xl p-6 border border-gray-200 dark:border-border">
-    <div class="flex items-start justify-between gap-3">
+  <div class="lg:col-span-4 bg-white dark:bg-card rounded-2xl sm:rounded-3xl p-4 sm:p-5 lg:p-6 border border-gray-200 dark:border-border">
+    <div class="flex items-start justify-between gap-2 sm:gap-3">
       <div>
-        <div class="text-[10px] font-black text-gray-400 dark:text-muted-foreground uppercase tracking-widest">Mapa</div>
-        <h3 class="text-lg font-black text-gray-800 dark:text-white tracking-tight mt-1">Área analisada</h3>
-        <p class="text-xs font-medium text-gray-500 dark:text-muted-foreground mt-1">
+        <div class="text-[9px] sm:text-[10px] font-black text-gray-400 dark:text-muted-foreground uppercase tracking-widest">Mapa</div>
+        <h3 class="text-base sm:text-lg font-black text-gray-800 dark:text-white tracking-tight mt-1">Área analisada</h3>
+        <p class="text-[11px] sm:text-xs font-medium text-gray-500 dark:text-muted-foreground mt-1">
           {{ geocodingResult?.bioma }} • IBGE {{ geocodingResult?.ibge_id }}
         </p>
       </div>
-      <div class="text-right">
-        <div class="text-[10px] font-black text-gray-400 dark:text-muted-foreground uppercase tracking-widest">Preferência</div>
-        <div class="mt-1 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-gray-100 dark:bg-secondary text-[10px] font-black uppercase tracking-widest text-gray-600 dark:text-muted-foreground">
-          <span class="w-1.5 h-1.5 rounded-full" :class="preference === 'air' ? 'bg-blue-500' : 'bg-emerald-500'"></span>
+      <div class="text-right flex-shrink-0">
+        <div class="text-[9px] sm:text-[10px] font-black text-gray-400 dark:text-muted-foreground uppercase tracking-widest">Preferência</div>
+        <div class="mt-1 inline-flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full bg-gray-100 dark:bg-secondary text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-gray-600 dark:text-muted-foreground">
+          <span class="w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full" :class="preference === 'air' ? 'bg-blue-500' : 'bg-emerald-500'"></span>
           {{ preference === 'air' ? 'AR' : 'CLIMA' }}
         </div>
       </div>
     </div>
 
-    <div class="mt-5 rounded-2xl overflow-hidden border border-gray-100 dark:border-border bg-gray-100 dark:bg-secondary relative">
-      <div id="map" class="w-full h-[260px]"></div>
+    <div class="mt-3 sm:mt-4 lg:mt-5 rounded-xl sm:rounded-2xl overflow-hidden border border-gray-100 dark:border-border bg-gray-100 dark:bg-secondary relative">
+      <div id="map" class="w-full h-[200px] sm:h-[230px] lg:h-[260px]"></div>
       
       <!-- Info button with credits tooltip -->
       <div class="absolute bottom-3 right-3 z-[1000] group">
-        <div class="w-6 h-6 rounded-full bg-white/90 dark:bg-card/90 backdrop-blur-sm border border-gray-200 dark:border-border flex items-center justify-center cursor-help shadow-sm hover:shadow-md transition-shadow">
+        <div class="w-6 h-6 rounded-full bg-white/90 dark:bg-card/90 backdrop-blur-sm border border-gray-200 dark:border-border flex items-center justify-center cursor-help shadow-sm hover:shadow-md">
           <svg class="w-3.5 h-3.5 text-gray-500 dark:text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
             <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
         </div>
         
         <!-- Tooltip -->
-        <div class="absolute bottom-full right-0 mb-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 pointer-events-none">
+        <div class="absolute bottom-full right-0 mb-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible pointer-events-none">
           <div class="bg-white dark:bg-card text-gray-800 dark:text-white text-[10px] font-medium px-3 py-2 rounded-lg shadow-xl border border-gray-200 dark:border-border whitespace-nowrap">
             <div class="text-gray-400 dark:text-muted-foreground uppercase tracking-wider mb-1">Créditos</div>
             <div>© Stadia Maps</div>

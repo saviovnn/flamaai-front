@@ -1,21 +1,39 @@
 <template>
-  <div class="lg:col-span-2 bg-white dark:bg-card rounded-2xl sm:rounded-3xl p-8 border border-gray-200 dark:border-border">
-    <div class="flex items-center justify-between mb-8">
+  <div class="md:col-span-1 lg:col-span-2 bg-white dark:bg-card rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 border border-gray-200 dark:border-border">
+    <div class="flex items-center justify-between mb-4 sm:mb-6 lg:mb-8">
       <div>
-        <h3 class="text-xl font-black text-gray-800 dark:text-white tracking-tight">Evolução do Risco</h3>
-        <p class="text-sm font-medium text-gray-500 dark:text-muted-foreground">Projeção para os próximos 7 dias</p>
+        <h3 class="text-base sm:text-lg lg:text-xl font-black text-gray-800 dark:text-white tracking-tight">Evolução do Risco</h3>
+        <p class="text-xs sm:text-sm font-medium text-gray-500 dark:text-muted-foreground">Projeção para os próximos 7 dias</p>
       </div>
     </div>
-    <apexchart type="area" height="300" :options="chartOptions" :series="chartSeries" />
+    <apexchart type="area" :height="chartHeight" :options="chartOptions" :series="chartSeries" />
   </div>
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, ref, onMounted, onUnmounted } from 'vue'
 import apexchart from 'vue3-apexcharts'
 import { useGlobalStore } from '@/stores/global'
 
 const globalStore = useGlobalStore()
+
+// Responsive chart height
+const windowWidth = ref(typeof window !== 'undefined' ? window.innerWidth : 1024)
+
+const chartHeight = computed(() => {
+  if (windowWidth.value < 640) return 200
+  if (windowWidth.value < 1024) return 250
+  return 300
+})
+
+let resizeHandler = null
+onMounted(() => {
+  resizeHandler = () => { windowWidth.value = window.innerWidth }
+  window.addEventListener('resize', resizeHandler)
+})
+onUnmounted(() => {
+  if (resizeHandler) window.removeEventListener('resize', resizeHandler)
+})
 
 // Dados do store
 const fireRiskResult = computed(() => globalStore.orchestratorResponse?.fireRiskResult)

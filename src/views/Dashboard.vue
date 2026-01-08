@@ -5,30 +5,30 @@
       :userInitials="userInitials"
     />
 
-    <div class="flex-1 flex flex-col">
-      <header 
-        class="p-3 sm:p-4 md:p-6 flex items-center transition-all duration-300 ease-in-out"
-        :style="mainContentStyle"
-      >
+    <!-- Main content wrapper - responsivo à sidebar -->
+    <div 
+      class="flex-1 flex flex-col min-w-0 transition-[margin] duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]"
+      :class="sidebarOpenClass"
+    >
+      <header class="p-3 sm:p-4 md:p-6 flex items-center">
         <HeaderControls
           @new-chat="handleNewChat"
         />
       </header>
 
       <main 
-        class="flex-1 flex flex-col items-center justify-center px-3 sm:px-4 md:px-6 transition-all duration-300 ease-in-out overflow-hidden"
-        :style="mainContentStyle"
+        class="flex-1 flex flex-col items-center justify-center px-3 sm:px-4 md:px-6 overflow-hidden"
         :class="globalStore.dashboard ? 'h-screen' : ''"
       >
         <template v-if="!globalStore.dashboard">
-          <div v-if="!globalStore.isSearchLoading" class="flex items-center gap-2 sm:gap-3 mb-6 sm:mb-9 transition-all duration-300 ease-in-out px-2 sm:px-0">
+          <div v-if="!globalStore.isSearchLoading" class="flex items-center gap-2 sm:gap-3 mb-6 sm:mb-9 px-2 sm:px-0">
             <img :src="logo" alt="FlamaAI" class="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0" />
             <h1 class="text-lg sm:text-xl md:text-2xl font-semibold text-gray-900 dark:text-foreground">
               Qual região vamos analizar?
             </h1>
           </div>
           
-          <div class="w-full flex justify-center transition-all duration-300 ease-in-out">
+          <div class="w-full flex justify-center">
             <SearchInput
               v-if="!globalStore.isSearchLoading"
               placeholder="Digite o nome da cidade, endereço latitude e longitude..."
@@ -37,7 +37,7 @@
           </div>
         </template>
         
-        <div v-if="globalStore.dashboard" class="w-full max-w-7xl px-4 py-3 overflow-y-auto">
+        <div v-if="globalStore.dashboard" class="w-full max-w-7xl px-2 sm:px-4 lg:px-6 py-2 sm:py-3 overflow-y-auto">
           <LocationAnalysis 
             v-if="globalStore.orchestratorResponse"
             :orchestrator-response="globalStore.orchestratorResponse"
@@ -45,6 +45,13 @@
         </div>
       </main>
     </div>
+
+    <!-- Overlay para fechar sidebar em mobile -->
+    <div 
+      v-if="globalStore.isSidebarOpen"
+      class="fixed inset-0 bg-black/30 z-30 lg:hidden"
+      @click="globalStore.isSidebarOpen = false"
+    ></div>
   </div>
 </template>
 
@@ -105,16 +112,12 @@ const userInitials = computed(() => {
 
 authStore.isAuthenticated = true
 
-const mainContentStyle = computed(() => {
-  const sidebarWidth = 267
+// Classes para deslocar conteúdo quando sidebar está aberta (apenas em desktop)
+const sidebarOpenClass = computed(() => {
   if (globalStore.isSidebarOpen) {
-    return {
-      transform: `translateX(${sidebarWidth / 2}px)`
-    }
+    return 'lg:ml-[16.7rem]'
   }
-  return {
-    transform: 'translateX(0)'
-  }
+  return 'lg:ml-0'
 })
 
 watch(() => globalStore.isSidebarOpen, (newValue) => {
@@ -171,11 +174,4 @@ function navigateTo(path) {
 </script>
 
 <style scoped>
-button {
-  transition: all 0.2s ease;
-}
-
-button:active {
-  transform: scale(0.98);
-}
 </style>

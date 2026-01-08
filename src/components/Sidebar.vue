@@ -240,12 +240,20 @@ const groupedSearches = computed(() => {
 <style scoped>
 .sidebar-enter-active,
 .sidebar-leave-active {
-  transition: transform 0.3s ease;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
 }
 
 .sidebar-enter-from,
 .sidebar-leave-to {
-  transform: translateX(-100%);
+  transform: translate3d(-100%, 0, 0);
+}
+
+.sidebar-enter-to,
+.sidebar-leave-from {
+  transform: translate3d(0, 0, 0);
 }
 
 .sidebar-gradient {

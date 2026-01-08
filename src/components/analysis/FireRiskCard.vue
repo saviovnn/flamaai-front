@@ -1,63 +1,64 @@
 <template>
   <div
-    class="lg:col-span-8 relative overflow-hidden rounded-2xl sm:rounded-3xl p-7 sm:p-8 border bg-white dark:bg-card border-gray-200 dark:border-border"
+    class="lg:col-span-8 relative overflow-hidden rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 border bg-white dark:bg-card border-gray-200 dark:border-border"
   >
     <div class="absolute inset-x-0 top-0 h-1.5"></div>
 
     <div class="relative">
-      <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+      <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 sm:gap-4">
         <div>
           <div class="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 dark:text-muted-foreground">
             <Activity :size="14" class="text-gray-400 dark:text-muted-foreground" />
             Risco de Fogo
           </div>
-          <h2 class="text-2xl sm:text-3xl font-black mt-2 tracking-tight">
+          <h2 class="text-xl sm:text-2xl lg:text-3xl font-black mt-2 tracking-tight">
             Hoje: <span :class="riskTone.labelText">{{ todayRiskLabel }}</span>
           </h2>
-          <p class="text-sm text-gray-600 dark:text-muted-foreground font-medium mt-1">
+          <p class="text-xs sm:text-sm text-gray-600 dark:text-muted-foreground font-medium mt-1">
             Média semanal: <span class="font-black">{{ (globalStore.orchestratorResponse?.fireRiskResult?.weeklyRiskMean * 100).toFixed(0) }}%</span> • Nível
             <span class="font-black">{{ weeklyRiskLabel }}</span>
           </p>
         </div>
 
-        <div class="flex items-center gap-3">
-          <div class="px-3 py-1.5 rounded-full border text-[10px] font-black uppercase tracking-widest"
+        <div class="flex items-center gap-2 sm:gap-3">
+          <div class="px-2 sm:px-3 py-1 sm:py-1.5 rounded-full border text-[9px] sm:text-[10px] font-black uppercase tracking-widest"
                :class="riskTone.badge">
             {{ riskTone.badgeText }}
           </div>
-          <div class="w-11 h-11 rounded-2xl flex items-center justify-center border bg-gray-50 dark:bg-secondary border-gray-100 dark:border-border">
-            <Flame :size="22" :class="riskTone.iconText" />
+          <div class="w-9 h-9 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl flex items-center justify-center border bg-gray-50 dark:bg-secondary border-gray-100 dark:border-border">
+            <Flame :size="18" class="sm:w-[22px] sm:h-[22px]" :class="riskTone.iconText" />
           </div>
         </div>
       </div>
 
-      <div class="mt-6 flex items-end gap-2">
-        <span class="text-7xl sm:text-8xl font-black tracking-tighter leading-none text-gray-900 dark:text-white">{{ todayRiskPercent.toFixed(0) }}</span>
-        <span class="text-2xl sm:text-3xl font-bold text-gray-400 dark:text-muted-foreground mb-2">%</span>
+      <div class="mt-4 sm:mt-6 flex items-end gap-2">
+        <span class="text-5xl sm:text-7xl lg:text-8xl font-black tracking-tighter leading-none text-gray-900 dark:text-white">{{ todayRiskPercent.toFixed(0) }}</span>
+        <span class="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-400 dark:text-muted-foreground mb-1 sm:mb-2">%</span>
       </div>
 
-      <div class="mt-6 space-y-4">
-        <div class="w-full h-3 bg-gray-100 dark:bg-accent rounded-full overflow-hidden">
+      <div class="mt-4 sm:mt-6 space-y-3 sm:space-y-4">
+        <div class="w-full h-2 sm:h-3 bg-gray-100 dark:bg-accent rounded-full overflow-hidden">
           <div
-            class="h-full rounded-full transition-all duration-1000 ease-out"
+            class="h-full rounded-full"
             :class="riskTone.fill"
             :style="{ width: `${Math.min(100, Math.max(0, todayRiskPercent))}%` }"
           ></div>
         </div>
 
-        <div class="grid grid-cols-7 gap-2">
+        <!-- Grid responsivo: scroll horizontal em mobile, grid em desktop -->
+        <div class="flex gap-1.5 sm:gap-2 overflow-x-auto pb-2 sm:pb-0 -mx-1 px-1 sm:mx-0 sm:px-0 sm:grid sm:grid-cols-7 scrollbar-hide">
           <div
             v-for="(d, idx) in dailyRisksSliced"
             :key="idx"
-            class="bg-gray-50 dark:bg-secondary border border-gray-200 dark:border-border rounded-2xl p-2"
+            class="flex-shrink-0 w-[4.5rem] sm:w-auto bg-gray-50 dark:bg-secondary border border-gray-200 dark:border-border rounded-xl sm:rounded-2xl p-1.5 sm:p-2"
           >
-            <div class="text-[10px] font-black uppercase tracking-widest text-gray-500 dark:text-muted-foreground">
+            <div class="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-gray-500 dark:text-muted-foreground">
               {{ formatDayShort(d.day) }}
             </div>
-            <div class="mt-2 h-2 rounded-full bg-gray-200/70 dark:bg-accent overflow-hidden">
-              <div class="h-2 rounded-full" :class="toneForRisk(d.risk).fill" :style="{ width: `${Math.round((d.risk || 0) * 100)}%` }"></div>
+            <div class="mt-1.5 sm:mt-2 h-1.5 sm:h-2 rounded-full bg-gray-200/70 dark:bg-accent overflow-hidden">
+              <div class="h-1.5 sm:h-2 rounded-full" :class="toneForRisk(d.risk).fill" :style="{ width: `${Math.round((d.risk || 0) * 100)}%` }"></div>
             </div>
-            <div class="mt-2 text-xs font-black text-gray-800 dark:text-foreground">
+            <div class="mt-1.5 sm:mt-2 text-[11px] sm:text-xs font-black text-gray-800 dark:text-foreground">
               {{ Math.round((d.risk || 0) * 100) }}%
             </div>
           </div>
@@ -171,3 +172,16 @@ const formatDayShort = (iso) => {
   }
 }
 </script>
+
+<style scoped>
+/* Hide scrollbar for Chrome, Safari and Opera */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+</style>
