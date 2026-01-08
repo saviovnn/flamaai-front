@@ -184,7 +184,7 @@ const handleLocation = () => {
   navigator.geolocation.getCurrentPosition((position) => {
     const latitude = position.coords.latitude.toFixed(2)
     const longitude = position.coords.longitude.toFixed(2)
-    const coords = `latitude: ${latitude}, longitude: ${longitude}`
+    const coords = `${latitude}, ${longitude}`
     globalStore.setSearchQuery(coords)
   }, (error) => {
     console.error('Erro ao obter localização:', error)

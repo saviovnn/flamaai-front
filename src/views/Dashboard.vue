@@ -16,8 +16,9 @@
       </header>
 
       <main 
-        class="flex-1 flex flex-col items-center justify-center px-3 sm:px-4 md:px-6 pb-20 sm:pb-32 transition-all duration-300 ease-in-out"
+        class="flex-1 flex flex-col items-center justify-center px-3 sm:px-4 md:px-6 transition-all duration-300 ease-in-out overflow-hidden"
         :style="mainContentStyle"
+        :class="globalStore.dashboard ? 'h-screen' : ''"
       >
         <template v-if="!globalStore.dashboard">
           <div v-if="!globalStore.isSearchLoading" class="flex items-center gap-2 sm:gap-3 mb-6 sm:mb-9 transition-all duration-300 ease-in-out px-2 sm:px-0">
@@ -36,8 +37,11 @@
           </div>
         </template>
         
-        <div v-if="globalStore.dashboard" class="w-full max-w-4xl px-4">
-          <pre class="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg overflow-auto text-xs">{{ JSON.stringify(globalStore.orchestratorResponse, null, 2) }}</pre>
+        <div v-if="globalStore.dashboard" class="w-full max-w-7xl px-4 py-3 overflow-y-auto">
+          <LocationAnalysis 
+            v-if="globalStore.orchestratorResponse"
+            :orchestrator-response="globalStore.orchestratorResponse"
+          />
         </div>
       </main>
     </div>
@@ -55,6 +59,7 @@ import SearchInput from '@/components/SearchInput.vue'
 import HeaderControls from '@/components/HeaderControls.vue'
 import Sidebar from '@/components/Sidebar.vue'
 import Loading from '@/components/Loading.vue'
+import LocationAnalysis from '@/components/LocationAnalysis.vue'
 
 const router = useRouter()
 const authStore = useAuthStore()

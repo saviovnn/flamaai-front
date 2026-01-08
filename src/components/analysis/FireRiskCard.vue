@@ -1,0 +1,173 @@
+<template>
+  <div
+    class="lg:col-span-8 relative overflow-hidden rounded-2xl sm:rounded-3xl p-7 sm:p-8 border bg-white dark:bg-card border-gray-200 dark:border-border"
+  >
+    <div class="absolute inset-x-0 top-0 h-1.5"></div>
+
+    <div class="relative">
+      <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+        <div>
+          <div class="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 dark:text-muted-foreground">
+            <Activity :size="14" class="text-gray-400 dark:text-muted-foreground" />
+            Risco de Fogo
+          </div>
+          <h2 class="text-2xl sm:text-3xl font-black mt-2 tracking-tight">
+            Hoje: <span :class="riskTone.labelText">{{ todayRiskLabel }}</span>
+          </h2>
+          <p class="text-sm text-gray-600 dark:text-muted-foreground font-medium mt-1">
+            Média semanal: <span class="font-black">{{ (globalStore.orchestratorResponse?.fireRiskResult?.weeklyRiskMean * 100).toFixed(0) }}%</span> • Nível
+            <span class="font-black">{{ weeklyRiskLabel }}</span>
+          </p>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <div class="px-3 py-1.5 rounded-full border text-[10px] font-black uppercase tracking-widest"
+               :class="riskTone.badge">
+            {{ riskTone.badgeText }}
+          </div>
+          <div class="w-11 h-11 rounded-2xl flex items-center justify-center border bg-gray-50 dark:bg-secondary border-gray-100 dark:border-border">
+            <Flame :size="22" :class="riskTone.iconText" />
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-6 flex items-end gap-2">
+        <span class="text-7xl sm:text-8xl font-black tracking-tighter leading-none text-gray-900 dark:text-white">{{ todayRiskPercent.toFixed(0) }}</span>
+        <span class="text-2xl sm:text-3xl font-bold text-gray-400 dark:text-muted-foreground mb-2">%</span>
+      </div>
+
+      <div class="mt-6 space-y-4">
+        <div class="w-full h-3 bg-gray-100 dark:bg-accent rounded-full overflow-hidden">
+          <div
+            class="h-full rounded-full transition-all duration-1000 ease-out"
+            :class="riskTone.fill"
+            :style="{ width: `${Math.min(100, Math.max(0, todayRiskPercent))}%` }"
+          ></div>
+        </div>
+
+        <div class="grid grid-cols-7 gap-2">
+          <div
+            v-for="(d, idx) in dailyRisksSliced"
+            :key="idx"
+            class="bg-gray-50 dark:bg-secondary border border-gray-200 dark:border-border rounded-2xl p-2"
+          >
+            <div class="text-[10px] font-black uppercase tracking-widest text-gray-500 dark:text-muted-foreground">
+              {{ formatDayShort(d.day) }}
+            </div>
+            <div class="mt-2 h-2 rounded-full bg-gray-200/70 dark:bg-accent overflow-hidden">
+              <div class="h-2 rounded-full" :class="toneForRisk(d.risk).fill" :style="{ width: `${Math.round((d.risk || 0) * 100)}%` }"></div>
+            </div>
+            <div class="mt-2 text-xs font-black text-gray-800 dark:text-foreground">
+              {{ Math.round((d.risk || 0) * 100) }}%
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup>
+import { computed } from 'vue'
+import { Activity, Flame } from 'lucide-vue-next'
+import { useGlobalStore } from '@/stores/global'
+
+const globalStore = useGlobalStore()
+
+// Dados do store
+const fireRiskResult = computed(() => globalStore.orchestratorResponse?.fireRiskResult)
+
+// Risk calculations
+const dailyRisks = computed(() => fireRiskResult.value?.dailyRisks || [])
+const dailyRisksSliced = computed(() => dailyRisks.value.slice(0, 7))
+
+const todayRisk = computed(() => {
+  return dailyRisks.value.length > 0 
+    ? (dailyRisks.value[0].risk || 0) 
+    : (fireRiskResult.value?.weeklyRiskMean || 0)
+})
+
+const todayRiskPercent = computed(() => todayRisk.value * 100)
+
+const todayRiskLabel = computed(() => {
+  const p = todayRiskPercent.value
+  if (p < 20) return 'Mínimo'
+  if (p < 40) return 'Baixo'
+  if (p < 60) return 'Moderado'
+  if (p < 80) return 'Elevado'
+  return 'Extremo'
+})
+
+const weeklyRiskLabel = computed(() => {
+  const level = fireRiskResult.value?.riskLevel
+  const labels = { baixo: 'Baixo', regular: 'Regular', medio: 'Médio', alto: 'Alto', critico: 'Crítico' }
+  return labels[level] || '—'
+})
+
+const toneForPercent = (percent) => {
+  if (percent < 20) {
+    return {
+      topBar: 'bg-emerald-500',
+      labelText: 'text-emerald-600 dark:text-emerald-400',
+      iconText: 'text-emerald-600 dark:text-emerald-400',
+      badge: 'bg-emerald-50 text-emerald-700 border-emerald-100 dark:bg-emerald-900/20 dark:text-emerald-300 dark:border-emerald-900/40',
+      badgeText: 'Risco mínimo',
+      fill: 'bg-emerald-500',
+      chart: '#10b981'
+    }
+  }
+  if (percent < 40) {
+    return {
+      topBar: 'bg-teal-500',
+      labelText: 'text-teal-700 dark:text-teal-300',
+      iconText: 'text-teal-700 dark:text-teal-300',
+      badge: 'bg-teal-50 text-teal-700 border-teal-100 dark:bg-teal-900/20 dark:text-teal-200 dark:border-teal-900/40',
+      badgeText: 'Risco baixo',
+      fill: 'bg-teal-500',
+      chart: '#14b8a6'
+    }
+  }
+  if (percent < 60) {
+    return {
+      topBar: 'bg-amber-500',
+      labelText: 'text-amber-700 dark:text-amber-300',
+      iconText: 'text-amber-700 dark:text-amber-300',
+      badge: 'bg-amber-50 text-amber-800 border-amber-100 dark:bg-amber-900/20 dark:text-amber-200 dark:border-amber-900/40',
+      badgeText: 'Risco moderado',
+      fill: 'bg-amber-500',
+      chart: '#f59e0b'
+    }
+  }
+  if (percent < 80) {
+    return {
+      topBar: 'bg-orange-500',
+      labelText: 'text-orange-700 dark:text-orange-300',
+      iconText: 'text-orange-700 dark:text-orange-300',
+      badge: 'bg-orange-50 text-orange-800 border-orange-100 dark:bg-orange-900/20 dark:text-orange-200 dark:border-orange-900/40',
+      badgeText: 'Risco elevado',
+      fill: 'bg-orange-500',
+      chart: '#f97316'
+    }
+  }
+  return {
+    topBar: 'bg-rose-600',
+    labelText: 'text-rose-700 dark:text-rose-300',
+    iconText: 'text-rose-700 dark:text-rose-300',
+    badge: 'bg-rose-50 text-rose-800 border-rose-100 dark:bg-rose-900/20 dark:text-rose-200 dark:border-rose-900/40',
+    badgeText: 'Risco extremo',
+    fill: 'bg-rose-600',
+    chart: '#e11d48'
+  }
+}
+
+const riskTone = computed(() => toneForPercent(todayRiskPercent.value))
+const toneForRisk = (risk) => toneForPercent((risk || 0) * 100)
+
+const formatDayShort = (iso) => {
+  try {
+    return new Date(iso).toLocaleDateString('pt-BR', { weekday: 'short' }).replace('.', '')
+  } catch {
+    return '—'
+  }
+}
+</script>
