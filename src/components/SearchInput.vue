@@ -6,13 +6,22 @@
         ? 'border-orange-500 dark:border-orange-500' 
         : 'border-gray-200 dark:border-border'"
     >
-      <div class="mb-3 sm:mb-4">
+      <div class="mb-3 sm:mb-4 relative">
+        <div 
+          v-if="currentSuggestion && query"
+          class="absolute inset-0 pointer-events-none px-2.5 sm:px-3.5 py-1.5 text-sm sm:text-[15px]"
+        >
+          <span class="invisible">{{ query }}</span><span class="text-gray-400 dark:text-muted-foreground/50">{{ currentSuggestion }}</span>
+        </div>
         <input
+          ref="inputRef"
           v-model="query"
           type="text"
           :placeholder="responsivePlaceholder"
-          class="w-full px-2.5 sm:px-3.5 py-1.5 text-sm sm:text-[15px] text-gray-900 dark:text-foreground placeholder:text-gray-400 dark:placeholder:text-muted-foreground focus:outline-none bg-transparent"
+          class="relative w-full px-2.5 sm:px-3.5 py-1.5 text-sm sm:text-[15px] text-gray-900 dark:text-foreground placeholder:text-gray-400 dark:placeholder:text-muted-foreground focus:outline-none bg-transparent"
           @keypress.enter="handleSubmit"
+          @keydown.tab.prevent="acceptSuggestion"
+          @input="handleInput"
         />
       </div>
       
@@ -109,11 +118,16 @@ import { useAuthStore } from '@/stores/auth'
 import { orchestratorService, getAllSearchHistoryService } from '@/api/services'
 import micInSound from '@/assets/mic-in.wav'
 import micOutSound from '@/assets/mic-out.wav'
+import axios from 'axios'
 
 const globalStore = useGlobalStore()
 const authStore = useAuthStore()
 
 const windowWidth = ref(typeof window !== 'undefined' ? window.innerWidth : 640)
+const inputRef = ref(null)
+const suggestions = ref([])
+const currentSuggestion = ref('')
+let searchTimeout = null
 
 let handleResize = null
 
@@ -189,6 +203,86 @@ const handleLocation = () => {
   })
 }
 
+const searchIBGEMunicipios = async (searchText) => {
+  if (searchText.length < 3) {
+    suggestions.value = []
+    currentSuggestion.value = ''
+    return
+  }
+
+  try {
+    const response = await axios.get('https://servicodados.ibge.gov.br/api/v1/localidades/municipios')
+
+    if (response.data && response.data.length > 0) {
+      const filtered = response.data
+        .filter(item => {
+          const nomeNormalizado = item.nome.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+          const searchNormalizado = searchText.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+          return nomeNormalizado.includes(searchNormalizado)
+        })
+        .slice(0, 10)
+
+      suggestions.value = filtered.map(item => {
+        const municipio = item.nome
+        const uf = item.microrregiao?.mesorregiao?.UF?.sigla || ''
+        const displayName = uf ? `${municipio} - ${uf}` : municipio
+
+        return {
+          text: displayName,
+          municipio: municipio,
+          uf: uf,
+          id: item.id
+        }
+      })
+
+      if (suggestions.value.length > 0) {
+        const firstSuggestion = suggestions.value[0].text
+        const searchLower = searchText.toLowerCase()
+        const suggestionLower = firstSuggestion.toLowerCase()
+        
+        if (suggestionLower.startsWith(searchLower)) {
+          currentSuggestion.value = firstSuggestion.slice(searchText.length)
+        } else {
+          currentSuggestion.value = ''
+        }
+      }
+    } else {
+      suggestions.value = []
+      currentSuggestion.value = ''
+    }
+  } catch (error) {
+    console.error('Erro ao buscar municípios IBGE:', error)
+    suggestions.value = []
+    currentSuggestion.value = ''
+  }
+}
+
+const handleInput = () => {
+  if (searchTimeout) {
+    clearTimeout(searchTimeout)
+  }
+
+  const searchText = query.value.trim()
+
+  if (searchText.length < 3) {
+    suggestions.value = []
+    currentSuggestion.value = ''
+    return
+  }
+
+  searchTimeout = setTimeout(() => {
+    searchIBGEMunicipios(searchText)
+  }, 300)
+}
+
+const acceptSuggestion = () => {
+  if (currentSuggestion.value && suggestions.value.length > 0) {
+    globalStore.setSearchQuery(suggestions.value[0].text)
+    currentSuggestion.value = ''
+    suggestions.value = []
+  }
+}
+
 const getUserId = () => {
   let userId = globalStore.user?.id
   
@@ -230,8 +324,6 @@ const handleSubmit = async () => {
       if (!userId || userId.length === 0) {
         throw new Error('UserId não pode estar vazio')
       }
-      
-      console.log('Enviando busca:', { query: searchQuery, userId, preference: globalStore.preference })
       
       const orchestratorResponse = await orchestratorService.search(searchQuery, userId, globalStore.preference)
       globalStore.setOrchestratorResponse(orchestratorResponse)
@@ -478,6 +570,9 @@ onUnmounted(() => {
   }
   if (handleResize) {
     window.removeEventListener('resize', handleResize)
+  }
+  if (searchTimeout) {
+    clearTimeout(searchTimeout)
   }
   globalStore.stopRecording()
   globalStore.clearTranscribedText()
