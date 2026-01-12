@@ -68,7 +68,6 @@ export const orchestratorService = {
         preference: preference === 'air' ? 'air' : 'weather',
       }
       
-      
       const response = await api.post('/orchestrator/search', body)
       return response.data
     } catch (error) {

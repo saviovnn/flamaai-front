@@ -10,10 +10,13 @@
       </div>
       <div class="text-right flex-shrink-0">
         <div class="text-[9px] sm:text-[10px] font-black text-gray-400 dark:text-muted-foreground uppercase tracking-widest">Preferência</div>
-        <div class="mt-1 inline-flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full bg-gray-100 dark:bg-secondary text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-gray-600 dark:text-muted-foreground">
-          <span class="w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full" :class="preference === 'air' ? 'bg-blue-500' : 'bg-emerald-500'"></span>
+        <button
+          @click="togglePreference"
+          class="mt-1 inline-flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full bg-gray-100 dark:bg-secondary text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-gray-600 dark:text-muted-foreground hover:bg-gray-200 dark:hover:bg-secondary/80 transition-all cursor-pointer active:scale-95"
+        >
+          <span class="w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full transition-colors" :class="preference === 'air' ? 'bg-blue-500' : 'bg-emerald-500'"></span>
           {{ preference === 'air' ? 'AR' : 'CLIMA' }}
-        </div>
+        </button>
       </div>
     </div>
 
@@ -55,18 +58,15 @@ import { useGlobalStore } from '@/stores/global'
 const globalStore = useGlobalStore()
 let map = null
 
-// Dados do store
 const geocodingResult = computed(() => globalStore.orchestratorResponse?.geocodingResult)
 const mapResult = computed(() => globalStore.orchestratorResponse?.mapResult)
 const fireRiskResult = computed(() => globalStore.orchestratorResponse?.fireRiskResult)
 
-// Computed
 const preference = computed(() => geocodingResult.value?.preference || 'weather')
 const lat = computed(() => geocodingResult.value?.lat)
 const lng = computed(() => geocodingResult.value?.lng)
 const mapGeometry = computed(() => mapResult.value?.map)
 
-// Risk color calculation
 const todayRisk = computed(() => {
   const risks = fireRiskResult.value?.dailyRisks || []
   return risks.length > 0 
@@ -103,6 +103,15 @@ const darkenColor = (hex, percent) => {
   return `#${(1 << 24 | R << 16 | G << 8 | B).toString(16).slice(1)}`
 }
 
+const togglePreference = () => {
+  if (globalStore.orchestratorResponse?.geocodingResult) {
+    const currentPref = preference.value
+    const newPref = currentPref === 'air' ? 'weather' : 'air'
+    
+    globalStore.orchestratorResponse.geocodingResult.preference = newPref
+  }
+}
+
 const initMap = () => {
   const target = document.getElementById('map')
   if (!target || !lat.value || !lng.value) return
@@ -127,7 +136,6 @@ const initMap = () => {
 
   const borderColor = riskColorBorder.value
 
-  // Marcador fixo com animação de pulso
   const marker = L.divIcon({
     className: '',
     html: `<div class="relative flex items-center justify-center">
@@ -165,7 +173,13 @@ const initMap = () => {
 onMounted(() => nextTick(initMap))
 onUnmounted(() => map?.remove())
 
-watch(() => globalStore.orchestratorResponse, () => nextTick(initMap), { deep: true })
+watch([
+  () => geocodingResult.value?.lat,
+  () => geocodingResult.value?.lng,
+  () => mapResult.value?.map,
+  () => fireRiskResult.value
+], () => nextTick(initMap))
+
 watch(() => globalStore.isDark, () => nextTick(initMap))
 </script>
 
