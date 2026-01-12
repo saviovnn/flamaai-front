@@ -402,7 +402,6 @@ const handleSubmit = async () => {
 
       const response = await authService.register(registerData);
 
-      console.log('Register response:', response);
 
       const token = response.token || response.session?.token;
       if (token) {
@@ -415,7 +414,6 @@ const handleSubmit = async () => {
           name: response.user.name,
           email: response.user.email
         };
-        console.log('Salvando user data:', userData);
         globalStore.setUser(userData);
         authStore.setUser(userData);
       } else {
@@ -475,7 +473,6 @@ const handleSubmit = async () => {
 
       const response = await authService.login(loginData);
 
-      console.log('Login response:', response);
 
       const token = response.token || response.session?.token;
       if (token) {
@@ -488,7 +485,6 @@ const handleSubmit = async () => {
           name: response.user.name,
           email: response.user.email
         };
-        console.log('Salvando user data:', userData);
         globalStore.setUser(userData);
         authStore.setUser(userData);
       } else {

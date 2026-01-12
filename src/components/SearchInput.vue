@@ -118,7 +118,7 @@ import { useAuthStore } from '@/stores/auth'
 import { orchestratorService, getAllSearchHistoryService } from '@/api/services'
 import micInSound from '@/assets/mic-in.wav'
 import micOutSound from '@/assets/mic-out.wav'
-import axios from 'axios'
+import api from '@/api/axios'
 
 const globalStore = useGlobalStore()
 const authStore = useAuthStore()
@@ -164,6 +164,25 @@ const query = computed({
   set: (value) => globalStore.setSearchQuery(value)
 })
 
+// Watch para buscar municípios automaticamente a cada caractere digitado
+watch(query, (newValue) => {
+  if (searchTimeout) {
+    clearTimeout(searchTimeout)
+  }
+
+  const searchText = newValue.trim()
+
+  if (searchText.length < 3) {
+    suggestions.value = []
+    currentSuggestion.value = ''
+    return
+  }
+
+  searchTimeout = setTimeout(() => {
+    searchMunicipios(searchText)
+  }, 300)
+})
+
 const responsivePlaceholder = computed(() => {
   if (windowWidth.value < 640) {
     if (props.placeholder.includes('cidade')) {
@@ -203,44 +222,45 @@ const handleLocation = () => {
   })
 }
 
-const searchIBGEMunicipios = async (searchText) => {
-  if (searchText.length < 3) {
+const searchMunicipios = async (searchText) => {
+  if (searchText.length < 2) {
     suggestions.value = []
     currentSuggestion.value = ''
     return
   }
 
   try {
-    const response = await axios.get('https://servicodados.ibge.gov.br/api/v1/localidades/municipios')
+    const response = await api.post('/geocoding/search-municipios', {
+      query: searchText
+    })
 
     if (response.data && response.data.length > 0) {
-      const filtered = response.data
-        .filter(item => {
-          const nomeNormalizado = item.nome.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-          const searchNormalizado = searchText.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-          return nomeNormalizado.includes(searchNormalizado)
-        })
-        .slice(0, 10)
-
-      suggestions.value = filtered.map(item => {
-        const municipio = item.nome
-        const uf = item.microrregiao?.mesorregiao?.UF?.sigla || ''
+      suggestions.value = response.data.slice(0, 10).map(item => {
+        const municipio = item.name
+        const uf = item.siglaUf || ''
         const displayName = uf ? `${municipio} - ${uf}` : municipio
 
         return {
           text: displayName,
           municipio: municipio,
           uf: uf,
-          id: item.id
+          id: item.cdMun
         }
       })
 
       if (suggestions.value.length > 0) {
         const firstSuggestion = suggestions.value[0].text
-        const searchLower = searchText.toLowerCase()
-        const suggestionLower = firstSuggestion.toLowerCase()
         
-        if (suggestionLower.startsWith(searchLower)) {
+        // Normaliza removendo acentos para comparação
+        const normalizeText = (text) => {
+          return text.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+        }
+        
+        const searchNormalized = normalizeText(searchText)
+        const suggestionNormalized = normalizeText(firstSuggestion)
+        
+        if (suggestionNormalized.startsWith(searchNormalized)) {
+          // Encontra onde termina o texto digitado no original (com acento)
           currentSuggestion.value = firstSuggestion.slice(searchText.length)
         } else {
           currentSuggestion.value = ''
@@ -251,28 +271,15 @@ const searchIBGEMunicipios = async (searchText) => {
       currentSuggestion.value = ''
     }
   } catch (error) {
-    console.error('Erro ao buscar municípios IBGE:', error)
+    console.error('Erro ao buscar municípios:', error)
     suggestions.value = []
     currentSuggestion.value = ''
   }
 }
 
 const handleInput = () => {
-  if (searchTimeout) {
-    clearTimeout(searchTimeout)
-  }
-
-  const searchText = query.value.trim()
-
-  if (searchText.length < 3) {
-    suggestions.value = []
-    currentSuggestion.value = ''
-    return
-  }
-
-  searchTimeout = setTimeout(() => {
-    searchIBGEMunicipios(searchText)
-  }, 300)
+  // A busca agora é feita automaticamente pelo watch do query
+  // Mantendo a função para compatibilidade com o template
 }
 
 const acceptSuggestion = () => {
