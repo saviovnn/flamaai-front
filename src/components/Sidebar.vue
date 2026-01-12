@@ -58,7 +58,7 @@
           </div>
         </div>
 
-        <div v-if="Object.keys(globalStore.searchHistory).length === 0" class="px-3 sm:px-4 py-6 sm:py-8 text-center">
+        <div v-if="Object.keys(groupedSearches).length === 0" class="px-3 sm:px-4 py-6 sm:py-8 text-center">
           <p class="text-xs sm:text-sm text-gray-500 dark:text-muted-foreground">Nenhuma análise ainda</p>
         </div>
       </div>
@@ -75,7 +75,7 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, onMounted, watch } from 'vue'
 import { BadgePlus, PanelRight } from 'lucide-vue-next'
 import logoLight from '@/assets/logo.svg'
 import logoDark from '@/assets/logo-dark.svg'
@@ -85,41 +85,82 @@ import logoMedio from '@/assets/logo-medio.svg'
 import logoMedioDark from '@/assets/logo-medio-dark.svg'
 import logoBaixo from '@/assets/logo-baixo.svg'
 import logoBaixoDark from '@/assets/logo-baixo-dark.svg'
+import logoUndefined from '@/assets/logo-undefined.svg'
+import logoUndefinedDark from '@/assets/logo-undefined-dark.svg'
 import { useGlobalStore } from '@/stores/global'
 import { useAuthStore } from '@/stores/auth'
+import { getAllSearchHistoryService } from '@/api/services'
 import UserMenu from './UserMenu.vue'
 import Tooltip from './Tooltip.vue'
 
 const riscoLogosLight = {
   alto: logoAlto,
   medio: logoMedio,
-  baixo: logoBaixo
+  baixo: logoBaixo,
+  undefined: logoUndefined
 }
 
 const riscoLogosDark = {
   alto: logoAltoDark,
   medio: logoMedioDark,
-  baixo: logoBaixoDark
+  baixo: logoBaixoDark,
+  undefined: logoUndefinedDark
 }
 
 const riscoTooltips = {
   alto: 'Risco acima de 80%',
   medio: 'Risco entre 30% e 80%',
-  baixo: 'Risco abaixo de 30%'
+  baixo: 'Risco abaixo de 30%',
+  regular: 'Risco regular',
+  low: 'Risco baixo',
+  high: 'Risco alto',
+  undefined: 'Risco não definido'
 }
 
 const globalStore = useGlobalStore()
 const authStore = useAuthStore()
 
+const mapRiskLevel = (riskLevel) => {
+  const mapping = {
+    'high': 'alto',
+    'regular': 'medio',
+    'low': 'baixo',
+    'N/A': 'undefined'
+  }
+  return mapping[riskLevel] || 'undefined'
+}
+
 const getRiscoLogo = (riscoMedio) => {
   const logos = globalStore.isDark ? riscoLogosDark : riscoLogosLight
-  const fallback = globalStore.isDark ? logoBaixoDark : logoBaixo
+  const fallback = globalStore.isDark ? logoUndefinedDark : logoUndefined
   return logos[riscoMedio] || fallback
 }
 
 const getRiscoTooltip = (riscoMedio) => {
-  return riscoTooltips[riscoMedio] || riscoTooltips.baixo
+  return riscoTooltips[riscoMedio] || riscoTooltips.undefined
 }
+
+onMounted(async () => {
+  if (globalStore.user.id) {
+    try {
+      const history = await getAllSearchHistoryService(globalStore.user.id)
+      globalStore.setSearchHistoryList(history)
+    } catch (error) {
+      console.error('Erro ao carregar histórico:', error)
+    }
+  }
+})
+
+watch(() => globalStore.user.id, async (newUserId) => {
+  if (newUserId) {
+    try {
+      const history = await getAllSearchHistoryService(newUserId)
+      globalStore.setSearchHistoryList(history)
+    } catch (error) {
+      console.error('Erro ao carregar histórico:', error)
+    }
+  }
+})
 
 const logo = computed(() => globalStore.isDark ? logoDark : logoLight)
 
@@ -151,6 +192,27 @@ const handleSelectSearch = (search) => {
 const parsedSearches = computed(() => {
   const searches = []
   
+  if (Array.isArray(globalStore.searchHistoryList)) {
+    globalStore.searchHistoryList.forEach(item => {
+      const dateObj = new Date(item.createdAt)
+      const riskLevelMapped = mapRiskLevel(item.risk_level)
+      
+      searches.push({
+        key: item.id,
+        location: item.name,
+        dateObj,
+        month: dateObj.getMonth() + 1,
+        year: dateObj.getFullYear(),
+        data: {
+          risco_medio: riskLevelMapped,
+          risk_level: item.risk_level,
+          id: item.id
+        },
+        rawData: item
+      })
+    })
+  }
+  
   for (const [key, value] of Object.entries(globalStore.searchHistory)) {
     const parts = key.split('-')
     const day = parts[parts.length - 3]
@@ -170,11 +232,9 @@ const parsedSearches = computed(() => {
     })
   }
   
-  // Sort by date (most recent first)
   return searches.sort((a, b) => b.dateObj - a.dateObj)
 })
 
-// Group searches by month/year or special periods
 const groupedSearches = computed(() => {
   const groups = {}
   

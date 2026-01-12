@@ -106,7 +106,7 @@ import { Cloudy, Wind, MapPin, Mic, CircleStop, ArrowUp } from 'lucide-vue-next'
 import Tooltip from './Tooltip.vue'
 import { useGlobalStore } from '@/stores/global'
 import { useAuthStore } from '@/stores/auth'
-import { orchestratorService } from '@/api/services'
+import { orchestratorService, getAllSearchHistoryService } from '@/api/services'
 import micInSound from '@/assets/mic-in.wav'
 import micOutSound from '@/assets/mic-out.wav'
 
@@ -124,16 +124,13 @@ onMounted(() => {
   window.addEventListener('resize', handleResize)
 })
 
-// Web Speech API
 let recognition = null
 const audioContext = ref(null)
-let baseText = '' // Texto base sem interim
+let baseText = ''
 
-// Áudios pré-carregados
 const micInAudio = new Audio(micInSound)
 const micOutAudio = new Audio(micOutSound)
 
-// Preload dos áudios
 micInAudio.preload = 'auto'
 micOutAudio.preload = 'auto'
 
@@ -148,16 +145,13 @@ const props = defineProps({
   }
 })
 
-// Usa o query do store ao invés de props
 const query = computed({
   get: () => globalStore.searchQuery,
   set: (value) => globalStore.setSearchQuery(value)
 })
 
-// Placeholder responsivo - mais curto em telas pequenas
 const responsivePlaceholder = computed(() => {
   if (windowWidth.value < 640) {
-    // Placeholder curto para mobile
     if (props.placeholder.includes('cidade')) {
       return 'Digite cidade ou coordenadas...'
     }
@@ -168,7 +162,6 @@ const responsivePlaceholder = computed(() => {
   return props.placeholder
 })
 
-// Usa preference do store, default é 'weather'
 const climaTempo = computed(() => globalStore.preference === 'weather')
 const qualidadeAr = computed(() => globalStore.preference === 'air')
 
@@ -196,19 +189,15 @@ const handleLocation = () => {
   })
 }
 
-// Função auxiliar para obter o userId
 const getUserId = () => {
-  // Tenta pegar do store global primeiro
   let userId = globalStore.user?.id
   
-  // Se não tiver no store, tenta pegar do localStorage
   if (!userId) {
     const userStr = localStorage.getItem('user')
     if (userStr) {
       try {
         const user = JSON.parse(userStr)
         userId = user?.id
-        // Se encontrou o userId no localStorage, atualiza o store
         if (userId) {
           globalStore.setUser(user)
         }
@@ -218,14 +207,11 @@ const getUserId = () => {
     }
   }
   
-  // Valida se o userId é válido (não null, undefined, ou string vazia)
   if (!userId || userId === 'null' || userId === 'undefined' || String(userId).trim() === '') {
     console.warn('UserId não encontrado. Verifique se está logado corretamente.')
-    // Não usa 'anonymous' - exige que o usuário esteja logado
     throw new Error('Usuário não autenticado. Por favor, faça login novamente.')
   }
   
-  // Garante que userId é uma string válida
   return String(userId).trim()
 }
 
@@ -237,7 +223,6 @@ const handleSubmit = async () => {
       const userId = getUserId()
       const searchQuery = query.value.trim()
       
-      // Valida se query e userId são válidos
       if (!searchQuery || searchQuery.length === 0) {
         throw new Error('Query não pode estar vazia')
       }
@@ -248,7 +233,6 @@ const handleSubmit = async () => {
       
       console.log('Enviando busca:', { query: searchQuery, userId, preference: globalStore.preference })
       
-      // POST único para /api/orchestrator/search
       const orchestratorResponse = await orchestratorService.search(searchQuery, userId, globalStore.preference)
       globalStore.setOrchestratorResponse(orchestratorResponse)
       
@@ -257,13 +241,19 @@ const handleSubmit = async () => {
         climaTempo: climaTempo.value,
         qualidadeAr: qualidadeAr.value
       })
+      
+      try {
+        const history = await getAllSearchHistoryService(userId)
+        globalStore.setSearchHistoryList(history)
+      } catch (historyError) {
+        console.error('Erro ao atualizar histórico:', historyError)
+      }
     } catch (error) {
       console.error('Erro ao buscar dados:', error)
       if (error.response) {
         console.error('Response status:', error.response.status)
         console.error('Response data:', error.response.data)
       }
-      // Mostra mensagem de erro ao usuário se for erro de autenticação
       if (error.message && error.message.includes('autenticado')) {
         alert(error.message)
       }
@@ -278,30 +268,25 @@ const handleSubmit = async () => {
   }
 }
 
-// Detecta se é Safari
 const isSafari = () => {
   return /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
 }
 
-// Detecta se é Firefox
 const isFirefox = () => {
   return navigator.userAgent.toLowerCase().indexOf('firefox') > -1
 }
 
-// Verifica suporte para Web Speech API
 const hasSpeechRecognition = () => {
   return 'SpeechRecognition' in window || 'webkitSpeechRecognition' in window
 }
 
-// Função para tocar som de início de gravação
 const playMicInSound = () => {
-  // Safari usa apenas o som padrão do sistema
   if (isSafari()) {
     return
   }
   
   try {
-    micInAudio.currentTime = 0 // Reinicia o áudio
+    micInAudio.currentTime = 0
     micInAudio.play().catch(e => {
       console.warn('Erro ao tocar som de início:', e)
     })
@@ -310,15 +295,13 @@ const playMicInSound = () => {
   }
 }
 
-// Função para tocar som de fim de gravação
 const playMicOutSound = () => {
-  // Safari usa apenas o som padrão do sistema
   if (isSafari()) {
     return
   }
   
   try {
-    micOutAudio.currentTime = 0 // Reinicia o áudio
+    micOutAudio.currentTime = 0
     micOutAudio.play().catch(e => {
       console.warn('Erro ao tocar som de fim:', e)
     })
@@ -327,7 +310,6 @@ const playMicOutSound = () => {
   }
 }
 
-// Inicializa Web Speech API
 const initSpeechRecognition = () => {
   if (!hasSpeechRecognition()) {
     console.warn('Web Speech API não suportada neste navegador')
@@ -354,18 +336,15 @@ const initSpeechRecognition = () => {
       }
     }
     
-    // Se há texto final, adiciona ao base e atualiza
     if (finalTranscript) {
       baseText = baseText + finalTranscript.trim() + ' '
       globalStore.setSearchQuery(baseText.trim())
     }
     
-    // Mostra texto interim enquanto fala (temporário, não adiciona ao base)
     if (interimTranscript) {
       const currentText = baseText + interimTranscript
       globalStore.setSearchQuery(currentText)
     } else if (!finalTranscript) {
-      // Se não há interim nem final, mantém apenas o base
       globalStore.setSearchQuery(baseText.trim())
     }
   }
@@ -373,12 +352,10 @@ const initSpeechRecognition = () => {
   rec.onerror = (event) => {
     console.error('Erro no reconhecimento de voz:', event.error)
     
-    // Ignora erros não críticos
     if (event.error === 'no-speech' || event.error === 'aborted') {
       return
     }
     
-    // Erro de rede - tenta reiniciar automaticamente
     if (event.error === 'network') {
       console.warn('Erro de rede no reconhecimento, tentando reiniciar...')
       if (globalStore.isRecording && recognition) {
@@ -400,7 +377,6 @@ const initSpeechRecognition = () => {
       return
     }
     
-    // Erros críticos que param a gravação
     if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
       alert('Permissão de microfone negada. Por favor, permita o acesso ao microfone.')
       stopVoiceRecording()
@@ -408,21 +384,17 @@ const initSpeechRecognition = () => {
       alert('Nenhum microfone detectado. Verifique se há um microfone conectado.')
       stopVoiceRecording()
     } else {
-      // Outros erros - tenta continuar mas loga
       console.warn('Erro no reconhecimento:', event.error, '- tentando continuar...')
     }
   }
   
   rec.onend = () => {
     if (globalStore.isRecording) {
-      // Reinicia se ainda estiver gravando (para manter contínuo)
-      // Usa setTimeout para evitar erro de "already started"
       setTimeout(() => {
         if (globalStore.isRecording && recognition) {
           try {
             recognition.start()
           } catch (e) {
-            // Se já estiver rodando, ignora o erro
             if (e.name !== 'InvalidStateError') {
               console.error('Erro ao reiniciar reconhecimento:', e)
               stopVoiceRecording()
@@ -437,10 +409,8 @@ const initSpeechRecognition = () => {
 }
 
 const startVoiceRecording = () => {
-  // Inicializa o texto base com o que já está no input
   baseText = query.value || ''
   
-  // Recria o recognition se necessário (pode ter sido destruído)
   if (!recognition) {
     recognition = initSpeechRecognition()
   }
@@ -451,12 +421,11 @@ const startVoiceRecording = () => {
   }
   
   try {
-    playMicInSound() // Toca som de início
+    playMicInSound()
     globalStore.startRecording()
     recognition.start()
   } catch (e) {
     console.error('Erro ao iniciar gravação:', e)
-    // Se der erro, tenta recriar o recognition
     if (e.name === 'InvalidStateError') {
       recognition = initSpeechRecognition()
       try {
@@ -481,12 +450,11 @@ const stopVoiceRecording = () => {
     }
   }
   
-  // Garante que o texto final está salvo (sem interim)
   if (baseText.trim()) {
     globalStore.setSearchQuery(baseText.trim())
   }
   
-  playMicOutSound() // Toca som de fim
+  playMicOutSound()
   globalStore.stopRecording()
 }
 
@@ -498,12 +466,10 @@ const handleVoiceInput = () => {
   }
 }
 
-// Inicializa o query do store se tiver valor inicial
 if (props.modelValue) {
   globalStore.setSearchQuery(props.modelValue)
 }
 
-// Limpa ao desmontar
 onUnmounted(() => {
   if (recognition) {
     try {

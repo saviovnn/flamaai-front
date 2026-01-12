@@ -1,5 +1,4 @@
 import api from './axios'
-
 export const authService = {
   async login(credentials) {
     try {
@@ -83,3 +82,20 @@ export const orchestratorService = {
   }
 }
 
+export const getAllSearchHistoryService = async (userId) => {
+  try {
+    const body = {
+      userId: String(userId).trim(),
+    }
+    const response = await api.post('/orchestrator/all', body)
+    
+    if (response.data.success && response.data.data) {
+      return response.data.data 
+    }
+    
+    return []
+  } catch (error) {
+    console.error('Erro ao buscar histórico de buscas:', error)
+    throw error
+  }
+}
