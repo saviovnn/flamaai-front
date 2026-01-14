@@ -182,6 +182,12 @@ const closeSidebar = () => {
 const handleNewAnalysis = () => {
   globalStore.selectedSearch = null
   globalStore.isSidebarOpen = false
+  globalStore.setOrchestratorResponse(null)
+  globalStore.setSearchSubmitData({
+    query: null,
+    climaTempo: false,
+    qualidadeAr: false
+  })
 }
 
 const handleSelectSearch = async (search) => {
