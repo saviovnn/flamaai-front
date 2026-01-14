@@ -2,7 +2,7 @@
   <header class="flex flex-col sm:flex-row sm:items-end justify-between gap-3 sm:gap-4">
     <div class="space-y-1 min-w-0">
       <h1 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black text-gray-900 dark:text-white tracking-tight truncate">
-        {{ geocodingResult?.cidade }}<span class="text-gray-400 dark:text-muted-foreground">.</span>
+        {{ geocodingResult?.cidade || geocodingResult?.name }}<span class="text-gray-400 dark:text-muted-foreground">.</span>
       </h1>
       <p class="text-xs sm:text-sm text-gray-500 dark:text-muted-foreground font-medium flex items-center gap-1.5 sm:gap-2 flex-wrap">
         <MapPin :size="14" class="sm:w-4 sm:h-4 text-gray-400 dark:text-muted-foreground flex-shrink-0" />

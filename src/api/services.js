@@ -77,6 +77,23 @@ export const orchestratorService = {
       }
       throw error
     }
+  },
+
+  async getSingle(locationId) {
+    try {
+      const body = {
+        locationId: String(locationId).trim(),
+      }
+      
+      const response = await api.post('/orchestrator/single', body)
+      return response.data
+    } catch (error) {
+      console.error('Orchestrator service - Erro ao buscar single:', error)
+      if (error.response) {
+        console.error('Response data:', error.response.data)
+      }
+      throw error
+    }
   }
 }
 
@@ -87,11 +104,8 @@ export const getAllSearchHistoryService = async (userId) => {
     }
     const response = await api.post('/orchestrator/all', body)
     
-    if (response.data.success && response.data.data) {
-      return response.data.data 
-    }
-    
-    return []
+    // A API agora retorna diretamente o array, sem wrapper
+    return response.data || []
   } catch (error) {
     console.error('Erro ao buscar histórico de buscas:', error)
     throw error

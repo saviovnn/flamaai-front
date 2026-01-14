@@ -12,7 +12,7 @@
             Risco de Fogo
           </div>
           <h2 class="text-xl sm:text-2xl lg:text-3xl font-black mt-2 tracking-tight">
-            Hoje: <span :class="riskTone.labelText">{{ todayRiskLabel }}</span>
+            {{ dateLabel }}: <span :class="riskTone.labelText">{{ todayRiskLabel }}</span>
           </h2>
           <p class="text-xs sm:text-sm text-gray-600 dark:text-muted-foreground font-medium mt-1">
             Média semanal: <span class="font-black">{{ (globalStore.orchestratorResponse?.fireRiskResult?.weeklyRiskMean * 100).toFixed(0) }}%</span> • Nível
@@ -77,6 +77,30 @@ const globalStore = useGlobalStore()
 
 // Dados do store
 const fireRiskResult = computed(() => globalStore.orchestratorResponse?.fireRiskResult)
+
+// Verifica se a data é hoje e formata adequadamente
+const dateLabel = computed(() => {
+  const createdAt = globalStore.orchestratorResponse?.geocodingResult?.createdAt
+  if (!createdAt) return 'Hoje'
+  
+  const dataCreatedAt = new Date(createdAt)
+  const hoje = new Date()
+  
+  // Compara apenas dia, mês e ano
+  const ehHoje = dataCreatedAt.getDate() === hoje.getDate() &&
+                 dataCreatedAt.getMonth() === hoje.getMonth() &&
+                 dataCreatedAt.getFullYear() === hoje.getFullYear()
+  
+  if (ehHoje) {
+    return 'Hoje'
+  }
+  
+  return dataCreatedAt.toLocaleDateString('pt-BR', { 
+    day: '2-digit', 
+    month: 'long', 
+    year: 'numeric' 
+  })
+})
 
 // Risk calculations
 const dailyRisks = computed(() => fireRiskResult.value?.dailyRisks || [])
@@ -152,8 +176,8 @@ const toneForPercent = (percent) => {
   }
   return {
     topBar: 'bg-rose-600',
-    labelText: 'text-rose-700 dark:text-rose-300',
-    iconText: 'text-rose-700 dark:text-rose-300',
+    labelText: 'text-rose-700 dark:text-rose-500',
+    iconText: 'text-rose-700 dark:text-rose-500',
     badge: 'bg-rose-50 text-rose-800 border-rose-100 dark:bg-rose-900/20 dark:text-rose-200 dark:border-rose-900/40',
     badgeText: 'Risco extremo',
     fill: 'bg-rose-600',

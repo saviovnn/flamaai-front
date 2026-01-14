@@ -89,7 +89,7 @@ import logoUndefined from '@/assets/logo-undefined.svg'
 import logoUndefinedDark from '@/assets/logo-undefined-dark.svg'
 import { useGlobalStore } from '@/stores/global'
 import { useAuthStore } from '@/stores/auth'
-import { getAllSearchHistoryService } from '@/api/services'
+import { getAllSearchHistoryService, orchestratorService } from '@/api/services'
 import UserMenu from './UserMenu.vue'
 import Tooltip from './Tooltip.vue'
 
@@ -184,9 +184,35 @@ const handleNewAnalysis = () => {
   globalStore.isSidebarOpen = false
 }
 
-const handleSelectSearch = (search) => {
-  globalStore.selectedSearch = search
-  globalStore.isSidebarOpen = false
+const handleSelectSearch = async (search) => {
+  try {
+    // Ativa o loading
+    globalStore.setSearchLoading(true)
+    
+    // Fecha a sidebar
+    globalStore.isSidebarOpen = false
+    
+    // Busca o locationId do item clicado
+    const locationId = search.data?.id || search.rawData?.id
+    
+    if (!locationId) {
+      console.error('LocationId não encontrado no item:', search)
+      globalStore.setSearchLoading(false)
+      return
+    }
+    
+    // Faz a chamada POST para buscar os dados atualizados
+    const data = await orchestratorService.getSingle(locationId)
+    
+    // Atribui os dados diretamente ao orchestratorResponse (já vem no formato correto do backend)
+    globalStore.setOrchestratorResponse(data)
+    
+  } catch (error) {
+    console.error('Erro ao buscar dados do location:', error)
+  } finally {
+    // Desativa o loading
+    globalStore.setSearchLoading(false)
+  }
 }
 
 const parsedSearches = computed(() => {

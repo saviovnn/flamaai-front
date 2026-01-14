@@ -170,6 +170,11 @@ watch(query, (newValue) => {
     clearTimeout(searchTimeout)
   }
 
+  // Garante que newValue seja uma string
+  if (typeof newValue !== 'string') {
+    return
+  }
+
   const searchText = newValue.trim()
 
   if (searchText.length < 3) {
