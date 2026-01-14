@@ -19,9 +19,9 @@ const globalStore = useGlobalStore()
 const isGenerating = ref(false)
 
 // Dados do store
-const geocodingResult = computed(() => globalStore.orchestratorResponse?.geocodingResult)
-const fireRiskResult = computed(() => globalStore.orchestratorResponse?.fireRiskResult)
-const weatherResult = computed(() => globalStore.orchestratorResponse?.weatherResult)
+const geocodingResult = computed(() => globalStore.orchestratorResponse?.geocoding_result)
+const fireRiskResult = computed(() => globalStore.orchestratorResponse?.fire_risk_result)
+const weatherResult = computed(() => globalStore.orchestratorResponse?.weather_result)
 
 // Logo SVG para uso no PDF
 const logoSvgString = `<svg width="338" height="387" viewBox="0 0 338 387" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -121,13 +121,13 @@ const generatePDF = async () => {
     const weather = weatherResult.value || {}
     const preference = geo.preference || 'weather'
     
-    const dailyRisks = fire.dailyRisks || []
-    const todayRisk = dailyRisks.length > 0 ? (dailyRisks[0].risk || 0) : (fire.weeklyRiskMean || 0)
+    const dailyRisks = fire.daily_risks || []
+    const todayRisk = dailyRisks.length > 0 ? (dailyRisks[0].risk || 0) : (fire.weekly_risk_mean || 0)
     const todayRiskPercent = todayRisk * 100
-    const weeklyRiskPercent = (fire.weeklyRiskMean || 0) * 100
+    const weeklyRiskPercent = (fire.weekly_risk_mean || 0) * 100
     
-    const weatherFuture = weather.weatherFuture_7d?.[0]?.daily || {}
-    const weatherPast = weather.weatherPast_7d?.[0]?.daily || {}
+    const weatherFuture = weather.weather_future_7d?.[0]?.daily || {}
+    const weatherPast = weather.weather_past_7d?.[0]?.daily || {}
     
     const safeLast = (arr) => Array.isArray(arr) && arr.length ? arr[arr.length - 1] : null
     const currentTempMax = weatherFuture.temperature_2m_max?.[0] ?? safeLast(weatherPast.temperature_2m_max) ?? 0

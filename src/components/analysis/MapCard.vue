@@ -58,9 +58,9 @@ import { useGlobalStore } from '@/stores/global'
 const globalStore = useGlobalStore()
 let map = null
 
-const geocodingResult = computed(() => globalStore.orchestratorResponse?.geocodingResult)
-const mapResult = computed(() => globalStore.orchestratorResponse?.mapResult)
-const fireRiskResult = computed(() => globalStore.orchestratorResponse?.fireRiskResult)
+const geocodingResult = computed(() => globalStore.orchestratorResponse?.geocoding_result)
+const mapResult = computed(() => globalStore.orchestratorResponse?.map_result)
+const fireRiskResult = computed(() => globalStore.orchestratorResponse?.fire_risk_result)
 
 const preference = computed(() => geocodingResult.value?.preference || 'weather')
 const lat = computed(() => geocodingResult.value?.lat)
@@ -68,10 +68,10 @@ const lng = computed(() => geocodingResult.value?.lng)
 const mapGeometry = computed(() => mapResult.value?.map)
 
 const todayRisk = computed(() => {
-  const risks = fireRiskResult.value?.dailyRisks || []
+  const risks = fireRiskResult.value?.daily_risks || []
   return risks.length > 0 
     ? (risks[0].risk || 0) 
-    : (fireRiskResult.value?.weeklyRiskMean || 0)
+    : (fireRiskResult.value?.weekly_risk_mean || 0)
 })
 
 const todayRiskPercent = computed(() => todayRisk.value * 100)
@@ -104,11 +104,11 @@ const darkenColor = (hex, percent) => {
 }
 
 const togglePreference = () => {
-  if (globalStore.orchestratorResponse?.geocodingResult) {
+  if (globalStore.orchestratorResponse?.geocoding_result) {
     const currentPref = preference.value
     const newPref = currentPref === 'air' ? 'weather' : 'air'
     
-    globalStore.orchestratorResponse.geocodingResult.preference = newPref
+    globalStore.orchestratorResponse.geocoding_result.preference = newPref
   }
 }
 

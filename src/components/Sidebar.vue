@@ -226,7 +226,7 @@ const parsedSearches = computed(() => {
   
   if (Array.isArray(globalStore.searchHistoryList)) {
     globalStore.searchHistoryList.forEach(item => {
-      const dateObj = new Date(item.createdAt)
+      const dateObj = new Date(item.created_at)
       const riskLevelMapped = mapRiskLevel(item.risk_level)
       
       searches.push({

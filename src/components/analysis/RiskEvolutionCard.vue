@@ -36,15 +36,15 @@ onUnmounted(() => {
 })
 
 // Dados do store
-const fireRiskResult = computed(() => globalStore.orchestratorResponse?.fireRiskResult)
+const fireRiskResult = computed(() => globalStore.orchestratorResponse?.fire_risk_result)
 
 // Risk calculations
-const dailyRisks = computed(() => fireRiskResult.value?.dailyRisks || [])
+const dailyRisks = computed(() => fireRiskResult.value?.daily_risks || [])
 
 const todayRisk = computed(() => {
   return dailyRisks.value.length > 0 
     ? (dailyRisks.value[0].risk || 0) 
-    : (fireRiskResult.value?.weeklyRiskMean || 0)
+    : (fireRiskResult.value?.weekly_risk_mean || 0)
 })
 
 const todayRiskPercent = computed(() => todayRisk.value * 100)

@@ -30,15 +30,15 @@ import { useGlobalStore } from '@/stores/global'
 const globalStore = useGlobalStore()
 
 // Dados do store
-const weatherResult = computed(() => globalStore.orchestratorResponse?.weatherResult)
-const geocodingResult = computed(() => globalStore.orchestratorResponse?.geocodingResult)
+const weatherResult = computed(() => globalStore.orchestratorResponse?.weather_result)
+const geocodingResult = computed(() => globalStore.orchestratorResponse?.geocoding_result)
 
 // Computed
 const preference = computed(() => geocodingResult.value?.preference || 'weather')
-const weatherFuture = computed(() => weatherResult.value?.weatherFuture_7d?.[0]?.daily || {})
-const weatherPast = computed(() => weatherResult.value?.weatherPast_7d?.[0]?.daily || {})
-const airFuture = computed(() => weatherResult.value?.airFuture_7d?.[0]?.daily || {})
-const airPast = computed(() => weatherResult.value?.airPast_7d?.[0]?.daily || {})
+const weatherFuture = computed(() => weatherResult.value?.weather_future_7d?.[0]?.daily || {})
+const weatherPast = computed(() => weatherResult.value?.weather_past_7d?.[0]?.daily || {})
+const airFuture = computed(() => weatherResult.value?.air_future_7d?.[0]?.daily || {})
+const airPast = computed(() => weatherResult.value?.air_past_7d?.[0]?.daily || {})
 
 const safeLast = (arr) => (Array.isArray(arr) && arr.length ? arr[arr.length - 1] : null)
 

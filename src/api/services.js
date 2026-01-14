@@ -50,7 +50,7 @@ export const authService = {
       const response = await api.post('/auth/reset-password', {
         email: email,
         code: code,
-        newPassword: newPassword,
+        new_password: newPassword,
       })
       return response.data
     } catch (error) {
@@ -64,7 +64,7 @@ export const orchestratorService = {
     try {
       const body = {
         query: String(query).trim(),
-        userId: String(userId).trim(),
+        user_id: String(userId).trim(),
         preference: preference === 'air' ? 'air' : 'weather',
       }
       
@@ -82,7 +82,7 @@ export const orchestratorService = {
   async getSingle(locationId) {
     try {
       const body = {
-        locationId: String(locationId).trim(),
+        location_id: String(locationId).trim(),
       }
       
       const response = await api.post('/orchestrator/single', body)
@@ -100,7 +100,7 @@ export const orchestratorService = {
 export const getAllSearchHistoryService = async (userId) => {
   try {
     const body = {
-      userId: String(userId).trim(),
+      user_id: String(userId).trim(),
     }
     const response = await api.post('/orchestrator/all', body)
     

@@ -15,7 +15,7 @@
             {{ dateLabel }}: <span :class="riskTone.labelText">{{ todayRiskLabel }}</span>
           </h2>
           <p class="text-xs sm:text-sm text-gray-600 dark:text-muted-foreground font-medium mt-1">
-            Média semanal: <span class="font-black">{{ (globalStore.orchestratorResponse?.fireRiskResult?.weeklyRiskMean * 100).toFixed(0) }}%</span> • Nível
+            Média semanal: <span class="font-black">{{ (globalStore.orchestratorResponse?.fire_risk_result?.weekly_risk_mean * 100).toFixed(0) }}%</span> • Nível
             <span class="font-black">{{ weeklyRiskLabel }}</span>
           </p>
         </div>
@@ -76,11 +76,11 @@ import { useGlobalStore } from '@/stores/global'
 const globalStore = useGlobalStore()
 
 // Dados do store
-const fireRiskResult = computed(() => globalStore.orchestratorResponse?.fireRiskResult)
+const fireRiskResult = computed(() => globalStore.orchestratorResponse?.fire_risk_result)
 
 // Verifica se a data é hoje e formata adequadamente
 const dateLabel = computed(() => {
-  const createdAt = globalStore.orchestratorResponse?.geocodingResult?.createdAt
+  const createdAt = globalStore.orchestratorResponse?.geocoding_result?.created_at
   if (!createdAt) return 'Hoje'
   
   const dataCreatedAt = new Date(createdAt)
@@ -103,13 +103,13 @@ const dateLabel = computed(() => {
 })
 
 // Risk calculations
-const dailyRisks = computed(() => fireRiskResult.value?.dailyRisks || [])
+const dailyRisks = computed(() => fireRiskResult.value?.daily_risks || [])
 const dailyRisksSliced = computed(() => dailyRisks.value.slice(0, 7))
 
 const todayRisk = computed(() => {
   return dailyRisks.value.length > 0 
     ? (dailyRisks.value[0].risk || 0) 
-    : (fireRiskResult.value?.weeklyRiskMean || 0)
+    : (fireRiskResult.value?.weekly_risk_mean || 0)
 })
 
 const todayRiskPercent = computed(() => todayRisk.value * 100)
@@ -124,7 +124,7 @@ const todayRiskLabel = computed(() => {
 })
 
 const weeklyRiskLabel = computed(() => {
-  const level = fireRiskResult.value?.riskLevel
+  const level = fireRiskResult.value?.risk_level
   const labels = { baixo: 'Baixo', regular: 'Regular', medio: 'Médio', alto: 'Alto', critico: 'Crítico' }
   return labels[level] || '—'
 })

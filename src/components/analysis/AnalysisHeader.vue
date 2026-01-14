@@ -38,5 +38,5 @@ const props = defineProps({
 const globalStore = useGlobalStore()
 
 // Dados do store
-const geocodingResult = computed(() => globalStore.orchestratorResponse?.geocodingResult)
+const geocodingResult = computed(() => globalStore.orchestratorResponse?.geocoding_result)
 </script>

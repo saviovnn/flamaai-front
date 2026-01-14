@@ -6,7 +6,7 @@
           <Flame :size="20" class="sm:w-6 sm:h-6 lg:w-7 lg:h-7 text-gray-700 dark:text-foreground" />
         </div>
         <div class="min-w-0">
-          <h3 class="text-sm sm:text-base lg:text-lg font-black tracking-tight text-gray-900 dark:text-white">Motivo do Risco de <span class="font-black">{{ (globalStore.orchestratorResponse?.fireRiskResult?.weeklyRiskMean * 100).toFixed(0) }}%</span></h3>
+          <h3 class="text-sm sm:text-base lg:text-lg font-black tracking-tight text-gray-900 dark:text-white">Motivo do Risco de <span class="font-black">{{ (globalStore.orchestratorResponse?.fire_risk_result?.weekly_risk_mean * 100).toFixed(0) }}%</span></h3>
           <p class="text-[9px] sm:text-[10px] font-bold text-gray-500 dark:text-muted-foreground uppercase tracking-[0.2em]">Interpretação do risco de fogo</p>
         </div>
       </div>
@@ -28,7 +28,7 @@ import { useGlobalStore } from '@/stores/global'
 const globalStore = useGlobalStore()
 
 // Dados do store
-const ragExplanation = computed(() => globalStore.orchestratorResponse?.fireRiskResult?.ragExplanation)
+const ragExplanation = computed(() => globalStore.orchestratorResponse?.fire_risk_result?.rag_explanation)
 </script>
 
 <style scoped>
