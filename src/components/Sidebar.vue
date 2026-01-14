@@ -199,16 +199,16 @@ const handleSelectSearch = async (search) => {
     globalStore.isSidebarOpen = false
     
     // Busca o locationId do item clicado
-    const locationId = search.data?.id || search.rawData?.id
+    const location_id = search.data?.id || search.rawData?.id
     
-    if (!locationId) {
-      console.error('LocationId não encontrado no item:', search)
+    if (!location_id) {
+      console.error('location_id não encontrado no item:', search)
       globalStore.setSearchLoading(false)
       return
     }
     
     // Faz a chamada POST para buscar os dados atualizados
-    const data = await orchestratorService.getSingle(locationId)
+    const data = await orchestratorService.getSingle(location_id)
     
     // Atribui os dados diretamente ao orchestratorResponse (já vem no formato correto do backend)
     globalStore.setOrchestratorResponse(data)
