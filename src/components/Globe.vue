@@ -32,18 +32,11 @@
 <script setup>
 import { ref, onMounted, onUnmounted, watch, computed } from 'vue'
 import * as d3 from 'd3'
-import { useGlobalStore } from '@/stores/global'
 
-const globalStore = useGlobalStore()
-
-// Função para obter a cor de fundo do oceano baseada no tema
+// Função para obter a cor de fundo do oceano - sempre cinza, independente do tema
 const getOceanFillColor = () => {
-  if (globalStore.isDark) {
-    return 'transparent'
-  } else {
-    // Cor cinza do dark: hsl(220, 13%, 10%)
-    return 'hsl(220, 13%, 10%)'
-  }
+  // Sempre usa a cor cinza fixa, não muda com o tema
+  return 'hsl(220, 13%, 10%)'
 }
 
 const props = defineProps({
@@ -66,6 +59,14 @@ const props = defineProps({
   satelliteDistance: {
     type: Number,
     default: null // Se null, calcula automaticamente baseado no tamanho
+  },
+  rotation: {
+    type: Array,
+    default: null // Se null, usa rotação automática
+  },
+  autoRotate: {
+    type: Boolean,
+    default: true
   }
 })
 
@@ -96,6 +97,8 @@ let fireAnimationTimer = null
 let landFeatures = null
 let allDots = []
 let renderFunction = null
+let currentRotation = null // Armazena a rotação atual
+let currentProjection = null // Armazena a projeção atual
 
 // Função para verificar se um ponto está no Brasil (coordenadas mais precisas)
 const isInBrazil = (lng, lat) => {
@@ -258,19 +261,22 @@ const initializeGlobe = () => {
     .translate([canvasWidth / 2, canvasHeight / 2])
     .clipAngle(90)
 
-  // Posição inicial: centraliza o Brasil e América do Sul com África visível
-  // Para mostrar Brasil + África, centralizamos entre eles
-  // Brasil: longitude -53.5°, África: longitude ~15°
-  // Ponto médio: (-53.5 + 15) / 2 = -19.25°
-  // Latitude: Brasil -14°, ajustamos para -10° para melhor visualização
-  let rotation = [19, 10, 0] // Inverte o sinal da longitude para rotação correta
+  // Armazena referências globais
+  currentProjection = projection
+  
+  // Posição inicial: começa na África (longitude ~15°)
+  // Para mostrar a África centralizada, usamos rotação [-15, 0, 0]
+  // Se rotation prop for fornecida, usa ela; caso contrário, usa rotação inicial da África
+  let rotation = props.rotation ? [...props.rotation] : [-15, 0, 0] // África centralizada
+  currentRotation = rotation
   projection.rotate(rotation)
 
   const path = d3.geoPath().projection(projection).context(context)
 
   const render = () => {
-    // Aplica a rotação atual
-    projection.rotate(rotation)
+    // Aplica a rotação atual (usa currentRotation se disponível, senão usa rotation local)
+    const rot = currentRotation || rotation
+    projection.rotate(rot)
 
     // Clear canvas
     context.clearRect(0, 0, canvasWidth, canvasHeight)
@@ -530,8 +536,11 @@ const initializeGlobe = () => {
         })
       })
 
-      // Aplica a rotação inicial para centralizar Brasil e África
-      rotation = [19, 10, 0]
+      // Aplica a rotação inicial (África se não fornecida via prop)
+      if (!props.rotation) {
+        rotation = [-15, 0, 0] // África centralizada
+      }
+      currentRotation = rotation
       projection.rotate(rotation)
 
       // Renderiza imediatamente com a rotação correta
@@ -550,7 +559,7 @@ const initializeGlobe = () => {
   }
 
   // Set up rotation and interaction
-  let autoRotate = true // Ativado por padrão
+  // Usa a prop autoRotate para controlar rotação automática
   const baseRotationSpeed = 0.4 // Velocidade base (rápida)
   const slowRotationSpeed = 0.1 // Velocidade lenta (quando Brasil está visível)
 
@@ -567,17 +576,39 @@ const initializeGlobe = () => {
   }
 
   const rotate = () => {
-    if (autoRotate) {
+    // Só rotaciona automaticamente se autoRotate for true E não houver rotação controlada
+    if (props.autoRotate && !props.rotation) {
       // Usa velocidade lenta quando Brasil está visível, rápida caso contrário
       const currentSpeed = isBrazilVisible() ? slowRotationSpeed : baseRotationSpeed
       rotation[0] += currentSpeed
+      currentRotation = rotation
+      projection.rotate(rotation)
+      render()
+    } else if (props.rotation) {
+      // Se rotação controlada, atualiza da prop continuamente
+      rotation[0] = props.rotation[0]
+      rotation[1] = props.rotation[1]
+      rotation[2] = props.rotation[2] || 0
+      currentRotation = [...rotation]
       projection.rotate(rotation)
       render()
     }
   }
 
-  // Auto-rotation timer
-  rotationTimer = d3.timer(rotate)
+  // Timer sempre roda para atualizar rotação (automática ou controlada)
+  if (props.autoRotate || props.rotation) {
+    rotationTimer = d3.timer(rotate)
+  }
+  
+  // Se rotação controlada sem autoRotate, atualiza imediatamente também
+  if (!props.autoRotate && props.rotation) {
+    rotation[0] = props.rotation[0]
+    rotation[1] = props.rotation[1]
+    rotation[2] = props.rotation[2] || 0
+    currentRotation = [...rotation]
+    projection.rotate(rotation)
+    render()
+  }
 
   const handleMouseDown = (event) => {
     autoRotate = false
@@ -662,12 +693,19 @@ watch(() => [props.width, props.height], () => {
   cleanup = initializeGlobe()
 })
 
-// Watch para re-renderizar quando o tema mudar
-watch(() => globalStore.isDark, () => {
-  if (renderFunction) {
-    renderFunction()
+// Watch para atualizar rotação quando a prop mudar
+watch(() => props.rotation, (newRotation) => {
+  if (newRotation && currentProjection) {
+    // Atualiza a rotação atual e re-renderiza
+    currentRotation = [...newRotation]
+    currentProjection.rotate(newRotation)
+    if (renderFunction) {
+      renderFunction()
+    }
   }
-})
+}, { deep: true, immediate: false })
+
+// Watch removido - o globo agora sempre usa a mesma cor cinza, independente do tema
 </script>
 
 <style scoped>
