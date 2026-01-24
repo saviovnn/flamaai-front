@@ -8,7 +8,7 @@ export const useGlobalStore = defineStore('global', () => {
   // Theme management
   const theme = ref('system') // 'light' | 'dark' | 'system'
   
-  // Computed para verificar o tema efetivo (considerando system)
+  // Computed para verificar o tema efetivo
   const effectiveTheme = computed(() => {
     if (theme.value === 'system') {
       return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
@@ -21,8 +21,9 @@ export const useGlobalStore = defineStore('global', () => {
   // Aplica o tema no documento
   const applyTheme = () => {
     const favicon = document.getElementById('favicon')
+    const effective = effectiveTheme.value
     
-    if (isDark.value) {
+    if (effective === 'dark') {
       document.documentElement.classList.add('dark')
       if (favicon) favicon.href = '/logo-dark.svg'
     } else {
@@ -33,33 +34,44 @@ export const useGlobalStore = defineStore('global', () => {
   
   // Inicializa o tema (chama no App.vue)
   const initTheme = () => {
-    // Recupera o tema salvo no localStorage, ou usa 'system' como padrão
+    // Carrega tema do localStorage ou usa 'system' como padrão
     const savedTheme = localStorage.getItem('theme')
     if (savedTheme && ['light', 'dark', 'system'].includes(savedTheme)) {
       theme.value = savedTheme
     } else {
       theme.value = 'system'
+      localStorage.setItem('theme', 'system')
+    }
+    
+    // Escuta mudanças no tema do sistema
+    if (window.matchMedia) {
+      const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
+      mediaQuery.addEventListener('change', () => {
+        if (theme.value === 'system') {
+          applyTheme()
+        }
+      })
     }
     
     applyTheme()
-    
-    // Escuta mudanças na preferência do sistema
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
-      if (theme.value === 'system') {
-        applyTheme()
-      }
-    })
   }
   
   // Define o tema
   const setTheme = (newTheme) => {
-    theme.value = newTheme
-    localStorage.setItem('theme', newTheme)
-    applyTheme()
+    if (['light', 'dark', 'system'].includes(newTheme)) {
+      theme.value = newTheme
+      localStorage.setItem('theme', newTheme)
+      applyTheme()
+    }
   }
   
   // Watch para aplicar o tema quando mudar
   watch(theme, () => {
+    applyTheme()
+  })
+  
+  // Watch para mudanças no effectiveTheme (quando system muda)
+  watch(effectiveTheme, () => {
     applyTheme()
   })
   const searchHistory = ref({})
