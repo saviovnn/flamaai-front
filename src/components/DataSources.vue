@@ -7,10 +7,10 @@
           <span>Fontes de Dados</span>
         </div>
         <h2 class="text-3xl md:text-4xl lg:text-5xl font-semibold mb-4 text-foreground">
-          Dados confiáveis para previsões precisas
+          Bases utilizadas
         </h2>
         <p class="text-lg text-muted-foreground max-w-2xl mx-auto">
-          FlamaAI utiliza dados oficiais e atualizados de fontes confiáveis, processados por nosso modelo de inteligência artificial para análises precisas e explicativas.
+          Conjunto de dados públicos utilizados para treinamento e validação
         </p>
       </div>
 
@@ -59,7 +59,7 @@
 
             <div class="flex-1">
               <p class="text-muted-foreground leading-relaxed text-sm lg:text-base">
-                Dados de satélite e monitoramento ambiental para análise de queimadas e riscos de incêndio em todo o Brasil.
+                Produtos de sensoriamento remoto e dados ambientais.
               </p>
             </div>
 
@@ -112,7 +112,7 @@
             <!-- Descrição -->
             <div class="flex-1">
               <p class="text-muted-foreground leading-relaxed text-sm lg:text-base">
-                Dados meteorológicos globais em tempo real, incluindo temperatura, umidade, vento e condições climáticas históricas.
+                Dados meteorológicos globais em tempo quase real.
               </p>
             </div>
 

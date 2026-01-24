@@ -82,8 +82,13 @@
       </div>
 
       <div class="pt-8 border-t border-border">
-        <p class="text-sm text-center text-muted-foreground">
+        <p class="text-sm text-center text-muted-foreground mb-2">
           © {{ currentYear }} FlamaAI. Todos os direitos reservados.
+        </p>
+        <p class="text-xs text-center text-muted-foreground">
+          Protótipo Experimental – Uso acadêmico<br>
+          Este sistema não possui finalidade comercial.<br>
+          Desenvolvido para pesquisa em monitoramento ambiental e apoio à decisão.
         </p>
       </div>
     </div>

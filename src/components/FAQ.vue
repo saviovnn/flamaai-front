@@ -7,10 +7,10 @@
           <span>FAQ</span>
         </div>
         <h2 class="text-3xl md:text-4xl lg:text-5xl font-semibold mb-4 text-foreground">
-          Perguntas Frequentes
+          FAQ
         </h2>
-        <p class="text-lg text-muted-foreground">
-          Tire suas dúvidas sobre o FlamaAI
+        <p class="text-lg text-muted-foreground max-w-2xl mx-auto">
+          Esclarecimentos sobre o funcionamento e os limites do protótipo
         </p>
       </div>
 
@@ -61,33 +61,30 @@ const openItems = ref({})
 
 const faqItems = [
   {
-    question: 'O que é o FlamaAI?',
-    answer: 'FlamaAI é uma plataforma inteligente de monitoramento e previsão de risco de incêndios que combina dados climáticos, informações de satélite e inteligência artificial para fornecer análises precisas e explicativas sobre o risco de queimadas em todo o Brasil.'
+    question: 'O que é este sistema?',
+    answer: 'Um protótipo experimental desenvolvido para fins de pesquisa e avaliação.'
   },
   {
-    question: 'Como o FlamaAI calcula o risco de fogo?',
-    answer: 'O FlamaAI utiliza dados do INPE e de serviços meteorológicos como Open Meteo para calcular o risco de incêndios. Esses dados são processados por nossos modelos de IA para gerar previsões confiáveis, baseadas em histórico e condições atuais.'
+    question: 'Como o risco é estimado?',
+    answer: 'Por meio de modelos supervisionados treinados com dados históricos climáticos e ambientais.'
   },
   {
-    question: 'O FlamaAI cobre todo o Brasil?',
-    answer: 'Sim! Nosso sistema monitora todas as regiões do país, garantindo previsões para qualquer município que você desejar acompanhar.'
+    question: 'Qual a área de cobertura?',
+    answer: 'Todo o território nacional.'
   },
   {
-    question: 'A MaritacaAI fornece o risco de fogo?',
-    answer: 'Não. A MaritacaAI é nossa parceira e nos forneceu crédito para utilizar o modelo Sabiá, que usamos para gerar explicações (RAG) sobre o risco de fogo calculado pelo FlamaAI, mas ela não gera a previsão em si.'
+    question: 'Este sistema é um produto comercial?',
+    answer: 'Não. Trata-se de um protótipo de pesquisa.'
   },
   {
-    question: 'Como recebo as informações do FlamaAI?',
-    answer: 'Você pode acessar o dashboard online ou se cadastrar para receber relatórios por email. Futuramente será possível agendar envio automático diário ou semanal para o seu município.'
+    question: 'Os resultados são determinísticos?',
+    answer: 'Não. As estimativas são probabilísticas e dependem da qualidade dos dados.'
   },
   {
-    question: 'As previsões são confiáveis?',
-    answer: 'Sim! Nossos modelos são baseados em dados oficiais do INPE e de serviços meteorológicos, combinados com análise de inteligência artificial. Além disso, o FlamaAI gera explicações detalhadas (RAG) sobre o risco apresentado.'
-  },
-  {
-    question: 'Posso acompanhar mais de uma região ao mesmo tempo?',
-    answer: 'Sim! Você poderá adicionar diferentes municípios no dashboard e acompanhar o risco de fogo de cada um, com relatórios claros e interativos.'
-  }
+  question: 'A MaritacaAI fornece o risco de fogo?',
+  answer: 'Não. A MaritacaAI não participa do processo de estimativa do risco. O sistema utiliza um modelo de linguagem (Sabiá), por meio de créditos concedidos pela MaritacaAI, exclusivamente para a geração de explicações textuais (camada RAG) sobre os resultados previamente calculados pelo modelo de previsão.'
+}
+
 ];
 
 

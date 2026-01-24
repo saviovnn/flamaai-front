@@ -25,11 +25,14 @@
         >
           <div class="inline-flex items-center gap-2 mb-6 text-[#FA5D19]">
             <span>//</span>
-            <span class="text-sm font-medium uppercase tracking-wider">Monitoramento em Tempo Real</span>
+            <span class="text-sm font-medium uppercase tracking-wider">Monitoramento</span>
           </div>
           <h4 class="text-xl md:text-2xl lg:text-3xl font-semibold mb-6 text-white">
-            FlamaAI cobre todas as regiões do Brasil, garantindo monitoramento completo e em tempo real.
+            Abrangência territorial
           </h4>
+          <p class="text-lg text-muted-foreground">
+            O sistema permite análise em escala nacional, com possibilidade de seleção por município ou coordenadas geográficas.
+          </p>
         </div>
       </div>
     </div>

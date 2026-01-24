@@ -79,19 +79,18 @@
             </div>
 
             <h1 class="text-balance text-4xl font-semibold md:text-5xl lg:text-6xl mb-6 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-100">
-              Análise de risco de queimadas de forma rápida e confiável
+              Sistema Experimental para Previsão de Risco de Queimadas
             </h1>
             <p class="mx-auto my-8 max-w-2xl text-xl text-muted-foreground animate-in fade-in slide-in-from-bottom-4 duration-700 delay-200">
-              FlamaAI combina dados climáticos e satélite para entregar previsões diárias e semanais de risco de incêndio, de forma simples e intuitiva.
+              Plataforma baseada em dados climáticos e de sensoriamento remoto para apoio à decisão.
             </p>
-
             <!-- CTAs -->
             <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-300">
               <RouterLink
                 to="/login"
                 class="group relative inline-flex items-center justify-center px-8 py-3.5 text-base font-medium text-white bg-[#FA5D19] rounded-lg hover:bg-[#FA5D19]/90 transition-all duration-200 hover:scale-105 hover:shadow-lg hover:shadow-[#FA5D19]/25 focus:outline-none focus:ring-2 focus:ring-[#FA5D19] focus:ring-offset-2 no-underline"
               >
-                Começar agora
+                Acessar demonstração
                 <svg class="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
                 </svg>
@@ -100,7 +99,7 @@
                 @click="scrollToFeatures"
                 class="inline-flex items-center justify-center px-8 py-3.5 text-base font-medium text-foreground border border-border rounded-lg hover:bg-accent hover:border-[#FA5D19]/50 transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#FA5D19] focus:ring-offset-2"
               >
-                Saiba mais
+                Sobre o projeto
               </button>
             </div>
 

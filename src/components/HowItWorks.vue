@@ -11,10 +11,10 @@
           <span>Como Funciona</span>
         </div>
         <h2 class="text-3xl md:text-4xl lg:text-5xl font-semibold mb-4 text-foreground">
-          Uma solução completa e inteligente
+          Arquitetura do sistema
         </h2>
         <p class="text-lg text-muted-foreground max-w-2xl mx-auto">
-          Processo de concepção e desenvolvimento da solução FlamaAI.
+          Fluxo de concepção e processamento dos dados.
         </p>
       </div>
 
@@ -62,23 +62,23 @@ const isVisible = ref([false, false, false, false])
 const features = [
   {
     icon: Database,
-    title: 'Coleta de dados',
-    description: 'Dados climáticos e de satélite integrados para gerar previsões confiáveis.'
+    title: 'Aquisição de dados',
+    description: 'Integração de dados meteorológicos e produtos de sensoriamento remoto provenientes de bases oficiais.'
   },
   {
     icon: Brain,
-    title: 'Análise com IA',
-    description: 'Nosso modelo calcula o risco diário e semanal, explicando o resultado.'
+    title: 'Processamento e modelagem',
+    description: 'Aplicação de modelos de aprendizado de máquina para estimativa de risco diário e semanal.'
   },
   {
     icon: FileText,
-    title: 'Informação acionável',
-    description: 'Relatórios claros e gráficos interativos para prevenção.'
+    title: 'Camada explicativa',
+    description: 'Mecanismo baseado em recuperação de contexto para geração de explicações interpretáveis.'
   },
   {
     icon: History,
-    title: 'Histórico completo',
-    description: 'Todas as suas análises são salvas automaticamente para consulta e comparação posterior.'
+    title: 'Visualização e histórico',
+    description: 'Armazenamento das análises e exibição por meio de gráficos interativos.'
   }
 ]
 
