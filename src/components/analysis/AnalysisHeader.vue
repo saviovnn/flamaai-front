@@ -6,7 +6,7 @@
       </h1>
       <p class="text-xs sm:text-sm text-gray-500 dark:text-muted-foreground font-medium flex items-center gap-1.5 sm:gap-2 flex-wrap">
         <MapPin :size="14" class="sm:w-4 sm:h-4 text-gray-400 dark:text-muted-foreground flex-shrink-0" />
-        <span class="truncate">{{ geocodingResult?.logradouro || 'Logradouro não identificado' }}, {{ geocodingResult?.bairro || 'Bairro não identificado' }} — {{ geocodingResult?.estado }}</span>
+        <span class="truncate">{{ geocodingResult?.publicPlace || geocodingResult?.logradouro || 'Logradouro não identificado' }}, {{ geocodingResult?.neighborhood || geocodingResult?.bairro || 'Bairro não identificado' }} — {{ geocodingResult?.state || geocodingResult?.estado }}</span>
       </p>
     </div>
 

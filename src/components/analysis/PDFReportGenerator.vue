@@ -151,11 +151,11 @@ const generatePDF = async () => {
           <p style="font-size: 14px; color: #666; margin-bottom: 40px; text-align: center;">Sistema Inteligente de Análise e Previsão de Risco de Incêndios</p>
           <div style="border-top: 2px solid #f97316; border-bottom: 2px solid #f97316; padding: 30px 0; margin: 20px 0; width: 100%;">
             <h1 style="font-size: 22px; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 16px;">Relatório Técnico de Análise</h1>
-            <h2 style="font-size: 18px; border: none; margin: 0; padding: 0;">Risco de Fogo para ${geo.cidade || 'Localização'}, ${geo.estado || 'Estado'}</h2>
+            <h2 style="font-size: 18px; border: none; margin: 0; padding: 0;">Risco de Fogo para ${geo.cidade || 'Localização'}, ${geo.state || geo.estado || 'Estado'}</h2>
           </div>
           <div style="margin-top: 40px;">
             <p class="meta">Coordenadas: ${(geo.lat || 0).toFixed(6)}, ${(geo.lng || 0).toFixed(6)}</p>
-            <p class="meta">Endereço: ${geo.logradouro || 'N/A'}, ${geo.bairro || 'N/A'}</p>
+            <p class="meta">Endereço: ${geo.publicPlace || geo.logradouro || 'N/A'}, ${geo.neighborhood || geo.bairro || 'N/A'}</p>
             <p class="meta" style="margin-top: 20px;">Data de Geração: ${formatDate(new Date())}</p>
             <p class="meta">Período de Análise: Próximos 7 dias</p>
           </div>
@@ -171,11 +171,11 @@ const generatePDF = async () => {
         <h2>1. Introdução</h2>
         <p>Os incêndios florestais representam uma das maiores ameaças ambientais do século XXI, causando impactos devastadores em ecossistemas, comunidades e economias. No Brasil, país com vasta extensão territorial e biodiversidade única, o monitoramento e previsão de risco de fogo tornam-se ferramentas essenciais para a gestão ambiental e proteção civil.</p>
         <p>O sistema FlamaAI foi desenvolvido com o objetivo de fornecer análises preditivas de risco de incêndio baseadas em dados meteorológicos e climáticos. Utilizando técnicas de processamento de dados e inteligência artificial, o sistema integra múltiplas variáveis atmosféricas para calcular índices de risco confiáveis e interpretáveis.</p>
-        <p>Este relatório apresenta a análise de risco de fogo para a localidade de <strong>${geo.cidade || 'N/A'}, ${geo.estado || 'N/A'}</strong>, considerando dados meteorológicos atuais e projeções para os próximos 7 dias.</p>
+        <p>Este relatório apresenta a análise de risco de fogo para a localidade de <strong>${geo.cidade || 'N/A'}, ${geo.state || geo.estado || 'N/A'}</strong>, considerando dados meteorológicos atuais e projeções para os próximos 7 dias.</p>
         
         <h2>2. Sumário Executivo</h2>
         <div class="highlight-box">
-          <p style="margin-bottom: 8px;"><strong>Localização Analisada:</strong> ${geo.cidade || 'N/A'}, ${geo.estado || 'N/A'}</p>
+          <p style="margin-bottom: 8px;"><strong>Localização Analisada:</strong> ${geo.cidade || 'N/A'}, ${geo.state || geo.estado || 'N/A'}</p>
           <p style="margin-bottom: 8px;"><strong>Coordenadas:</strong> ${(geo.lat || 0).toFixed(6)}°, ${(geo.lng || 0).toFixed(6)}°</p>
           <p style="margin-bottom: 8px;"><strong>Risco Atual:</strong> <span class="risk-indicator" style="background: ${getRiskColor(todayRiskPercent)}20; color: ${getRiskColor(todayRiskPercent)}">${todayRiskPercent.toFixed(0)}% - ${getRiskLabel(todayRiskPercent)}</span></p>
           <p style="margin-bottom: 0;"><strong>Média Semanal:</strong> ${weeklyRiskPercent.toFixed(0)}%</p>
@@ -332,7 +332,7 @@ const generatePDF = async () => {
         </ul>
         
         <h2>7. Conclusão</h2>
-        <p>A análise realizada pelo sistema FlamaAI para a região de <strong>${geo.cidade || 'N/A'}, ${geo.estado || 'N/A'}</strong> indica um cenário de risco ${getRiskLabel(weeklyRiskPercent).toLowerCase()} para os próximos 7 dias, com índice médio de ${weeklyRiskPercent.toFixed(1)}%.</p>
+        <p>A análise realizada pelo sistema FlamaAI para a região de <strong>${geo.cidade || 'N/A'}, ${geo.state || geo.estado || 'N/A'}</strong> indica um cenário de risco ${getRiskLabel(weeklyRiskPercent).toLowerCase()} para os próximos 7 dias, com índice médio de ${weeklyRiskPercent.toFixed(1)}%.</p>
         <p>${weeklyRiskPercent > 60 ? 'Recomenda-se a intensificação do monitoramento e a preparação de equipes de combate a incêndios na região.' : weeklyRiskPercent > 40 ? 'Recomenda-se manter o monitoramento contínuo das condições meteorológicas.' : 'As condições atuais são relativamente favoráveis, porém o monitoramento deve ser mantido.'}</p>
         
         <h2>8. Melhorias Futuras</h2>
