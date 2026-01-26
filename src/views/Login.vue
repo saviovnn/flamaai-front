@@ -491,7 +491,6 @@ const handleSubmit = async () => {
         console.warn('Response não contém user:', response);
       }
 
-      notifySuccess("Bem-vindo de volta", "Login realizado com sucesso!");
       router.push("/dashboard");
     } catch (error) {
       console.error("Erro ao fazer login:", error);

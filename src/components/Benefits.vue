@@ -23,6 +23,7 @@
             :class="cn(
             'flex flex-col lg:border-r py-10 relative group/feature border-border benefit-item',
             (index === 0 || index === 3 || index === 6) && 'lg:border-l',
+            index < 3 && 'lg:border-t',
             index < 6 && 'lg:border-b',
             { 'benefit-item-visible': isVisible[index] }
           )"

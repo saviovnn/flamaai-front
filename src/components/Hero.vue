@@ -84,7 +84,6 @@
             <p class="mx-auto my-8 max-w-2xl text-xl text-muted-foreground animate-in fade-in slide-in-from-bottom-4 duration-700 delay-200">
               Plataforma baseada em dados climáticos e de sensoriamento remoto para apoio à decisão.
             </p>
-            <!-- CTAs -->
             <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-300">
               <RouterLink
                 to="/login"
@@ -158,14 +157,11 @@ const scrollToFeatures = () => {
 const mainContainer = ref(null)
 const globalStore = useGlobalStore()
 
-// Generate unique ID for SVG patterns
 const patternId = ref(`hero-grid-${Math.random().toString(36).substr(2, 9)}`)
 
-// Always use dark theme images
 const dashImage = computed(() => dashImageDark)
 const maritacaLogo = computed(() => maritacaLogoDark)
 
-// Grid animation state
 const gridSize = ref(40)
 const gridOffsetX = ref(0)
 const gridOffsetY = ref(0)

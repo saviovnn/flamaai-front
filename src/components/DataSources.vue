@@ -16,7 +16,7 @@
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8 max-w-5xl mx-auto">
         <a
-          href="https://www.gov.br/inpe/pt-br"
+          href="https://terrabrasilis.dpi.inpe.br/queimadas/portal/"
           target="_blank"
           rel="noopener noreferrer"
           class="group bg-card border border-border rounded-2xl p-6 lg:p-8 hover:border-[#159cfa]/50 hover:shadow-xl hover:shadow-[#159cfa]/10 transition-all duration-300 hover:-translate-y-1 relative overflow-visible block"

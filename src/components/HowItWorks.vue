@@ -19,7 +19,6 @@
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-2 max-w-5xl mx-auto">
-        <!-- Itens sem cards, estilo limpo -->
         <div 
           v-for="(feature, index) in features" 
           :key="index"
@@ -41,7 +40,6 @@
             </h3>
           </div>
           
-          <!-- Descrição -->
           <p class="text-muted-foreground leading-relaxed text-sm">
             {{ feature.description }}
           </p>
