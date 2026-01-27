@@ -21,7 +21,7 @@
           v-for="(benefit, index) in benefits"
           :key="index"
             :class="cn(
-            'flex flex-col py-10 relative group/feature benefit-item',
+            'flex flex-col py-12 md:py-14 relative group/feature benefit-item',
             'border-b md:border-b-0 lg:border-r border-border',
             (index === 0 || index === 3 || index === 6) && 'lg:border-l',
             index < 3 && 'lg:border-t',
@@ -41,14 +41,28 @@
             v-if="index >= 6"
             class="opacity-0 group-hover/feature:opacity-100 transition duration-200 absolute inset-0 h-full w-full bg-gradient-to-t from-background/80 dark:from-card/80 to-transparent pointer-events-none"
           />
-          <div class="mb-4 relative z-10 px-10 text-neutral-600 dark:text-neutral-400">
-            <component :is="benefit.icon" :size="24" class="text-[#FA5D19]" />
-          </div>
-          <div class="text-lg font-bold mb-2 relative z-10 px-10">
-            <div class="absolute left-0 inset-y-0 h-6 group-hover/feature:h-8 w-1 rounded-tr-full rounded-br-full bg-neutral-300 dark:bg-neutral-700 group-hover/feature:bg-[#FA5D19] transition-all duration-200 origin-center" />
-            <span class="group-hover/feature:translate-x-2 transition duration-200 inline-block text-neutral-800 dark:text-neutral-100">
-              {{ benefit.title }}
-            </span>
+          <div class="mb-4 relative z-10 px-10">
+            <div class="flex flex-row md:hidden items-center gap-3">
+              <div class="text-neutral-600 dark:text-neutral-400 flex-shrink-0">
+                <component :is="benefit.icon" :size="24" class="text-[#FA5D19]" />
+              </div>
+              <div class="text-lg font-bold relative z-10 flex-1">
+                <span class="group-hover/feature:translate-x-2 transition duration-200 inline-block text-neutral-800 dark:text-neutral-100">
+                  {{ benefit.title }}
+                </span>
+              </div>
+            </div>
+            <div class="hidden md:flex md:flex-row md:items-center gap-3">
+              <div class="h-8 w-1 rounded-tr-full rounded-br-full bg-neutral-300 dark:bg-neutral-700 group-hover/feature:bg-[#FA5D19] transition-all duration-200 origin-center flex-shrink-0" />
+              <div class="text-neutral-600 dark:text-neutral-400 flex-shrink-0">
+                <component :is="benefit.icon" :size="24" class="text-[#FA5D19]" />
+              </div>
+              <div class="text-lg font-bold relative z-10 flex-1">
+                <span class="group-hover/feature:translate-x-2 transition duration-200 inline-block text-neutral-800 dark:text-neutral-100">
+                  {{ benefit.title }}
+                </span>
+              </div>
+            </div>
           </div>
           <p class="text-sm text-neutral-600 dark:text-neutral-300 max-w-xs relative z-10 px-10">
             {{ benefit.description }}
