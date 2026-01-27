@@ -12,7 +12,7 @@
         class="globe-canvas"
       />
       <svg 
-        class="satellite-icon" 
+        class="satellite-icon hidden md:block" 
         viewBox="0 0 152 152" 
         fill="none" 
         xmlns="http://www.w3.org/2000/svg"
@@ -33,9 +33,7 @@
 import { ref, onMounted, onUnmounted, watch, computed } from 'vue'
 import * as d3 from 'd3'
 
-// Função para obter a cor de fundo do oceano - sempre cinza, independente do tema
 const getOceanFillColor = () => {
-  // Sempre usa a cor cinza fixa, não muda com o tema
   return 'hsl(220, 13%, 10%)'
 }
 
@@ -54,15 +52,15 @@ const props = defineProps({
   },
   satelliteSize: {
     type: Number,
-    default: 2.5 // Tamanho padrão em rem
+    default: 2.5
   },
   satelliteDistance: {
     type: Number,
-    default: null // Se null, calcula automaticamente baseado no tamanho
+    default: null
   },
   rotation: {
     type: Array,
-    default: null // Se null, usa rotação automática
+    default: null
   },
   autoRotate: {
     type: Boolean,
@@ -70,21 +68,14 @@ const props = defineProps({
   }
 })
 
-// Calcula a distância do satélite
-// Se satelliteDistance for fornecido, usa esse valor
-// Caso contrário, calcula baseado no tamanho (quanto menor, mais longe)
 const computedSatelliteDistance = computed(() => {
-  // Se a distância foi fornecida explicitamente, usa ela
   if (props.satelliteDistance !== null) {
     return props.satelliteDistance
   }
   
-  // Caso contrário, calcula baseado no tamanho
-  // Fórmula: distância base (1.5rem) + (tamanho padrão - tamanho atual) * fator
-  // Isso faz com que satélites menores fiquem mais longe
-  const baseDistance = 1.5 // Distância base em rem
-  const sizeDifference = 2.5 - props.satelliteSize // Diferença do tamanho padrão
-  const distanceFactor = 0.8 // Fator de multiplicação para ajustar a sensibilidade
+  const baseDistance = 1.5
+  const sizeDifference = 2.5 - props.satelliteSize
+  const distanceFactor = 0.8
   return baseDistance + (sizeDifference * distanceFactor)
 })
 
@@ -97,53 +88,78 @@ let fireAnimationTimer = null
 let landFeatures = null
 let allDots = []
 let renderFunction = null
-let currentRotation = null // Armazena a rotação atual
-let currentProjection = null // Armazena a projeção atual
+let currentRotation = null
+let currentProjection = null
 
-// Função para verificar se um ponto está no Brasil (coordenadas mais precisas)
 const isInBrazil = (lng, lat) => {
-  // Brasil: aproximadamente -73° a -34° longitude, -33° a 5° latitude
-  // Exclui Chile que está em -70° a -66° longitude, -56° a -17° latitude
-  // Exclui Argentina que está em -73° a -53° longitude, -55° a -21° latitude (parte sul)
-  const isInChile = lng >= -70 && lng <= -66 && lat >= -56 && lat <= -17
-  const isInArgentinaSouth = lng >= -73 && lng <= -53 && lat >= -55 && lat <= -40
-
-  // Brasil: -73° a -34° longitude, -33° a 5° latitude
-  // Mas excluindo áreas que se sobrepõem com Chile e Argentina
-  if (isInChile || isInArgentinaSouth) {
+  if (lng < -74 || lng > -34 || lat < -34 || lat > 6) {
     return false
   }
 
-  // Verifica se está na área geral do Brasil
-  if (lng >= -73 && lng <= -34 && lat >= -33 && lat <= 5) {
-    // Exclui área do Chile mais precisamente
-    if (lng >= -70 && lng <= -66 && lat <= -17) {
-      return false
-    }
-    return true
+  const brazilPolygon = [
+    [-60.0, 5.3],    // Norte (Roraima)
+    [-50.0, 4.5],    // Norte (Amapá)
+    [-48.5, 1.7],    // Norte (Amapá costa)
+    [-44.0, -1.0],   // Nordeste (Maranhão)
+    [-38.5, -3.7],   // Nordeste (Rio Grande do Norte)
+    [-35.0, -5.8],   // Nordeste (Pernambuco)
+    [-34.8, -8.0],   // Nordeste (Alagoas)
+    [-37.0, -11.0],  // Leste (Bahia)
+    [-39.0, -14.0],  // Leste (Bahia sul)
+    [-39.5, -17.0],  // Sudeste (Espírito Santo)
+    [-41.0, -21.0],  // Sudeste (Rio de Janeiro)
+    [-44.5, -23.5],  // Sudeste (São Paulo)
+    [-48.5, -26.0],  // Sul (Paraná)
+    [-51.0, -28.5],  // Sul (Santa Catarina)
+    [-53.5, -30.5],  // Sul (Rio Grande do Sul)
+    [-54.0, -31.5],  // Sul (RS fronteira)
+    [-55.0, -31.0],  // Sul (RS oeste)
+    [-56.0, -30.0],  // Sul-oeste
+    [-57.5, -28.0],  // Oeste (fronteira argentina)
+    [-58.0, -25.0],  // Oeste (Paraguai)
+    [-59.0, -22.0],  // Oeste (Paraguai)
+    [-60.0, -19.0],  // Oeste (Bolívia)
+    [-61.0, -16.0],  // Oeste (Bolívia)
+    [-63.0, -12.0],  // Oeste (Bolívia)
+    [-65.0, -10.0],  // Oeste (Acre)
+    [-69.0, -9.0],   // Oeste (Acre extremo)
+    [-70.0, -7.5],   // Oeste (Acre/Amazonas)
+    [-72.0, -5.0],   // Oeste (Amazonas)
+    [-73.0, -2.0],   // Oeste (Amazonas/Peru)
+    [-70.0, 0.0],    // Noroeste (Colômbia)
+    [-67.0, 1.5],    // Noroeste (Colômbia)
+    [-64.0, 2.5],    // Norte (Venezuela)
+    [-61.5, 4.0],    // Norte (Venezuela/Roraima)
+    [-60.0, 5.3]     // Fecha o polígono
+  ]
+
+  let inside = false
+  for (let i = 0, j = brazilPolygon.length - 1; i < brazilPolygon.length; j = i++) {
+    const [xi, yi] = brazilPolygon[i]
+    const [xj, yj] = brazilPolygon[j]
+
+    const intersect = ((yi > lat) !== (yj > lat)) &&
+      (lng < (xj - xi) * (lat - yi) / (yj - yi) + xi)
+
+    if (intersect) inside = !inside
   }
 
-  return false
+  return inside
 }
 
-// Função para interpolar cor entre cinza e laranja fluorescente baseado na intensidade
 const getFireColor = (intensity) => {
-  // intensity: 0 = cinza (#999999), 1 = laranja fluorescente (#ff4500)
   if (intensity <= 0) return '#999999'
-  if (intensity >= 1) return '#ff4500' // Laranja fluorescente mais brilhante
+  if (intensity >= 1) return '#ff4500'
 
-  // Interpolação linear entre as cores
   const gray = { r: 153, g: 153, b: 153 }
-  // Laranja fluorescente: #ff4500 (rgb(255, 69, 0)) - mais brilhante e vibrante
   const orange = { r: 255, g: 69, b: 0 }
 
   const r = Math.round(gray.r + (orange.r - gray.r) * intensity)
   const g = Math.round(gray.g + (orange.g - gray.g) * intensity)
   const b = Math.round(gray.b + (orange.b - gray.b) * intensity)
 
-  // Adiciona um brilho extra quando a intensidade é alta
   if (intensity > 0.7) {
-    const glow = (intensity - 0.7) * 0.3 // Brilho adicional de 0-9%
+    const glow = (intensity - 0.7) * 0.3
     return `rgb(${Math.min(255, r + glow * 50)}, ${Math.min(255, g + glow * 30)}, ${b})`
   }
 
@@ -171,23 +187,18 @@ const pointInFeature = (point, feature) => {
 
   if (geometry.type === 'Polygon') {
     const coordinates = geometry.coordinates
-    // Check if point is in outer ring
     if (!pointInPolygon(point, coordinates[0])) {
       return false
     }
-    // Check if point is in any hole (inner rings)
     for (let i = 1; i < coordinates.length; i++) {
       if (pointInPolygon(point, coordinates[i])) {
-        return false // Point is in a hole
+        return false
       }
     }
     return true
   } else if (geometry.type === 'MultiPolygon') {
-    // Check each polygon in the MultiPolygon
     for (const polygon of geometry.coordinates) {
-      // Check if point is in outer ring
       if (pointInPolygon(point, polygon[0])) {
-        // Check if point is in any hole
         let inHole = false
         for (let i = 1; i < polygon.length; i++) {
           if (pointInPolygon(point, polygon[i])) {
@@ -234,16 +245,13 @@ const initializeGlobe = () => {
   const context = canvas.getContext('2d')
   if (!context) return
 
-  // Set up responsive dimensions - calcula o tamanho baseado no container disponível
   const containerWidth = Math.min(props.width, window.innerWidth - 40)
   const containerHeight = Math.min(props.height, window.innerHeight - 100)
   
-  // Calcula o raio do globo baseado no menor lado disponível
   const availableSize = Math.min(containerWidth, containerHeight)
-  const radius = availableSize / 2.2 // Ajusta para o globo usar mais espaço
+  const radius = availableSize / 2.2
   
-  // Canvas deve ter o tamanho exato do globo (diâmetro + pequeno padding)
-  const canvasSize = radius * 2 + 20 // 20px de padding
+  const canvasSize = radius * 2 + 20
   const canvasWidth = canvasSize
   const canvasHeight = canvasSize
 
@@ -254,37 +262,29 @@ const initializeGlobe = () => {
   canvas.style.height = `${canvasHeight}px`
   context.scale(dpr, dpr)
 
-  // Create projection and path generator for Canvas
   const projection = d3
     .geoOrthographic()
     .scale(radius)
     .translate([canvasWidth / 2, canvasHeight / 2])
     .clipAngle(90)
 
-  // Armazena referências globais
   currentProjection = projection
   
-  // Posição inicial: começa na África (longitude ~15°)
-  // Para mostrar a África centralizada, usamos rotação [-15, 0, 0]
-  // Se rotation prop for fornecida, usa ela; caso contrário, usa rotação inicial da África
-  let rotation = props.rotation ? [...props.rotation] : [-15, 0, 0] // África centralizada
+  let rotation = props.rotation ? [...props.rotation] : [-15, 0, 0]
   currentRotation = rotation
   projection.rotate(rotation)
 
   const path = d3.geoPath().projection(projection).context(context)
 
   const render = () => {
-    // Aplica a rotação atual (usa currentRotation se disponível, senão usa rotation local)
     const rot = currentRotation || rotation
     projection.rotate(rot)
 
-    // Clear canvas
     context.clearRect(0, 0, canvasWidth, canvasHeight)
 
     const currentScale = projection.scale()
     const scaleFactor = currentScale / radius
 
-    // Draw ocean (globe background)
     context.beginPath()
     context.arc(canvasWidth / 2, canvasHeight / 2, currentScale, 0, 2 * Math.PI)
     context.fillStyle = getOceanFillColor()
@@ -294,7 +294,6 @@ const initializeGlobe = () => {
     context.stroke()
 
     if (landFeatures) {
-      // Draw graticule
       const graticule = d3.geoGraticule()
       context.beginPath()
       path(graticule())
@@ -304,7 +303,6 @@ const initializeGlobe = () => {
       context.stroke()
       context.globalAlpha = 1
 
-      // Draw land outlines
       context.beginPath()
       landFeatures.features.forEach((feature) => {
         path(feature)
@@ -313,7 +311,6 @@ const initializeGlobe = () => {
       context.lineWidth = 1 * scaleFactor
       context.stroke()
 
-      // Draw halftone dots
       allDots.forEach((dot) => {
         const projected = projection([dot.lng, dot.lat])
         if (
@@ -325,17 +322,14 @@ const initializeGlobe = () => {
         ) {
           context.beginPath()
 
-          // Pontos em chamas são ligeiramente maiores para destaque
-          const dotSize = isInBrazil(dot.lng, dot.lat) && dot.fireIntensity > 0
+          const dotSize = dot.isBrazil && dot.fireIntensity > 0
             ? 1.5 * scaleFactor
             : 1.2 * scaleFactor
 
           context.arc(projected[0], projected[1], dotSize, 0, 2 * Math.PI)
 
-          // Usa cor baseada na intensidade de fogo (apenas para pontos do Brasil)
-          if (isInBrazil(dot.lng, dot.lat) && dot.fireIntensity > 0) {
+          if (dot.isBrazil && dot.fireIntensity > 0) {
             context.fillStyle = getFireColor(dot.fireIntensity)
-            // Adiciona um leve brilho para pontos em chamas
             if (dot.fireIntensity > 0.5) {
               context.shadowBlur = 3 * scaleFactor
               context.shadowColor = getFireColor(dot.fireIntensity)
@@ -346,50 +340,47 @@ const initializeGlobe = () => {
           }
 
           context.fill()
-          context.shadowBlur = 0 // Reseta o shadow
+          context.shadowBlur = 0
         }
       })
     }
   }
 
-  // Função para animar queimadas no Brasil
   const startFireAnimation = (brazilDots) => {
-    if (!brazilDots || brazilDots.length === 0) return
+    if (!brazilDots || brazilDots.length === 0) {
+      console.log('Nenhum ponto do Brasil encontrado para animação')
+      return
+    }
 
-    // Para a animação anterior se existir
+    console.log(`Iniciando animação de queimadas com ${brazilDots.length} pontos do Brasil`)
+
     if (fireAnimationTimer) {
       fireAnimationTimer.stop()
     }
 
-    // Configurações da animação - aumentadas para mais visibilidade
-    const IGNITE_SPEED = 0.05 // Velocidade de acender (por frame)
-    const COOL_SPEED = 0.03 // Velocidade de esfriar (por frame)
-    const MAX_ACTIVE_FIRES = 200 // Número máximo de pontos queimando simultaneamente (aumentado)
-    const NEW_FIRE_CHANCE = 0.08 // Chance de iniciar novo fogo a cada frame (8% - aumentado)
+    const IGNITE_SPEED = 0.05
+    const COOL_SPEED = 0.03
+    const MAX_ACTIVE_FIRES = 200
+    const NEW_FIRE_CHANCE = 0.08
 
     const animateFires = () => {
       let needsRender = false
 
-      // Processa cada ponto do Brasil
       brazilDots.forEach((dot) => {
         if (dot.firePhase === 'igniting') {
-          // Aumenta intensidade gradualmente
           dot.fireIntensity = Math.min(1, dot.fireIntensity + IGNITE_SPEED)
           if (dot.fireIntensity >= 1) {
             dot.firePhase = 'burning'
-            // Mantém queimando por um tempo aleatório
-            dot.burnDuration = Math.random() * 30 + 20 // 20-50 frames
+            dot.burnDuration = Math.random() * 30 + 20
           }
           needsRender = true
         } else if (dot.firePhase === 'burning') {
-          // Mantém queimando
           if (dot.burnDuration > 0) {
             dot.burnDuration--
           } else {
             dot.firePhase = 'cooling'
           }
         } else if (dot.firePhase === 'cooling') {
-          // Diminui intensidade gradualmente
           dot.fireIntensity = Math.max(0, dot.fireIntensity - COOL_SPEED)
           if (dot.fireIntensity <= 0) {
             dot.firePhase = 'none'
@@ -399,14 +390,11 @@ const initializeGlobe = () => {
         }
       })
 
-      // Conta quantos pontos estão queimando ou acendendo
       const activeFires = brazilDots.filter(d =>
         d.firePhase === 'igniting' || d.firePhase === 'burning'
       ).length
 
-      // Inicia novos fogos aleatoriamente
       if (activeFires < MAX_ACTIVE_FIRES && Math.random() < NEW_FIRE_CHANCE) {
-        // Seleciona um ponto aleatório que não está queimando
         const availableDots = brazilDots.filter(d => d.firePhase === 'none')
         if (availableDots.length > 0) {
           const randomDot = availableDots[Math.floor(Math.random() * availableDots.length)]
@@ -416,17 +404,14 @@ const initializeGlobe = () => {
         }
       }
 
-      // Re-renderiza se houver mudanças
       if (needsRender) {
         render()
       }
     }
 
-    // Inicia a animação usando d3.timer (60fps)
     fireAnimationTimer = d3.timer(animateFires)
   }
 
-  // Expõe a função render para uso externo
   renderFunction = render
 
   const loadWorldDataWithXHR = (url) => {
@@ -448,7 +433,7 @@ const initializeGlobe = () => {
       }
       xhr.onerror = () => reject(new Error('Network error'))
       xhr.ontimeout = () => reject(new Error('Request timeout'))
-      xhr.timeout = 30000 // 30 segundos
+      xhr.timeout = 30000
       xhr.send()
     })
   }
@@ -458,7 +443,6 @@ const initializeGlobe = () => {
       isLoading.value = true
       error.value = null
 
-      // URLs alternativas para o GeoJSON
       const urls = [
         'https://raw.githubusercontent.com/martynafford/natural-earth-geojson/refs/heads/master/110m/physical/ne_110m_land.json',
         'https://cdn.jsdelivr.net/npm/world-atlas@3/land-110m.json',
@@ -468,11 +452,8 @@ const initializeGlobe = () => {
       let landData = null
       let lastError = null
 
-      // Primeiro tenta com fetch
       for (const url of urls) {
         try {
-          // Usa fetch com cache: 'no-cache' para evitar problemas com ServiceWorker
-          // e mode: 'cors' para garantir que CORS funcione
           const response = await fetch(url, {
             method: 'GET',
             mode: 'cors',
@@ -490,7 +471,6 @@ const initializeGlobe = () => {
         } catch (err) {
           lastError = err
           console.warn(`Fetch failed for ${url}:`, err)
-          // Se fetch falhar, tenta com XHR (não é interceptado por ServiceWorker)
           try {
             landData = await loadWorldDataWithXHR(url)
             break
@@ -512,41 +492,45 @@ const initializeGlobe = () => {
         throw new Error('Invalid GeoJSON data format')
       }
 
-      // Generate dots for all land features
       let totalDots = 0
       let brazilDots = []
+      let brazilDotsCount = 0
+      
       landFeatures.features.forEach((feature) => {
         const dots = generateDotsInPolygon(feature, 16)
         dots.forEach(([lng, lat]) => {
+          const isBrazilPoint = isInBrazil(lng, lat)
+          
           const dot = {
             lng,
             lat,
             visible: true,
-            fireIntensity: 0, // 0 = normal, 1 = laranja máximo
-            firePhase: 'none' // 'none', 'igniting', 'burning', 'cooling'
+            isBrazil: isBrazilPoint,
+            fireIntensity: 0,
+            firePhase: 'none'
           }
           allDots.push(dot)
 
-          // Identifica pontos do Brasil
-          if (isInBrazil(lng, lat)) {
+          if (isBrazilPoint) {
             brazilDots.push(dot)
+            brazilDotsCount++
           }
 
           totalDots++
         })
       })
 
-      // Aplica a rotação inicial (África se não fornecida via prop)
+      console.log(`Total de pontos gerados: ${totalDots}`)
+      console.log(`Pontos do Brasil: ${brazilDotsCount}`)
+
       if (!props.rotation) {
-        rotation = [-15, 0, 0] // África centralizada
+        rotation = [-15, 0, 0]
       }
       currentRotation = rotation
       projection.rotate(rotation)
 
-      // Renderiza imediatamente com a rotação correta
       render()
 
-      // Inicia animação de queimadas no Brasil
       startFireAnimation(brazilDots)
 
       render()
@@ -558,34 +542,25 @@ const initializeGlobe = () => {
     }
   }
 
-  // Set up rotation and interaction
-  // Usa a prop autoRotate para controlar rotação automática
-  const baseRotationSpeed = 0.4 // Velocidade base (rápida)
-  const slowRotationSpeed = 0.1 // Velocidade lenta (quando Brasil está visível)
+  const baseRotationSpeed = 0.4
+  const slowRotationSpeed = 0.1
 
-  // Função para verificar se o Brasil está visível no globo atual
   const isBrazilVisible = () => {
-    // Brasil está visível quando a longitude de rotação está entre aproximadamente -80° e 30°
-    // Normalizamos a rotação para estar entre -180 e 180
     let normalizedLng = rotation[0] % 360
     if (normalizedLng > 180) normalizedLng -= 360
     if (normalizedLng < -180) normalizedLng += 360
 
-    // Brasil visível: aproximadamente entre -30° e 80° (considerando rotação invertida)
     return normalizedLng >= -30 && normalizedLng <= 80
   }
 
   const rotate = () => {
-    // Só rotaciona automaticamente se autoRotate for true E não houver rotação controlada
-    if (props.autoRotate && !props.rotation) {
-      // Usa velocidade lenta quando Brasil está visível, rápida caso contrário
+      if (props.autoRotate && !props.rotation) {
       const currentSpeed = isBrazilVisible() ? slowRotationSpeed : baseRotationSpeed
       rotation[0] += currentSpeed
       currentRotation = rotation
       projection.rotate(rotation)
       render()
     } else if (props.rotation) {
-      // Se rotação controlada, atualiza da prop continuamente
       rotation[0] = props.rotation[0]
       rotation[1] = props.rotation[1]
       rotation[2] = props.rotation[2] || 0
@@ -595,12 +570,10 @@ const initializeGlobe = () => {
     }
   }
 
-  // Timer sempre roda para atualizar rotação (automática ou controlada)
   if (props.autoRotate || props.rotation) {
     rotationTimer = d3.timer(rotate)
   }
   
-  // Se rotação controlada sem autoRotate, atualiza imediatamente também
   if (!props.autoRotate && props.rotation) {
     rotation[0] = props.rotation[0]
     rotation[1] = props.rotation[1]
@@ -642,22 +615,10 @@ const initializeGlobe = () => {
     document.addEventListener('mouseup', handleMouseUp)
   }
 
-  // Zoom desativado - apenas rotação permitida
-  // const handleWheel = (event) => {
-  //   event.preventDefault()
-  //   const scaleFactor = event.deltaY > 0 ? 0.9 : 1.1
-  //   const newRadius = Math.max(radius * 0.5, Math.min(radius * 3, projection.scale() * scaleFactor))
-  //   projection.scale(newRadius)
-  //   render()
-  // }
-
   canvas.addEventListener('mousedown', handleMouseDown)
-  // canvas.addEventListener('wheel', handleWheel) // Zoom desativado
 
-  // Load the world data
   loadWorldData()
 
-  // Return cleanup function
   return () => {
     if (rotationTimer) {
       rotationTimer.stop()
@@ -667,7 +628,6 @@ const initializeGlobe = () => {
       fireAnimationTimer = null
     }
     canvas.removeEventListener('mousedown', handleMouseDown)
-    // canvas.removeEventListener('wheel', handleWheel) // Zoom desativado
   }
 }
 
@@ -687,16 +647,13 @@ watch(() => [props.width, props.height], () => {
   if (cleanup) {
     cleanup()
   }
-  // Reset data when dimensions change
   allDots = []
   landFeatures = null
   cleanup = initializeGlobe()
 })
 
-// Watch para atualizar rotação quando a prop mudar
 watch(() => props.rotation, (newRotation) => {
   if (newRotation && currentProjection) {
-    // Atualiza a rotação atual e re-renderiza
     currentRotation = [...newRotation]
     currentProjection.rotate(newRotation)
     if (renderFunction) {
@@ -705,7 +662,6 @@ watch(() => props.rotation, (newRotation) => {
   }
 }, { deep: true, immediate: false })
 
-// Watch removido - o globo agora sempre usa a mesma cor cinza, independente do tema
 </script>
 
 <style scoped>

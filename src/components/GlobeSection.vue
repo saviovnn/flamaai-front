@@ -27,7 +27,7 @@
             <span>//</span>
             <span class="text-sm font-medium uppercase tracking-wider">Monitoramento</span>
           </div>
-          <h4 class="text-xl md:text-2xl lg:text-3xl font-semibold mb-6 text-white">
+          <h4 class="text-3xl md:text-2xl lg:text-3xl font-semibold mb-6 text-white">
             Abrangência territorial
           </h4>
           <p class="text-lg text-muted-foreground">
@@ -57,10 +57,16 @@ const handleScroll = () => {
   const section = sectionRef.value
   const rect = section.getBoundingClientRect()
   const windowHeight = window.innerHeight
+  const windowWidth = window.innerWidth
   const sectionTop = rect.top
   
-  const scrollStart = windowHeight
-  const scrollEnd = windowHeight * 0.4
+  // Detecta se é mobile (telas menores que 768px)
+  const isMobile = windowWidth < 768
+  
+  // Em mobile, o scroll só começa quando a seção está mais próxima (50% da altura da tela)
+  // Em desktop, mantém o comportamento original (100% da altura da tela)
+  const scrollStart = isMobile ? windowHeight * 0.5 : windowHeight
+  const scrollEnd = isMobile ? windowHeight * 0.1 : windowHeight * 0.4
   
   let progress = 0
   

@@ -87,7 +87,7 @@
             <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-300">
               <RouterLink
                 to="/login"
-                class="group relative inline-flex items-center justify-center px-8 py-3.5 text-base font-medium text-white bg-[#FA5D19] rounded-lg hover:bg-[#FA5D19]/90 transition-all duration-200 hover:scale-105 hover:shadow-lg hover:shadow-[#FA5D19]/25 focus:outline-none focus:ring-2 focus:ring-[#FA5D19] focus:ring-offset-2 no-underline"
+                class="group relative inline-flex items-center justify-center w-full sm:w-auto px-8 py-3.5 text-base font-medium text-white bg-[#FA5D19] rounded-lg hover:bg-[#FA5D19]/90 transition-all duration-200 hover:scale-105 hover:shadow-lg hover:shadow-[#FA5D19]/25 focus:outline-none focus:ring-2 focus:ring-[#FA5D19] focus:ring-offset-2 no-underline"
               >
                 Acessar demonstração
                 <svg class="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -96,7 +96,7 @@
               </RouterLink>
               <button
                 @click="scrollToFeatures"
-                class="inline-flex items-center justify-center px-8 py-3.5 text-base font-medium text-foreground border border-border rounded-lg hover:bg-accent hover:border-[#FA5D19]/50 transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#FA5D19] focus:ring-offset-2"
+                class="inline-flex items-center justify-center w-full sm:w-auto px-8 py-3.5 text-base font-medium text-foreground border border-border rounded-lg hover:bg-accent hover:border-[#FA5D19]/50 transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#FA5D19] focus:ring-offset-2"
               >
                 Sobre o projeto
               </button>
@@ -119,7 +119,7 @@
           </div>
         </div>
 
-        <div class="mx-auto -mt-16 max-w-7xl [mask-image:linear-gradient(to_bottom,black_50%,transparent_100%)]">
+        <div class="hidden md:block mx-auto -mt-16 max-w-7xl [mask-image:linear-gradient(to_bottom,black_50%,transparent_100%)]">
           <div class="[perspective:1200px] [mask-image:linear-gradient(to_right,black_50%,transparent_100%)] -mr-16 pl-16 lg:-mr-56 lg:pl-56">
             <div class="[transform:rotateX(20deg);]">
               <div class="lg:h-[44rem] relative skew-x-[.36rad] overflow-visible">
@@ -136,7 +136,7 @@
         </div>
       </section>
 
-      <div class="absolute bottom-0 left-0 right-0 h-64 bg-gradient-to-b from-transparent via-background/60 via-background/90 to-background pointer-events-none z-20"></div>
+      <div class="absolute bottom-0 left-0 right-0 h-64 bg-gradient-to-b from-transparent via-background/60 to-background pointer-events-none z-20"></div>
     </main>
 </template>
 

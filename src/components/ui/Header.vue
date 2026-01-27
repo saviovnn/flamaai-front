@@ -53,51 +53,86 @@
         </RouterLink>
       </div>
       
-      <Button
-        size="icon"
-        variant="outline"
+      <button
         @click="open = !open"
-        class="md:hidden"
+        class="md:hidden inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 w-10 relative z-50 text-foreground"
+        aria-label="Toggle menu"
+        :aria-expanded="open"
       >
-        <MenuToggleIcon :open="open" class="size-5" :duration="300" />
-      </Button>
+        <span class="sr-only">Menu</span>
+        <div class="flex flex-col items-center justify-center w-5 h-5 space-y-1.5">
+          <span
+            :class="[
+              'block w-5 h-0.5 bg-current transition-all duration-300 ease-in-out origin-center',
+              open ? 'rotate-45 translate-y-2' : ''
+            ]"
+          ></span>
+          <span
+            :class="[
+              'block w-5 h-0.5 bg-current transition-all duration-300 ease-in-out',
+              open ? 'opacity-0' : 'opacity-100'
+            ]"
+          ></span>
+          <span
+            :class="[
+              'block w-5 h-0.5 bg-current transition-all duration-300 ease-in-out origin-center',
+              open ? '-rotate-45 -translate-y-2' : ''
+            ]"
+          ></span>
+        </div>
+      </button>
     </nav>
 
-    <div
-      :class="cn(
-        'bg-background/90 fixed top-14 right-0 bottom-0 left-0 z-50 flex flex-col overflow-hidden border-y md:hidden',
-        open ? 'block' : 'hidden'
-      )"
+    <!-- Menu Mobile Dropdown -->
+    <Transition
+      enter-active-class="transition ease-out duration-200"
+      enter-from-class="opacity-0 -translate-y-2"
+      enter-to-class="opacity-100 translate-y-0"
+      leave-active-class="transition ease-in duration-150"
+      leave-from-class="opacity-100 translate-y-0"
+      leave-to-class="opacity-0 -translate-y-2"
     >
       <div
-        :data-slot="open ? 'open' : 'closed'"
+        v-if="open"
         :class="cn(
-          'data-[slot=open]:animate-in data-[slot=open]:zoom-in-95 data-[slot=closed]:animate-out data-[slot=closed]:zoom-out-95 ease-out',
-          'flex h-full w-full flex-col justify-between gap-y-2 p-4'
+          'fixed left-0 right-0 top-14 bottom-0 z-[9999] border-b border-border shadow-lg md:hidden',
+          scrolled 
+            ? 'bg-background/95 backdrop-blur-xl' 
+            : 'bg-background/95 backdrop-blur-xl',
+          !scrolled ? 'bg-white/80 backdrop-blur-md dark:bg-zinc-950/50' : 'bg-background/95 backdrop-blur-xl'
         )"
+        style="height: calc(100vh - 3.5rem);"
       >
-        <div class="grid gap-y-2">
-          <a
-            v-for="link in links"
-            :key="link.label"
-            href="#"
-            @click.prevent="scrollToSection(link.href); open = false"
-            :class="buttonVariants({ variant: 'ghost', className: 'justify-start' })"
-          >
-            {{ link.label }}
-          </a>
-        </div>
-        <div class="flex flex-col gap-2">
-          <RouterLink
-            to="/login"
-            class="w-full inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FA5D19] focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-9 px-4 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white hover:text-white no-underline"
-            @click="open = false"
-          >
-            Começar agora
-          </RouterLink>
+        <div class="flex h-full flex-col overflow-y-auto">
+          <!-- Itens de navegação em cima -->
+          <div class="flex flex-col gap-1 p-4 flex-1">
+            <a
+              v-for="link in links"
+              :key="link.label"
+              href="#"
+              @click.prevent="handleMenuClick(link.href)"
+              class="inline-flex items-center justify-start whitespace-nowrap rounded-md text-base font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 px-4 py-3 hover:bg-accent hover:text-accent-foreground text-foreground active:bg-accent/80"
+            >
+              {{ link.label }}
+            </a>
+          </div>
+          
+          <!-- Botão Acessar demonstração embaixo -->
+          <div class="p-4 pt-2 border-t border-border mt-auto">
+            <RouterLink
+              to="/login"
+              class="w-full inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FA5D19] focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-10 px-4 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white hover:text-white no-underline"
+              @click="open = false"
+            >
+              Acessar demonstração
+              <svg class="ml-1.5 w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+              </svg>
+            </RouterLink>
+          </div>
         </div>
       </div>
-    </div>
+    </Transition>
   </header>
 </template>
 
@@ -107,8 +142,6 @@ import { RouterLink } from 'vue-router'
 import { cn } from '@/lib/utils'
 import { useScroll } from '@/composables/useScroll'
 import { useGlobalStore } from '@/stores/global'
-import Button from './Button.vue'
-import MenuToggleIcon from './MenuToggleIcon.vue'
 import logoDark from '@/assets/logo-dark.svg'
 
 const globalStore = useGlobalStore()
@@ -152,6 +185,14 @@ const scrollToSection = (sectionId) => {
       behavior: 'smooth'
     })
   }
+}
+
+const handleMenuClick = (sectionId) => {
+  open.value = false
+  // Pequeno delay para garantir que o menu feche antes de rolar
+  setTimeout(() => {
+    scrollToSection(sectionId)
+  }, 100)
 }
 
 // Button variants helper

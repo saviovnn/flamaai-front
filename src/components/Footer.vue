@@ -3,8 +3,8 @@
     <div class="mx-auto max-w-7xl px-6 py-12 lg:py-16">
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12 mb-8">
         <!-- Logo e frase -->
-        <div class="lg:col-span-1">
-          <div class="flex items-center gap-2 mb-4">
+        <div class="lg:col-span-1 text-center md:text-left">
+          <div class="flex items-center justify-center md:justify-start gap-2 mb-4">
             <img :src="logo" alt="FlamaAI" class="h-6 w-auto" />
             <h3 class="text-xl font-semibold text-white">FlamaAI</h3>
           </div>
@@ -14,7 +14,7 @@
         </div>
 
         <!-- Links -->
-        <div>
+        <div class="text-center md:text-left">
           <h4 class="text-sm font-semibold mb-4 text-foreground uppercase tracking-wider">Links</h4>
           <ul class="space-y-3">
             <li>
@@ -40,9 +40,9 @@
           </ul>
         </div>
 
-        <div>
+        <div class="text-center md:text-left">
           <h4 class="text-sm font-semibold mb-4 text-foreground uppercase tracking-wider">Contato</h4>
-          <div class="flex flex-col gap-3">
+          <div class="flex flex-col gap-3 items-center md:items-start">
             <a
               href="https://linkedin.com"
               target="_blank"
@@ -64,7 +64,7 @@
           </div>
         </div>
 
-        <div>
+        <div class="text-center md:text-left">
           <h4 class="text-sm font-semibold mb-4 text-foreground uppercase tracking-wider">Legal</h4>
           <ul class="space-y-3">
             <li>

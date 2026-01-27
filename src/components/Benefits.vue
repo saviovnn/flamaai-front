@@ -21,7 +21,8 @@
           v-for="(benefit, index) in benefits"
           :key="index"
             :class="cn(
-            'flex flex-col lg:border-r py-10 relative group/feature border-border benefit-item',
+            'flex flex-col py-10 relative group/feature benefit-item',
+            'border-b md:border-b-0 lg:border-r border-border',
             (index === 0 || index === 3 || index === 6) && 'lg:border-l',
             index < 3 && 'lg:border-t',
             index < 6 && 'lg:border-b',
