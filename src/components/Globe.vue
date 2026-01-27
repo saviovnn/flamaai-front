@@ -348,11 +348,8 @@ const initializeGlobe = () => {
 
   const startFireAnimation = (brazilDots) => {
     if (!brazilDots || brazilDots.length === 0) {
-      console.log('Nenhum ponto do Brasil encontrado para animação')
       return
     }
-
-    console.log(`Iniciando animação de queimadas com ${brazilDots.length} pontos do Brasil`)
 
     if (fireAnimationTimer) {
       fireAnimationTimer.stop()
@@ -470,12 +467,10 @@ const initializeGlobe = () => {
           }
         } catch (err) {
           lastError = err
-          console.warn(`Fetch failed for ${url}:`, err)
           try {
             landData = await loadWorldDataWithXHR(url)
             break
           } catch (xhrErr) {
-            console.warn(`XHR also failed for ${url}:`, xhrErr)
             lastError = xhrErr
             continue
           }
@@ -519,9 +514,6 @@ const initializeGlobe = () => {
           totalDots++
         })
       })
-
-      console.log(`Total de pontos gerados: ${totalDots}`)
-      console.log(`Pontos do Brasil: ${brazilDotsCount}`)
 
       if (!props.rotation) {
         rotation = [-15, 0, 0]
