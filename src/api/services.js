@@ -104,7 +104,6 @@ export const getAllSearchHistoryService = async (userId) => {
     }
     const response = await api.post('/orchestrator/all', body)
     
-    // A API agora retorna diretamente o array, sem wrapper
     return response.data || []
   } catch (error) {
     console.error('Erro ao buscar histórico de buscas:', error)

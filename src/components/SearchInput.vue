@@ -2,9 +2,13 @@
   <div class="w-full max-w-3xl px-2 sm:px-0">
     <div 
       class="relative bg-white dark:bg-card rounded-2xl sm:rounded-3xl border p-2.5 sm:p-3 transition-colors"
-      :class="globalStore.isRecording 
-        ? 'border-orange-500 dark:border-orange-500' 
-        : 'border-gray-200 dark:border-border'"
+      :class="[
+        globalStore.isRecording 
+          ? 'border-orange-500 dark:border-orange-500' 
+          : (hasError || globalStore.searchError)
+          ? 'border-red-500 dark:border-red-500'
+          : 'border-gray-200 dark:border-border'
+      ]"
     >
       <div class="mb-3 sm:mb-4 relative">
         <div 
@@ -21,7 +25,6 @@
           class="relative w-full px-2.5 sm:px-3.5 py-1.5 text-sm sm:text-[15px] text-gray-900 dark:text-foreground placeholder:text-gray-400 dark:placeholder:text-muted-foreground focus:outline-none bg-transparent"
           @keypress.enter="handleSubmit"
           @keydown.tab.prevent="acceptSuggestion"
-          @input="handleInput"
         />
       </div>
       
@@ -127,6 +130,7 @@ const windowWidth = ref(typeof window !== 'undefined' ? window.innerWidth : 640)
 const inputRef = ref(null)
 const suggestions = ref([])
 const currentSuggestion = ref('')
+const hasError = computed(() => !!globalStore.searchError)
 let searchTimeout = null
 
 let handleResize = null
@@ -164,13 +168,15 @@ const query = computed({
   set: (value) => globalStore.setSearchQuery(value)
 })
 
-// Watch para buscar municípios automaticamente a cada caractere digitado
 watch(query, (newValue) => {
+  if (globalStore.searchError) {
+    globalStore.clearSearchError()
+  }
+  
   if (searchTimeout) {
     clearTimeout(searchTimeout)
   }
 
-  // Garante que newValue seja uma string
   if (typeof newValue !== 'string') {
     return
   }
@@ -256,7 +262,6 @@ const searchMunicipios = async (searchText) => {
       if (suggestions.value.length > 0) {
         const firstSuggestion = suggestions.value[0].text
         
-        // Normaliza removendo acentos para comparação
         const normalizeText = (text) => {
           return text.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
         }
@@ -265,7 +270,6 @@ const searchMunicipios = async (searchText) => {
         const suggestionNormalized = normalizeText(firstSuggestion)
         
         if (suggestionNormalized.startsWith(searchNormalized)) {
-          // Encontra onde termina o texto digitado no original (com acento)
           currentSuggestion.value = firstSuggestion.slice(searchText.length)
         } else {
           currentSuggestion.value = ''
@@ -280,11 +284,6 @@ const searchMunicipios = async (searchText) => {
     suggestions.value = []
     currentSuggestion.value = ''
   }
-}
-
-const handleInput = () => {
-  // A busca agora é feita automaticamente pelo watch do query
-  // Mantendo a função para compatibilidade com o template
 }
 
 const acceptSuggestion = () => {
@@ -321,8 +320,59 @@ const getUserId = () => {
   return String(userId).trim()
 }
 
+const extractErrorMessage = (error) => {
+  if (error.response?.data) {
+    const data = error.response.data
+    
+    if ('error' in data && data.error !== undefined && data.error !== null) {
+      if (typeof data.error === 'string' && data.error.trim().length > 0) {
+        return data.error.trim()
+      }
+      if (typeof data.error === 'object') {
+        return JSON.stringify(data.error)
+      }
+    }
+    
+    if (data.errors && Array.isArray(data.errors) && data.errors.length > 0) {
+      return data.errors.map(err => err.erro || err.message || err).join(', ')
+    }
+    
+    if (data.message && !('error' in data)) {
+      if (typeof data.message === 'string' && data.message.trim().length > 0) {
+        return data.message.trim()
+      }
+      if (typeof data.message === 'object') {
+        return JSON.stringify(data.message)
+      }
+    }
+    
+    if (typeof data === 'object' && data !== null) {
+      if ('error' in data && typeof data.error === 'string' && data.error.trim().length > 0) {
+        return data.error.trim()
+      }
+      for (const key in data) {
+        if (key !== 'statusCode' && typeof data[key] === 'string' && data[key].trim().length > 0) {
+          return data[key].trim()
+        }
+      }
+    }
+  }
+  
+  if (error.code === 'ECONNABORTED' || error.message?.includes('timeout')) {
+    return 'Tempo de espera esgotado. Tente novamente.'
+  }
+  
+  if (error.message) {
+    return error.message
+  }
+  
+  return 'Erro ao processar a pesquisa. Tente novamente.'
+}
+
 const handleSubmit = async () => {
   if (query.value.trim()) {
+    globalStore.clearSearchError()
+    
     globalStore.setSearchLoading(true)
     
     try {
@@ -354,13 +404,22 @@ const handleSubmit = async () => {
       }
     } catch (error) {
       console.error('Erro ao buscar dados:', error)
+      
       if (error.response) {
         console.error('Response status:', error.response.status)
         console.error('Response data:', error.response.data)
       }
+      
+      const message = extractErrorMessage(error)
+      
+      if (message && message.trim().length > 0) {
+        globalStore.setSearchError(message.trim())
+      }
+      
       if (error.message && error.message.includes('autenticado')) {
         alert(error.message)
       }
+      
       globalStore.setSearchSubmitData({
         query: query.value,
         climaTempo: climaTempo.value,
@@ -590,3 +649,20 @@ onUnmounted(() => {
   globalStore.clearTranscribedText()
 })
 </script>
+
+<style scoped>
+.error-fade-enter-active,
+.error-fade-leave-active {
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.error-fade-enter-from {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
+.error-fade-leave-to {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+</style>

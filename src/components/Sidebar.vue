@@ -192,13 +192,10 @@ const handleNewAnalysis = () => {
 
 const handleSelectSearch = async (search) => {
   try {
-    // Ativa o loading
     globalStore.setSearchLoading(true)
     
-    // Fecha a sidebar
     globalStore.isSidebarOpen = false
     
-    // Busca o locationId do item clicado
     const location_id = search.data?.id || search.rawData?.id
     
     if (!location_id) {
@@ -207,16 +204,13 @@ const handleSelectSearch = async (search) => {
       return
     }
     
-    // Faz a chamada POST para buscar os dados atualizados
     const data = await orchestratorService.getSingle(location_id)
     
-    // Atribui os dados diretamente ao orchestratorResponse (já vem no formato correto do backend)
     globalStore.setOrchestratorResponse(data)
     
   } catch (error) {
     console.error('Erro ao buscar dados do location:', error)
   } finally {
-    // Desativa o loading
     globalStore.setSearchLoading(false)
   }
 }

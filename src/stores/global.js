@@ -5,10 +5,8 @@ export const useGlobalStore = defineStore('global', () => {
   const isSidebarOpen = ref(false)
   const isSettingsOpen = ref(false)
   
-  // Theme management
-  const theme = ref('system') // 'light' | 'dark' | 'system'
+  const theme = ref('system')
   
-  // Computed para verificar o tema efetivo
   const effectiveTheme = computed(() => {
     if (theme.value === 'system') {
       return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
@@ -18,7 +16,6 @@ export const useGlobalStore = defineStore('global', () => {
   
   const isDark = computed(() => effectiveTheme.value === 'dark')
   
-  // Aplica o tema no documento
   const applyTheme = () => {
     const favicon = document.getElementById('favicon')
     const effective = effectiveTheme.value
@@ -32,9 +29,7 @@ export const useGlobalStore = defineStore('global', () => {
     }
   }
   
-  // Inicializa o tema (chama no App.vue)
   const initTheme = () => {
-    // Carrega tema do localStorage ou usa 'system' como padrão
     const savedTheme = localStorage.getItem('theme')
     if (savedTheme && ['light', 'dark', 'system'].includes(savedTheme)) {
       theme.value = savedTheme
@@ -43,7 +38,6 @@ export const useGlobalStore = defineStore('global', () => {
       localStorage.setItem('theme', 'system')
     }
     
-    // Escuta mudanças no tema do sistema
     if (window.matchMedia) {
       const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
       mediaQuery.addEventListener('change', () => {
@@ -56,7 +50,6 @@ export const useGlobalStore = defineStore('global', () => {
     applyTheme()
   }
   
-  // Define o tema
   const setTheme = (newTheme) => {
     if (['light', 'dark', 'system'].includes(newTheme)) {
       theme.value = newTheme
@@ -65,31 +58,27 @@ export const useGlobalStore = defineStore('global', () => {
     }
   }
   
-  // Watch para aplicar o tema quando mudar
   watch(theme, () => {
     applyTheme()
   })
   
-  // Watch para mudanças no effectiveTheme (quando system muda)
   watch(effectiveTheme, () => {
     applyTheme()
   })
   const searchHistory = ref({})
-  const searchHistoryList = ref([]) // Novo formato: array de objetos
+  const searchHistoryList = ref([])
   const selectedSearch = ref(null)
   
   const setSearchHistoryList = (historyArray) => {
     searchHistoryList.value = historyArray || []
   }
   
-  // Search query
   const searchQuery = ref('')
   
   const setSearchQuery = (query) => {
     searchQuery.value = query
   }
   
-  // Preference: 'weather' | 'air' - default é 'weather'
   const preference = ref('weather')
   
   const setPreference = (pref) => {
@@ -98,7 +87,6 @@ export const useGlobalStore = defineStore('global', () => {
     }
   }
   
-  // Search submit data
   const searchSubmitData = ref({
     query: null,
     climaTempo: false,
@@ -113,28 +101,34 @@ export const useGlobalStore = defineStore('global', () => {
     }
   }
   
-  // Orchestrator response data (complete response)
   const orchestratorResponse = ref(null)
   
   const setOrchestratorResponse = (data) => {
     orchestratorResponse.value = data
   }
   
-  // Loading state for search
   const isSearchLoading = ref(false)
   
   const setSearchLoading = (loading) => {
     isSearchLoading.value = loading
   }
   
-  // Dashboard state - true when orchestrator response is available
+  const searchError = ref('')
+  
+  const setSearchError = (errorMessage) => {
+    searchError.value = errorMessage || ''
+  }
+  
+  const clearSearchError = () => {
+    searchError.value = ''
+  }
+  
   const dashboard = ref(false)
   
   const setDashboard = (value) => {
     dashboard.value = value
   }
   
-  // Watch para atualizar dashboard quando a resposta do orchestrator estiver disponível
   watch(orchestratorResponse, (response) => {
     if (response) {
       dashboard.value = true
@@ -143,7 +137,6 @@ export const useGlobalStore = defineStore('global', () => {
     }
   }, { deep: true })
   
-  // Voice recognition
   const isRecording = ref(false)
   const transcribedText = ref('')
   
@@ -163,7 +156,6 @@ export const useGlobalStore = defineStore('global', () => {
     transcribedText.value = ''
   }
   
-  // User information
   const user = ref({
     id: null,
     name: null,
@@ -177,7 +169,6 @@ export const useGlobalStore = defineStore('global', () => {
         name: userData.name || null,
         email: userData.email || null
       }
-      // Salva no localStorage também
       localStorage.setItem('user', JSON.stringify(user.value))
     }
   }
@@ -191,7 +182,6 @@ export const useGlobalStore = defineStore('global', () => {
     localStorage.removeItem('user')
   }
   
-  // Função para carregar user do localStorage
   const loadUserFromStorage = () => {
     if (typeof window !== 'undefined') {
       const userStr = localStorage.getItem('user')
@@ -213,12 +203,9 @@ export const useGlobalStore = defineStore('global', () => {
     }
   }
   
-  // Inicializa carregando user do localStorage
   loadUserFromStorage()
   
-  // Watch para detectar mudanças no localStorage do user
   if (typeof window !== 'undefined') {
-    // Escuta mudanças no localStorage (de outras abas/contextos)
     window.addEventListener('storage', (e) => {
       if (e.key === 'user') {
         if (e.newValue) {
@@ -240,7 +227,6 @@ export const useGlobalStore = defineStore('global', () => {
       }
     })
     
-    // Escuta eventos customizados de mudança no localStorage
     window.addEventListener('localStorageChange', (e) => {
       if (e.detail?.key === 'user') {
         if (e.detail?.newValue) {
@@ -297,6 +283,9 @@ export const useGlobalStore = defineStore('global', () => {
     clearTranscribedText,
     user,
     setUser,
-    clearUser
+    clearUser,
+    searchError,
+    setSearchError,
+    clearSearchError
   }
 })

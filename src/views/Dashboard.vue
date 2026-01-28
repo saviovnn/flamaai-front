@@ -5,7 +5,6 @@
       :userInitials="userInitials"
     />
 
-    <!-- Main content wrapper - responsivo à sidebar -->
     <div 
       class="flex-1 flex flex-col min-w-0 transition-[margin] duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]"
       :class="sidebarOpenClass"
@@ -22,9 +21,19 @@
       >
         <template v-if="!globalStore.dashboard">
           <div v-if="!globalStore.isSearchLoading" class="flex items-center gap-2 sm:gap-3 mb-6 sm:mb-9 px-2 sm:px-0">
-            <img :src="logo" alt="FlamaAI" class="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0" />
-            <h1 class="text-lg sm:text-xl md:text-2xl font-semibold text-gray-900 dark:text-foreground">
-              Qual região vamos analizar?
+            <img 
+              v-if="!globalStore.searchError"
+              :src="logo" 
+              alt="FlamaAI" 
+              class="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0" 
+            />
+            <h1 
+              class="text-lg sm:text-xl md:text-2xl font-semibold transition-colors"
+              :class="globalStore.searchError 
+                ? 'text-red-500 dark:text-red-500' 
+                : 'text-gray-900 dark:text-foreground'"
+            >
+              {{ globalStore.searchError || 'Qual região vamos analizar?' }}
             </h1>
           </div>
           
@@ -46,7 +55,6 @@
       </main>
     </div>
 
-    <!-- Overlay para fechar sidebar em mobile -->
     <div 
       v-if="globalStore.isSidebarOpen"
       class="fixed inset-0 bg-black/30 z-30 lg:hidden"
@@ -73,14 +81,11 @@ const authStore = useAuthStore()
 const globalStore = useGlobalStore()
 
 onMounted(() => {
-  // Verifica se há token no localStorage
   const token = localStorage.getItem('token')
   if (token) {
     authStore.setToken(token)
   }
 
-  // O store global já carrega o user do localStorage automaticamente
-  // Mas vamos garantir que está sincronizado
   const userStr = localStorage.getItem('user')
   if (userStr) {
     try {
@@ -112,7 +117,6 @@ const userInitials = computed(() => {
 
 authStore.isAuthenticated = true
 
-// Classes para deslocar conteúdo quando sidebar está aberta (apenas em desktop)
 const sidebarOpenClass = computed(() => {
   if (globalStore.isSidebarOpen) {
     return 'lg:ml-[16.7rem]'
