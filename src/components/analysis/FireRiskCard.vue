@@ -12,11 +12,11 @@
             {{ t('analysis.fireRisk') }}
           </div>
           <h2 class="text-xl sm:text-2xl lg:text-3xl font-black mt-2 tracking-tight">
-            {{ dateLabel }}: <span :class="riskTone.labelText">{{ todayRiskLabel }}</span>
+            {{ t('analysis.weeklyMean') }}: <span :class="riskTone.labelText">{{ weeklyRiskLabel }}</span>
           </h2>
           <p class="text-xs sm:text-sm text-gray-600 dark:text-muted-foreground font-medium mt-1">
-            {{ t('analysis.weeklyMean') }}: <span class="font-black">{{ (globalStore.orchestratorResponse?.fire_risk_result?.weekly_risk_mean * 100).toFixed(0) }}%</span> • {{ t('analysis.level') }}
-            <span class="font-black">{{ weeklyRiskLabel }}</span>
+            {{ dateLabel }}: <span class="font-black">{{ todayRiskPercent.toFixed(0) }}%</span> • {{ t('analysis.level') }}
+            <span class="font-black">{{ todayRiskLabel }}</span>
           </p>
         </div>
 
@@ -32,7 +32,7 @@
       </div>
 
       <div class="mt-4 sm:mt-6 flex items-end gap-2">
-        <span class="text-5xl sm:text-7xl lg:text-8xl font-black tracking-tighter leading-none text-gray-900 dark:text-white">{{ todayRiskPercent.toFixed(0) }}</span>
+        <span class="text-5xl sm:text-7xl lg:text-8xl font-black tracking-tighter leading-none text-gray-900 dark:text-white">{{ weeklyRiskPercent.toFixed(0) }}</span>
         <span class="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-400 dark:text-muted-foreground mb-1 sm:mb-2">%</span>
       </div>
 
@@ -41,11 +41,10 @@
           <div
             class="h-full rounded-full"
             :class="riskTone.fill"
-            :style="{ width: `${Math.min(100, Math.max(0, todayRiskPercent))}%` }"
+            :style="{ width: `${Math.min(100, Math.max(0, weeklyRiskPercent))}%` }"
           ></div>
         </div>
 
-        <!-- Grid responsivo: scroll horizontal em mobile, grid em desktop -->
         <div class="flex gap-1.5 sm:gap-2 overflow-x-auto pb-2 sm:pb-0 -mx-1 px-1 sm:mx-0 sm:px-0 sm:grid sm:grid-cols-7 scrollbar-hide">
           <div
             v-for="(d, idx) in dailyRisksSliced"
@@ -73,50 +72,54 @@ import { computed } from 'vue'
 import { Activity, Flame } from 'lucide-vue-next'
 import { useGlobalStore } from '@/stores/global'
 import { useI18n } from '@/composables/useI18n'
+import { parseDateLocal } from '@/lib/utils'
 
 const globalStore = useGlobalStore()
 const { t } = useI18n()
 
-// Dados do store
 const fireRiskResult = computed(() => globalStore.orchestratorResponse?.fire_risk_result)
 
-// Verifica se a data é hoje e formata adequadamente
 const dateLabel = computed(() => {
-  const createdAt = globalStore.orchestratorResponse?.geocoding_result?.created_at
-  if (!createdAt) return t('analysis.today')
-  
-  const dataCreatedAt = new Date(createdAt)
-  const hoje = new Date()
-  
-  // Compara apenas dia, mês e ano
-  const ehHoje = dataCreatedAt.getDate() === hoje.getDate() &&
-                 dataCreatedAt.getMonth() === hoje.getMonth() &&
-                 dataCreatedAt.getFullYear() === hoje.getFullYear()
-  
-  if (ehHoje) {
-    return t('analysis.today')
-  }
-  
+  const entry = displayDayEntry.value
+  if (!entry?.day) return t('analysis.today')
+
+  const dayIso = entry.day
+  if (dayIso === todayIso.value) return t('analysis.today')
+
   const localeMap = { pt: 'pt-BR', en: 'en-US', es: 'es-ES' }
   const locale = localeMap[globalStore.locale] || 'en-US'
-  return dataCreatedAt.toLocaleDateString(locale, { 
-    day: '2-digit', 
-    month: 'long', 
-    year: 'numeric' 
+  const d = parseDateLocal(dayIso)
+  return d.toLocaleDateString(locale, {
+    day: '2-digit',
+    month: 'long',
+    year: 'numeric'
   })
 })
 
-// Risk calculations
 const dailyRisks = computed(() => fireRiskResult.value?.daily_risks || [])
 const dailyRisksSliced = computed(() => dailyRisks.value.slice(0, 7))
 
+const todayIso = computed(() => {
+  const d = new Date()
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+})
+
+const displayDayEntry = computed(() => {
+  const slice = dailyRisksSliced.value
+  if (!slice.length) return null
+  const today = dailyRisksSliced.value.find((d) => d.day === todayIso.value)
+  return today ?? slice[0]
+})
+
 const todayRisk = computed(() => {
-  return dailyRisks.value.length > 0 
-    ? (dailyRisks.value[0].risk || 0) 
-    : (fireRiskResult.value?.weekly_risk_mean || 0)
+  if (displayDayEntry.value != null) return displayDayEntry.value.risk ?? 0
+  return fireRiskResult.value?.weekly_risk_mean ?? 0
 })
 
 const todayRiskPercent = computed(() => todayRisk.value * 100)
+
+const weeklyRiskMean = computed(() => fireRiskResult.value?.weekly_risk_mean ?? 0)
+const weeklyRiskPercent = computed(() => weeklyRiskMean.value * 100)
 
 const todayRiskLabel = computed(() => {
   const p = todayRiskPercent.value
@@ -196,8 +199,8 @@ const toneForPercent = (percent) => {
 }
 
 const riskTone = computed(() => {
-  globalStore.locale // dependência para reavaliar ao trocar idioma
-  return toneForPercent(todayRiskPercent.value)
+  globalStore.locale 
+  return toneForPercent(weeklyRiskPercent.value)
 })
 const toneForRisk = (risk) => toneForPercent((risk || 0) * 100)
 
@@ -205,7 +208,7 @@ const formatDayShort = (iso) => {
   try {
     const localeMap = { pt: 'pt-BR', en: 'en-US', es: 'es-ES' }
     const locale = localeMap[globalStore.locale] || 'en-US'
-    return new Date(iso).toLocaleDateString(locale, { weekday: 'short' }).replace('.', '')
+    return parseDateLocal(iso).toLocaleDateString(locale, { weekday: 'short' }).replace('.', '')
   } catch {
     return '—'
   }
@@ -213,14 +216,12 @@ const formatDayShort = (iso) => {
 </script>
 
 <style scoped>
-/* Hide scrollbar for Chrome, Safari and Opera */
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
 }
 
-/* Hide scrollbar for IE, Edge and Firefox */
 .scrollbar-hide {
-  -ms-overflow-style: none;  /* IE and Edge */
-  scrollbar-width: none;  /* Firefox */
+  -ms-overflow-style: none;  
+  scrollbar-width: none;  
 }
 </style>

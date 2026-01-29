@@ -29,7 +29,6 @@ import { useI18n } from '@/composables/useI18n'
 const globalStore = useGlobalStore()
 const { t } = useI18n()
 
-// Dados do store
 const ragExplanation = computed(() => globalStore.orchestratorResponse?.fire_risk_result?.rag_explanation)
 </script>
 

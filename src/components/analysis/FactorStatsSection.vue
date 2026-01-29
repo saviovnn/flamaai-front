@@ -31,11 +31,9 @@ import { useI18n } from '@/composables/useI18n'
 const globalStore = useGlobalStore()
 const { t } = useI18n()
 
-// Dados do store
 const weatherResult = computed(() => globalStore.orchestratorResponse?.weather_result)
 const geocodingResult = computed(() => globalStore.orchestratorResponse?.geocoding_result)
 
-// Computed
 const preference = computed(() => geocodingResult.value?.preference || 'weather')
 const weatherFuture = computed(() => weatherResult.value?.weather_future_7d?.[0]?.daily || {})
 const weatherPast = computed(() => weatherResult.value?.weather_past_7d?.[0]?.daily || {})
@@ -44,7 +42,6 @@ const airPast = computed(() => weatherResult.value?.air_past_7d?.[0]?.daily || {
 
 const safeLast = (arr) => (Array.isArray(arr) && arr.length ? arr[arr.length - 1] : null)
 
-// Weather stats
 const currentTempMax = computed(() => {
   const v = weatherFuture.value.temperature_2m_max?.[0]
   return typeof v === 'number' ? v : safeLast(weatherPast.value.temperature_2m_max)
@@ -65,7 +62,6 @@ const currentUvMax = computed(() => {
   return typeof v === 'number' ? v : safeLast(weatherPast.value.uv_index_max)
 })
 
-// Air stats
 const currentPM25 = computed(() => {
   const v = airFuture.value.pm2_5?.[0]
   return v === null || v === undefined ? safeLast(airPast.value.pm2_5) : v

@@ -15,11 +15,11 @@ import { computed, ref, onMounted, onUnmounted } from 'vue'
 import apexchart from 'vue3-apexcharts'
 import { useGlobalStore } from '@/stores/global'
 import { useI18n } from '@/composables/useI18n'
+import { parseDateLocal } from '@/lib/utils'
 
 const globalStore = useGlobalStore()
 const { t } = useI18n()
 
-// Responsive chart height
 const windowWidth = ref(typeof window !== 'undefined' ? window.innerWidth : 1024)
 
 const chartHeight = computed(() => {
@@ -37,22 +37,15 @@ onUnmounted(() => {
   if (resizeHandler) window.removeEventListener('resize', resizeHandler)
 })
 
-// Dados do store
 const fireRiskResult = computed(() => globalStore.orchestratorResponse?.fire_risk_result)
 
-// Risk calculations
 const dailyRisks = computed(() => fireRiskResult.value?.daily_risks || [])
 
-const todayRisk = computed(() => {
-  return dailyRisks.value.length > 0 
-    ? (dailyRisks.value[0].risk || 0) 
-    : (fireRiskResult.value?.weekly_risk_mean || 0)
-})
-
-const todayRiskPercent = computed(() => todayRisk.value * 100)
+const weeklyRiskMean = computed(() => fireRiskResult.value?.weekly_risk_mean ?? 0)
+const weeklyRiskPercent = computed(() => weeklyRiskMean.value * 100)
 
 const riskColor = computed(() => {
-  const percent = todayRiskPercent.value
+  const percent = weeklyRiskPercent.value
   if (percent < 20) return '#10b981'
   if (percent < 40) return '#14b8a6'
   if (percent < 60) return '#f59e0b'
@@ -105,7 +98,7 @@ const chartOptions = computed(() => ({
 const chartSeries = computed(() => [{
   name: t('analysis.riskSeries'),
   data: dailyRisks.value.map(d => ({ 
-    x: new Date(d.day).getTime(), 
+    x: parseDateLocal(d.day).getTime(), 
     y: Math.round(d.risk * 100) 
   }))
 }])

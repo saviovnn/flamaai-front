@@ -14,6 +14,7 @@ import { ref, computed, nextTick } from 'vue'
 import { FileDown } from 'lucide-vue-next'
 import { jsPDF } from 'jspdf'
 import { useGlobalStore } from '@/stores/global'
+import { parseDateLocal } from '@/lib/utils'
 
 const globalStore = useGlobalStore()
 const isGenerating = ref(false)
@@ -36,7 +37,7 @@ const logoDataURL = svgToDataURL(logoSvgString)
 const getRiskLabel = (p) => p < 20 ? 'Mínimo' : p < 40 ? 'Baixo' : p < 60 ? 'Moderado' : p < 80 ? 'Elevado' : 'Extremo'
 const getRiskColor = (p) => p < 20 ? '#10b981' : p < 40 ? '#14b8a6' : p < 60 ? '#f59e0b' : p < 80 ? '#f97316' : '#e11d48'
 const formatDate = (d) => new Date(d).toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' })
-const formatDayShort = (iso) => { try { return new Date(iso).toLocaleDateString('pt-BR', { weekday: 'short', day: '2-digit' }).replace('.', '') } catch { return '—' } }
+const formatDayShort = (iso) => { try { return parseDateLocal(iso).toLocaleDateString('pt-BR', { weekday: 'short', day: '2-digit' }).replace('.', '') } catch { return '—' } }
 
 // CSS base isolado para o PDF (não afeta a interface)
 const getBaseStyles = () => `

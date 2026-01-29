@@ -1,6 +1,5 @@
 <template>
   <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
-    <!-- Card 1: Qualidade do Ar / Histórico Climático -->
     <div class="bg-white dark:bg-card rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 border border-gray-200 dark:border-border">
       <div class="flex items-center gap-3 sm:gap-4 mb-4 sm:mb-6 lg:mb-8">
         <div
@@ -69,7 +68,6 @@ import { useI18n } from '@/composables/useI18n'
 const globalStore = useGlobalStore()
 const { t } = useI18n()
 
-// Responsive chart height
 const windowWidth = ref(typeof window !== 'undefined' ? window.innerWidth : 1024)
 
 const chartHeight = computed(() => {
@@ -87,11 +85,9 @@ onUnmounted(() => {
   if (resizeHandler) window.removeEventListener('resize', resizeHandler)
 })
 
-// Dados do store
 const weatherResult = computed(() => globalStore.orchestratorResponse?.weather_result)
 const geocodingResult = computed(() => globalStore.orchestratorResponse?.geocoding_result)
 
-// Computed
 const preference = computed(() => geocodingResult.value?.preference || 'weather')
 const weatherFuture = computed(() => weatherResult.value?.weather_future_7d?.[0]?.daily || {})
 const weatherPast = computed(() => weatherResult.value?.weather_past_7d?.[0]?.daily || {})
@@ -100,7 +96,6 @@ const airPast = computed(() => weatherResult.value?.air_past_7d?.[0]?.daily || {
 
 const safeLast = (arr) => (Array.isArray(arr) && arr.length ? arr[arr.length - 1] : null)
 
-// AQI Logic
 const currentPM25 = computed(() => {
   const v = airFuture.value.pm2_5?.[0]
   return v === null || v === undefined ? safeLast(airPast.value.pm2_5) : v
@@ -127,7 +122,6 @@ const aqiColorClass = computed(() => {
   return 'text-rose-500'
 })
 
-// Chart Options
 const commonOptions = computed(() => ({
   chart: { toolbar: { show: false }, zoom: { enabled: false }, fontFamily: 'Inter, sans-serif' },
   grid: { borderColor: globalStore.isDark ? '#1e293b' : '#f1f5f9', strokeDashArray: 4 },
@@ -155,7 +149,6 @@ const zipTimeSeriesFiltered = (times, values) => {
   for (let i = 0; i < n; i++) {
     const t = times[i]
     const v = values[i]
-    // Pula valores null ou undefined
     if (!t || v === null || v === undefined || typeof v !== 'number') continue
     const x = new Date(t).getTime()
     if (!Number.isFinite(x)) continue
@@ -172,7 +165,6 @@ const airQualityChartSeries = computed(() => {
   const futurePm25 = airFuture.value.pm2_5 || []
   const futurePm10 = airFuture.value.pm10 || []
   
-  // Combina passado e futuro, filtrando nulls
   const pm25Past = zipTimeSeriesFiltered(pastTimes, pastPm25)
   const pm25Future = zipTimeSeriesFiltered(futureTimes, futurePm25)
   const pm10Past = zipTimeSeriesFiltered(pastTimes, pastPm10)
@@ -208,7 +200,6 @@ const airTrendSeries = computed(() => {
   const times = airFuture.value.time || []
   const pm25 = airFuture.value.pm2_5 || []
   
-  // Filtra apenas valores válidos (não null)
   const data = []
   for (let i = 0; i < Math.min(times.length, pm25.length, 7); i++) {
     const t = times[i]
@@ -275,7 +266,6 @@ const weatherHistorySeries = computed(() => {
   const pastTimes = past?.time || []
   const futureTimes = future?.time || []
   
-  // Helper para pegar array de forma segura
   const getArray = (obj, ...keys) => {
     for (const key of keys) {
       const arr = obj?.[key]
@@ -284,11 +274,9 @@ const weatherHistorySeries = computed(() => {
     return []
   }
   
-  // Helper para criar série de dados com timestamps
   const createTimeSeries = (pTimes, pValues, fTimes, fValues) => {
     const dataMap = new Map()
     
-    // Adiciona dados do passado
     if (Array.isArray(pTimes) && Array.isArray(pValues)) {
       pTimes.forEach((t, i) => {
         const v = pValues[i]
@@ -298,7 +286,6 @@ const weatherHistorySeries = computed(() => {
       })
     }
     
-    // Adiciona/sobrescreve com dados do futuro
     if (Array.isArray(fTimes) && Array.isArray(fValues)) {
       fTimes.forEach((t, i) => {
         const v = fValues[i]
@@ -308,7 +295,6 @@ const weatherHistorySeries = computed(() => {
       })
     }
     
-    // Converte para array ordenado por data
     const result = Array.from(dataMap.entries())
       .sort((a, b) => new Date(a[0]).getTime() - new Date(b[0]).getTime())
       .slice(-14)
@@ -370,7 +356,6 @@ const precipSeries = computed(() => {
   const times = weatherFuture.value.time || []
   const prec = weatherFuture.value.precipitation_sum || []
   
-  // Inclui todos os valores (mesmo 0), apenas filtra null/undefined
   const data = []
   for (let i = 0; i < Math.min(times.length, prec.length, 7); i++) {
     const t = times[i]

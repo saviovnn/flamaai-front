@@ -69,29 +69,23 @@ const lat = computed(() => geocodingResult.value?.lat)
 const lng = computed(() => geocodingResult.value?.lng)
 const mapGeometry = computed(() => mapResult.value?.map)
 
-const todayRisk = computed(() => {
-  const risks = fireRiskResult.value?.daily_risks || []
-  return risks.length > 0 
-    ? (risks[0].risk || 0) 
-    : (fireRiskResult.value?.weekly_risk_mean || 0)
-})
-
-const todayRiskPercent = computed(() => todayRisk.value * 100)
+const weeklyRiskMean = computed(() => fireRiskResult.value?.weekly_risk_mean ?? 0)
+const weeklyRiskPercent = computed(() => weeklyRiskMean.value * 100)
 
 const riskColor = computed(() => {
-  const percent = todayRiskPercent.value
+  const percent = weeklyRiskPercent.value
   if (percent < 20) return '#10b981'
   if (percent < 40) return '#14b8a6'
-  if (percent < 80) return '#f59e0b'
+  if (percent < 60) return '#f59e0b'
   if (percent < 80) return '#f97316'
   return '#e11d48'
 })
 
 const riskColorBorder = computed(() => {
-  const percent = todayRiskPercent.value
+  const percent = weeklyRiskPercent.value
   if (percent < 20) return darkenColor(riskColor.value, 50)
   if (percent < 40) return darkenColor(riskColor.value, 60)
-  if (percent < 80) return darkenColor(riskColor.value, 35)
+  if (percent < 60) return darkenColor(riskColor.value, 35)
   if (percent < 80) return darkenColor(riskColor.value, 60)
   return darkenColor(riskColor.value, 50)
 })
