@@ -33,14 +33,13 @@
                 ? 'text-red-500 dark:text-red-500' 
                 : 'text-gray-900 dark:text-foreground'"
             >
-              {{ globalStore.searchError || 'Qual região vamos analizar?' }}
+              {{ globalStore.searchError || t('dashboard.whatRegion') }}
             </h1>
           </div>
           
           <div class="w-full flex justify-center">
             <SearchInput
               v-if="!globalStore.isSearchLoading"
-              placeholder="Digite o nome da cidade, endereço latitude e longitude..."
             />
             <Loading v-else class="w-full h-full" />
           </div>
@@ -68,6 +67,9 @@ import { ref, computed, watch, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useGlobalStore } from '@/stores/global'
+import { useI18n } from '@/composables/useI18n'
+
+const { t } = useI18n()
 import logoLight from '@/assets/logo.svg'
 import logoDark from '@/assets/logo-dark.svg'
 import SearchInput from '@/components/SearchInput.vue'
@@ -103,7 +105,7 @@ onMounted(() => {
 const logo = computed(() => globalStore.isDark ? logoDark : logoLight)
 
 const userName = computed(() => {
-  return globalStore.user?.name || 'Usuário'
+  return globalStore.user?.name || t('dashboard.user')
 })
 
 const userInitials = computed(() => {

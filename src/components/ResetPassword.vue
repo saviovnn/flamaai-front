@@ -2,10 +2,10 @@
   <div>
     <div class="text-center mb-10">
       <h2 class="text-3xl font-bold text-gray-900 dark:text-foreground mb-2">
-        Redefina sua senha para acessar
+        {{ t('resetPassword.title') }}
       </h2>
       <p class="text-gray-500 dark:text-muted-foreground">
-        Digite sua nova senha e confirme
+        {{ t('resetPassword.subtitle') }}
       </p>
     </div>
 
@@ -13,8 +13,8 @@
       <Input
         :modelValue="newPassword"
         @update:modelValue="handleNewPasswordUpdate"
-        label="Digite sua nova senha"
-        placeholder="Digite sua nova senha"
+        :label="t('resetPassword.newPasswordLabel')"
+        :placeholder="t('resetPassword.newPasswordLabel')"
         :disabled="loading"
         :error="errors.newPassword"
         secret
@@ -23,8 +23,8 @@
       <Input
         :modelValue="authStore.resetPasswordConfirmPassword"
         @update:modelValue="handleConfirmPasswordUpdate"
-        label="Confirme sua senha"
-        placeholder="Confirme sua senha"
+        :label="t('resetPassword.confirmPassword')"
+        :placeholder="t('resetPassword.confirmPassword')"
         :disabled="loading"
         :error="errors.confirmPassword"
         secret
@@ -37,13 +37,13 @@
         variant="primary"
         class="mt-8"
       >
-        Continuar
+        {{ t('resetPassword.continue') }}
       </Button>
     </form>
 
     <div class="text-center mt-6">
       <Button @click="handleCancel" variant="secondary" class="w-full">
-        Cancelar
+        {{ t('resetPassword.cancel') }}
       </Button>
     </div>
   </div>
@@ -51,8 +51,11 @@
 
 <script setup>
 import { useAuthStore } from "@/stores/auth";
+import { useI18n } from "@/composables/useI18n";
 import Input from "@/components/Input.vue";
 import Button from "@/components/Button.vue";
+
+const { t } = useI18n()
 
 const props = defineProps({
   newPassword: {

@@ -8,13 +8,13 @@
       <div class="text-center mb-16">
         <div class="inline-flex items-center gap-2 mb-4 text-[#FA5D19] text-sm font-medium uppercase tracking-wider">
           <span>//</span>
-          <span>Como Funciona</span>
+          <span>{{ t('howItWorks.sectionLabel') }}</span>
         </div>
         <h2 class="text-3xl md:text-4xl lg:text-5xl font-semibold mb-4 text-foreground">
-          Arquitetura do sistema
+          {{ t('howItWorks.title') }}
         </h2>
         <p class="text-lg text-muted-foreground max-w-2xl mx-auto">
-          Fluxo de concepção e processamento dos dados.
+          {{ t('howItWorks.subtitle') }}
         </p>
       </div>
 
@@ -50,35 +50,38 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { Database, Brain, FileText, History } from 'lucide-vue-next'
+import { useI18n } from '@/composables/useI18n'
 
 const sectionRef = ref(null)
 const featureRefs = ref([])
 const isVisible = ref([false, false, false, false])
 
-const features = [
+const { t } = useI18n()
+
+const features = computed(() => [
   {
     icon: Database,
-    title: 'Aquisição de dados',
-    description: 'Integração de dados meteorológicos e produtos de sensoriamento remoto provenientes de bases oficiais.'
+    title: t('howItWorks.feature1Title'),
+    description: t('howItWorks.feature1Desc')
   },
   {
     icon: Brain,
-    title: 'Processamento e modelagem',
-    description: 'Aplicação de modelos de aprendizado de máquina para estimativa de risco diário e semanal.'
+    title: t('howItWorks.feature2Title'),
+    description: t('howItWorks.feature2Desc')
   },
   {
     icon: FileText,
-    title: 'Camada explicativa',
-    description: 'Mecanismo baseado em recuperação de contexto para geração de explicações interpretáveis.'
+    title: t('howItWorks.feature3Title'),
+    description: t('howItWorks.feature3Desc')
   },
   {
     icon: History,
-    title: 'Visualização e histórico',
-    description: 'Armazenamento das análises e exibição por meio de gráficos interativos.'
+    title: t('howItWorks.feature4Title'),
+    description: t('howItWorks.feature4Desc')
   }
-]
+])
 
 const handleScroll = () => {
   if (!sectionRef.value) return
@@ -88,7 +91,7 @@ const handleScroll = () => {
   const windowHeight = window.innerHeight
 
   if (rect.top < windowHeight * 0.6 && rect.bottom > 0) {
-    features.forEach((_, index) => {
+    features.value.forEach((_, index) => {
       if (!isVisible.value[index]) {
         setTimeout(() => {
           isVisible.value[index] = true

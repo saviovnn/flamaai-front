@@ -26,8 +26,10 @@ import {
   Sparkles, Sun, Leaf
 } from 'lucide-vue-next'
 import { useGlobalStore } from '@/stores/global'
+import { useI18n } from '@/composables/useI18n'
 
 const globalStore = useGlobalStore()
+const { t } = useI18n()
 
 // Dados do store
 const weatherResult = computed(() => globalStore.orchestratorResponse?.weather_result)
@@ -95,10 +97,10 @@ const factorStats = computed(() => {
   }
 
   return [
-    { label: 'Temperatura', value: (currentTempMax.value ?? 0).toFixed(1), unit: '°C', icon: Thermometer, bg: 'bg-orange-50 dark:bg-orange-900/20', color: 'text-orange-500' },
-    { label: 'Umidade', value: (currentHumidity.value ?? 0).toFixed(0), unit: '%', icon: Droplet, bg: 'bg-blue-50 dark:bg-blue-900/20', color: 'text-blue-500' },
-    { label: 'Vento Máx', value: (currentWindMax.value ?? 0).toFixed(1), unit: 'km/h', icon: Wind, bg: 'bg-gray-50 dark:bg-secondary', color: 'text-gray-500 dark:text-muted-foreground' },
-    { label: 'UV Máximo', value: (currentUvMax.value ?? 0).toFixed(1), unit: 'índice', icon: Sun, bg: 'bg-amber-50 dark:bg-amber-900/20', color: 'text-amber-500' }
+    { label: t('analysis.statTemperature'), value: (currentTempMax.value ?? 0).toFixed(1), unit: '°C', icon: Thermometer, bg: 'bg-orange-50 dark:bg-orange-900/20', color: 'text-orange-500' },
+    { label: t('analysis.statHumidity'), value: (currentHumidity.value ?? 0).toFixed(0), unit: '%', icon: Droplet, bg: 'bg-blue-50 dark:bg-blue-900/20', color: 'text-blue-500' },
+    { label: t('analysis.statWindMax'), value: (currentWindMax.value ?? 0).toFixed(1), unit: 'km/h', icon: Wind, bg: 'bg-gray-50 dark:bg-secondary', color: 'text-gray-500 dark:text-muted-foreground' },
+    { label: t('analysis.statUvMax'), value: (currentUvMax.value ?? 0).toFixed(1), unit: t('analysis.unitIndex'), icon: Sun, bg: 'bg-amber-50 dark:bg-amber-900/20', color: 'text-amber-500' }
   ]
 })
 </script>

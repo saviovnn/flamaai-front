@@ -11,15 +11,16 @@
 
     <div class="absolute inset-0 flex flex-col justify-center px-16 z-10">
       <h1 class="text-4xl font-bold text-white leading-tight mb-4">
-        Antecipe queimadas<br />
-        e tome decisões melhores<br />
-        com o poder do FlamaAI.
+        {{ t('login.loginSidebarTitle') }}
       </h1>
     </div>
   </div>
 </template>
 
 <script setup>
+import { useI18n } from "@/composables/useI18n";
 import abstractBg from "@/assets/abstract.jpg";
+
+const { t } = useI18n()
 </script>
 

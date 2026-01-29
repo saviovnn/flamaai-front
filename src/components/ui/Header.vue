@@ -21,8 +21,8 @@
       )"
     >
       <RouterLink to="/" aria-label="home" class="flex items-center gap-2">
-        <img :src="logo" alt="FlamaAI" class="h-4 w-auto" />
-        <span :class="cn('text-lg font-bold font-inter', !scrolled ? 'text-white' : 'text-foreground')">FlamaAI</span>
+        <img :src="logo" :alt="t('app.name')" class="h-4 w-auto" />
+        <span :class="cn('text-lg font-bold font-inter', !scrolled ? 'text-white' : 'text-foreground')">{{ t('app.name') }}</span>
       </RouterLink>
       
       <div class="hidden items-center gap-4 md:flex">
@@ -46,7 +46,7 @@
             'group inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FA5D19] focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-9 px-4 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white hover:text-white no-underline'
           )"
         >
-          Acessar demonstração
+          {{ t('header.accessDemo') }}
           <svg class="ml-1.5 w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
           </svg>
@@ -59,7 +59,7 @@
         aria-label="Toggle menu"
         :aria-expanded="open"
       >
-        <span class="sr-only">Menu</span>
+        <span class="sr-only">{{ t('header.menu') }}</span>
         <div class="flex flex-col items-center justify-center w-5 h-5 space-y-1.5">
           <span
             :class="[
@@ -124,7 +124,7 @@
               class="w-full inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FA5D19] focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-10 px-4 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white hover:text-white no-underline"
               @click="open = false"
             >
-              Acessar demonstração
+              {{ t('header.accessDemo') }}
               <svg class="ml-1.5 w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
               </svg>
@@ -142,6 +142,7 @@ import { RouterLink } from 'vue-router'
 import { cn } from '@/lib/utils'
 import { useScroll } from '@/composables/useScroll'
 import { useGlobalStore } from '@/stores/global'
+import { useI18n } from '@/composables/useI18n'
 import logoDark from '@/assets/logo-dark.svg'
 
 const globalStore = useGlobalStore()
@@ -150,28 +151,14 @@ const scrolled = useScroll(10)
 
 const logo = computed(() => logoDark)
 
-const links = [
-  {
-    label: 'Como Funciona',
-    href: '#features',
-  },
-  {
-    label: 'Monitoramento',
-    href: '#monitoramento',
-  },
-  {
-    label: 'Diferenciais',
-    href: '#diferenciais',
-  },
-  {
-    label: 'Fontes de Dados',
-    href: '#fontes-dados',
-  },
-  {
-    label: 'FAQ',
-    href: '#faq',
-  },
-]
+const { t } = useI18n()
+const links = computed(() => [
+  { label: t('header.howItWorks'), href: '#features' },
+  { label: t('header.monitoring'), href: '#monitoramento' },
+  { label: t('header.benefits'), href: '#diferenciais' },
+  { label: t('header.dataSources'), href: '#fontes-dados' },
+  { label: t('header.faq'), href: '#faq' },
+])
 
 const scrollToSection = (sectionId) => {
   const element = document.querySelector(sectionId)

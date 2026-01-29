@@ -6,7 +6,8 @@ export const useGlobalStore = defineStore('global', () => {
   const isSettingsOpen = ref(false)
   
   const theme = ref('system')
-  
+  const locale = ref('pt')
+
   const effectiveTheme = computed(() => {
     if (theme.value === 'system') {
       return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
@@ -55,6 +56,38 @@ export const useGlobalStore = defineStore('global', () => {
       theme.value = newTheme
       localStorage.setItem('theme', newTheme)
       applyTheme()
+    }
+  }
+
+  const initLocale = () => {
+    if (typeof window === 'undefined') return
+    const saved = localStorage.getItem('locale')
+    if (saved && ['pt', 'en', 'es'].includes(saved)) {
+      locale.value = saved
+      return
+    }
+    const browserLang = (
+      navigator.language ||
+      navigator.userLanguage ||
+      (navigator.languages && navigator.languages[0]) ||
+      'en'
+    ).toLowerCase().split('-')[0]
+    if (browserLang === 'pt') {
+      locale.value = 'pt'
+    } else if (browserLang === 'es') {
+      locale.value = 'es'
+    } else {
+      locale.value = 'en'
+    }
+    localStorage.setItem('locale', locale.value)
+  }
+
+  const setLocale = (newLocale) => {
+    if (['pt', 'en', 'es'].includes(newLocale)) {
+      locale.value = newLocale
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('locale', newLocale)
+      }
     }
   }
   
@@ -251,6 +284,8 @@ export const useGlobalStore = defineStore('global', () => {
     })
   }
   
+  initLocale()
+
   return {
     isSidebarOpen,
     isSettingsOpen,
@@ -275,6 +310,9 @@ export const useGlobalStore = defineStore('global', () => {
     isDark,
     initTheme,
     setTheme,
+    locale,
+    initLocale,
+    setLocale,
     isRecording,
     transcribedText,
     startRecording,

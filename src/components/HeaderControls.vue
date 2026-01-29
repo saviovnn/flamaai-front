@@ -10,7 +10,7 @@
       </div>
       
       <div class="flex items-center gap-1 bg-white dark:bg-card rounded-full border border-gray-200 dark:border-border p-0.5">
-        <Tooltip text="Abrir barra lateral" position="bottom">
+        <Tooltip :text="t('headerControls.openSidebar')" position="bottom">
           <button
             @click="toggleSidebar()"
             class="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-accent transition-colors"
@@ -19,7 +19,7 @@
           </button>
         </Tooltip>
         
-        <Tooltip text="Nova analise" position="bottom">
+        <Tooltip :text="t('headerControls.newAnalysis')" position="bottom">
           <button
             @click="handleNewAnalysis(); $emit('new-chat')"
             class="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-accent transition-colors"
@@ -38,8 +38,10 @@ import logoLight from '@/assets/logo.svg'
 import logoDark from '@/assets/logo-dark.svg'
 import Tooltip from './Tooltip.vue'
 import { useGlobalStore } from '@/stores/global'
+import { useI18n } from '@/composables/useI18n'
 
 const globalStore = useGlobalStore()
+const { t } = useI18n()
 
 const logo = computed(() => globalStore.isDark ? logoDark : logoLight)
 

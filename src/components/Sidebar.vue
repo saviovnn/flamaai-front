@@ -7,10 +7,10 @@
       <div class="p-3 sm:p-4">
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-2">
-            <img :src="logo" alt="FlamaAI" class="w-7 h-7 sm:w-8 sm:h-8 flex-shrink-0" />
-            <span class="text-lg sm:text-2xl font-bold text-gray-900 dark:text-foreground font-inter">FlamaAI</span>
+            <img :src="logo" :alt="t('app.name')" class="w-7 h-7 sm:w-8 sm:h-8 flex-shrink-0" />
+            <span class="text-lg sm:text-2xl font-bold text-gray-900 dark:text-foreground font-inter">{{ t('app.name') }}</span>
           </div>
-          <Tooltip text="Fechar barra lateral" position="bottom">
+          <Tooltip :text="t('sidebar.closeSidebar')" position="bottom">
             <button
               @click="closeSidebar()"
               class="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-accent transition-colors text-gray-600 dark:text-muted-foreground"
@@ -27,7 +27,7 @@
           class="w-full flex items-center justify-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5 bg-white dark:bg-card border border-gray-200 dark:border-border rounded-lg text-xs sm:text-sm font-medium text-gray-700 dark:text-muted-foreground hover:bg-gray-50 dark:hover:bg-secondary transition-colors"
         >
           <BadgePlus :size="16" class="sm:w-[18px] sm:h-[18px]" />
-          Nova analise
+          {{ t('sidebar.newAnalysis') }}
         </button>
       </div>
 
@@ -59,7 +59,7 @@
         </div>
 
         <div v-if="Object.keys(groupedSearches).length === 0" class="px-3 sm:px-4 py-6 sm:py-8 text-center">
-          <p class="text-xs sm:text-sm text-gray-500 dark:text-muted-foreground">Nenhuma análise ainda</p>
+          <p class="text-xs sm:text-sm text-gray-500 dark:text-muted-foreground">{{ t('sidebar.noAnalysisYet') }}</p>
         </div>
       </div>
       
@@ -77,6 +77,7 @@
 <script setup>
 import { computed, onMounted, watch } from 'vue'
 import { BadgePlus, PanelRight } from 'lucide-vue-next'
+import { useI18n } from '@/composables/useI18n'
 import logoLight from '@/assets/logo.svg'
 import logoDark from '@/assets/logo-dark.svg'
 import logoAlto from '@/assets/logo-alto.svg'
@@ -107,15 +108,17 @@ const riscoLogosDark = {
   undefined: logoUndefinedDark
 }
 
-const riscoTooltips = {
-  alto: 'Risco acima de 80%',
-  medio: 'Risco entre 30% e 80%',
-  baixo: 'Risco abaixo de 30%',
-  regular: 'Risco regular',
-  low: 'Risco baixo',
-  high: 'Risco alto',
-  undefined: 'Risco não definido'
-}
+const { t } = useI18n()
+
+const riscoTooltips = computed(() => ({
+  alto: t('sidebar.riskHigh'),
+  medio: t('sidebar.riskMedium'),
+  baixo: t('sidebar.riskLow'),
+  regular: t('sidebar.riskRegular'),
+  low: t('sidebar.riskLow'),
+  high: t('sidebar.riskHigh'),
+  undefined: t('sidebar.riskUndefined')
+}))
 
 const globalStore = useGlobalStore()
 const authStore = useAuthStore()
@@ -137,7 +140,7 @@ const getRiscoLogo = (riscoMedio) => {
 }
 
 const getRiscoTooltip = (riscoMedio) => {
-  return riscoTooltips[riscoMedio] || riscoTooltips.undefined
+  return riscoTooltips.value[riscoMedio] || riscoTooltips.value.undefined
 }
 
 onMounted(async () => {
@@ -281,9 +284,9 @@ const groupedSearches = computed(() => {
     
     if (search.month === currentMonth && search.year === currentYear) {
       if (searchDate.getTime() === todayDate.getTime()) {
-        groupKey = 'Hoje'
+        groupKey = t('sidebar.today')
       } else if (searchDate >= thirtyDaysAgo) {
-        groupKey = '30 dias'
+        groupKey = t('sidebar.last30Days')
       } else {
         groupKey = `${String(search.month).padStart(2, '0')}-${search.year}`
       }
@@ -298,7 +301,7 @@ const groupedSearches = computed(() => {
   })
   
   const sortedGroups = {}
-  const groupOrder = ['Hoje', '30 dias']
+  const groupOrder = [t('sidebar.today'), t('sidebar.last30Days')]
   
   groupOrder.forEach(key => {
     if (groups[key]) {

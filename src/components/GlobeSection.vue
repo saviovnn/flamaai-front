@@ -25,13 +25,13 @@
         >
           <div class="inline-flex items-center gap-2 mb-6 text-[#FA5D19]">
             <span>//</span>
-            <span class="text-sm font-medium uppercase tracking-wider">Monitoramento</span>
+            <span class="text-sm font-medium uppercase tracking-wider">{{ t('globeSection.sectionLabel') }}</span>
           </div>
           <h4 class="text-3xl md:text-2xl lg:text-3xl font-semibold mb-6 text-white">
-            Abrangência territorial
+            {{ t('globeSection.title') }}
           </h4>
           <p class="text-lg text-muted-foreground">
-            O sistema permite análise em escala nacional, com possibilidade de seleção por município ou coordenadas geográficas.
+            {{ t('globeSection.description') }}
           </p>
         </div>
       </div>
@@ -41,8 +41,11 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
+import { useI18n } from '@/composables/useI18n'
 import Globe from '@/components/Globe.vue'
 import { Satellite } from 'lucide-vue-next'
+
+const { t } = useI18n()
 
 const sectionRef = ref(null)
 const scrollRotation = ref([-15, 0, 0])

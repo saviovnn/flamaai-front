@@ -30,7 +30,7 @@
       
       <div class="flex items-center justify-between flex-wrap gap-2">
         <div class="flex items-center gap-1 sm:gap-1.5">
-          <Tooltip text="Complementar análise com dados de clima e tempo" position="bottom">
+          <Tooltip :text="t('searchInput.tooltipClima')" position="bottom">
             <button
               @click="selectClimaTempo"
               :class="[
@@ -41,12 +41,12 @@
               ]"
             >
               <Cloudy :size="14" class="sm:w-[15px] sm:h-[15px] flex-shrink-0" />
-              <span class="hidden sm:inline">Clima e Tempo</span>
+              <span class="hidden sm:inline">{{ t('searchInput.climaTempo') }}</span>
             </button>
           </Tooltip>
           
           
-          <Tooltip text="Complementar análise com dados da qualidade do ar" position="bottom">
+          <Tooltip :text="t('searchInput.tooltipAr')" position="bottom">
             <button
               @click="selectQualidadeAr"
               :class="[
@@ -57,14 +57,14 @@
               ]"
             >
               <Wind :size="14" class="sm:w-[15px] sm:h-[15px] flex-shrink-0" />
-              <span class="hidden sm:inline">Qualidade do Ar</span>
+              <span class="hidden sm:inline">{{ t('searchInput.qualidadeAr') }}</span>
             </button>
           </Tooltip>
         </div>
         
          
         <div class="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
-          <Tooltip text="Usar localização atual" position="bottom" mobile-position="right">
+          <Tooltip :text="t('searchInput.useLocation')" position="bottom" mobile-position="right">
             <button
               @click="handleLocation"
               class="p-1.5 sm:p-2 text-gray-400 dark:text-muted-foreground hover:text-gray-600 dark:hover:text-foreground transition-colors"
@@ -75,7 +75,7 @@
 
           <Tooltip 
             v-if="hasSpeechRecognition()"
-            :text="globalStore.isRecording ? 'Parar gravação' : 'Transcrever mensagem com voz'" 
+            :text="globalStore.isRecording ? t('searchInput.stopRecording') : t('searchInput.transcribeVoice')" 
             position="bottom" mobile-position="right"
           >
             <button
@@ -92,7 +92,7 @@
             </button>
           </Tooltip>
           
-          <Tooltip text="Enviar mensagem" position="bottom">
+          <Tooltip :text="t('searchInput.sendMessage')" position="bottom">
             <button
               @click="handleSubmit"
               :disabled="!query.trim()"
@@ -118,6 +118,9 @@ import { Cloudy, Wind, MapPin, Mic, CircleStop, ArrowUp } from 'lucide-vue-next'
 import Tooltip from './Tooltip.vue'
 import { useGlobalStore } from '@/stores/global'
 import { useAuthStore } from '@/stores/auth'
+import { useI18n } from '@/composables/useI18n'
+
+const { t } = useI18n()
 import { orchestratorService, getAllSearchHistoryService } from '@/api/services'
 import micInSound from '@/assets/mic-in.wav'
 import micOutSound from '@/assets/mic-out.wav'
@@ -155,7 +158,7 @@ micOutAudio.preload = 'auto'
 const props = defineProps({
   placeholder: {
     type: String,
-    default: 'Digite sua mensagem...'
+    default: ''
   },
   modelValue: {
     type: String,
@@ -195,15 +198,9 @@ watch(query, (newValue) => {
 })
 
 const responsivePlaceholder = computed(() => {
-  if (windowWidth.value < 640) {
-    if (props.placeholder.includes('cidade')) {
-      return 'Digite cidade ou coordenadas...'
-    }
-    return props.placeholder.length > 30 
-      ? props.placeholder.substring(0, 30) + '...'
-      : props.placeholder
-  }
-  return props.placeholder
+  if (props.placeholder) return props.placeholder
+  if (windowWidth.value < 640) return t('searchInput.placeholderShort')
+  return t('searchInput.placeholder')
 })
 
 const climaTempo = computed(() => globalStore.preference === 'weather')

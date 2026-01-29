@@ -6,13 +6,13 @@
       </h1>
       <p class="text-xs sm:text-sm text-gray-500 dark:text-muted-foreground font-medium flex items-center gap-1.5 sm:gap-2 flex-wrap">
         <MapPin :size="14" class="sm:w-4 sm:h-4 text-gray-400 dark:text-muted-foreground flex-shrink-0" />
-        <span class="truncate">{{ geocodingResult?.publicPlace || geocodingResult?.logradouro || 'Logradouro não identificado' }}, {{ geocodingResult?.neighborhood || geocodingResult?.bairro || 'Bairro não identificado' }} — {{ geocodingResult?.state || geocodingResult?.estado }}</span>
+        <span class="truncate">{{ geocodingResult?.publicPlace || geocodingResult?.logradouro || t('analysis.streetNotFound') }}, {{ geocodingResult?.neighborhood || geocodingResult?.bairro || t('analysis.neighborhoodNotFound') }} — {{ geocodingResult?.state || geocodingResult?.estado }}</span>
       </p>
     </div>
 
     <div class="flex items-center gap-2 sm:gap-3 flex-shrink-0">
       <div class="flex flex-col items-end">
-        <span class="text-[9px] sm:text-[10px] font-bold text-gray-400 dark:text-muted-foreground uppercase tracking-widest">Coordenadas</span>
+        <span class="text-[9px] sm:text-[10px] font-bold text-gray-400 dark:text-muted-foreground uppercase tracking-widest">{{ t('analysis.coordinates') }}</span>
         <span class="text-xs sm:text-sm font-mono font-medium text-gray-600 dark:text-muted-foreground">
           {{ geocodingResult?.lat?.toFixed(2) }}, {{ geocodingResult?.lng?.toFixed(2) }}
         </span>
@@ -26,7 +26,10 @@
 import { computed } from 'vue'
 import { MapPin } from 'lucide-vue-next'
 import { useGlobalStore } from '@/stores/global'
+import { useI18n } from '@/composables/useI18n'
 import PDFReportGenerator from './PDFReportGenerator.vue'
+
+const { t } = useI18n()
 
 const props = defineProps({
   reportContainerRef: {

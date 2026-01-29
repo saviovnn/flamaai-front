@@ -1,125 +1,93 @@
 <template>
-  <section id="fontes-dados" ref="sectionRef" class="relative py-20 lg:py-28 bg-muted/30 overflow-visible">
-    <div class="relative mx-auto max-w-7xl px-6">
+  <section id="fontes-dados" ref="sectionRef" class="relative py-24 lg:py-32 bg-background">
+    <div class="relative mx-auto max-w-6xl px-6 lg:px-8">
+      <!-- Header -->
       <div class="text-center mb-16">
         <div class="inline-flex items-center gap-2 mb-4 text-[#FA5D19] text-sm font-medium uppercase tracking-wider">
           <span>//</span>
-          <span>Fontes de Dados</span>
+          <span>{{ t('dataSources.sectionLabel') }}</span>
         </div>
         <h2 class="text-3xl md:text-4xl lg:text-5xl font-semibold mb-4 text-foreground">
-          Bases utilizadas
+          {{ t('dataSources.title') }}
         </h2>
         <p class="text-lg text-muted-foreground max-w-2xl mx-auto">
-          Conjunto de dados públicos utilizados para treinamento e validação
+          {{ t('dataSources.subtitle') }}
         </p>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8 max-w-5xl mx-auto">
+      <!-- Data Sources Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 max-w-5xl mx-auto">
+        <!-- INPE Card -->
         <a
           href="https://terrabrasilis.dpi.inpe.br/queimadas/portal/"
           target="_blank"
           rel="noopener noreferrer"
-          class="group bg-card border border-border rounded-2xl p-6 lg:p-8 hover:border-[#159cfa]/50 hover:shadow-xl hover:shadow-[#159cfa]/10 transition-all duration-300 hover:-translate-y-1 relative overflow-visible block"
-          :class="{ 'opacity-0 translate-y-4': !isVisible[0] }"
+          class="group relative bg-card border border-border/50 rounded-lg p-8 lg:p-10 hover:border-border transition-all duration-300 hover:shadow-lg"
+          :class="{ 'opacity-0 translate-y-8': !isVisible[0] }"
         >
-          <div class="absolute top-0 right-0 w-40 h-40 bg-[#159cfa]/5 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-          
-          <div class="relative z-10 flex flex-col gap-5 h-full">
-            <div class="flex items-start justify-between gap-4">
-              <div class="flex items-start gap-4 flex-1 min-w-0">
-                <div class="flex-shrink-0">
-                  <div class="bg-background border border-border rounded-xl p-3 lg:p-4 flex items-center justify-center group-hover:border-[#159cfa]/50 group-hover:shadow-md group-hover:scale-105 transition-all duration-300 w-16 h-16 lg:w-20 lg:h-20">
-                    <img 
-                      :src="inpeLogo" 
-                      alt="INPE Logo" 
-                      class="h-10 lg:h-12 w-auto object-contain"
-                    />
-                  </div>
-                </div>
-                
-                <!-- Nome -->
-                <div class="flex-1 min-w-0">
-                  <h3 
-                    class="text-lg lg:text-xl font-semibold text-foreground group-hover:text-[#159cfa] transition-colors leading-tight relative inline-block tooltip-trigger"
-                    title="Instituto Nacional de Pesquisas Espaciais"
-                  >
-                    INPE
-                    <span class="tooltip-text">Instituto Nacional de Pesquisas Espaciais</span>
-                  </h3>
-                </div>
-              </div>
-              
-              <div class="flex-shrink-0">
-                <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#159cfa]/10 border border-[#159cfa]/20">
-                  <div class="w-2 h-2 rounded-full bg-[#159cfa]"></div>
-                  <span class="text-xs font-medium text-[#159cfa] uppercase tracking-wider">Dados Oficiais</span>
-                </div>
-              </div>
+          <div class="flex flex-col items-center text-center space-y-8">
+            <!-- Logo Container -->
+            <div class="w-32 h-32 lg:w-40 lg:h-40 flex items-center justify-center bg-background border border-border/30 rounded-lg p-6 group-hover:border-border transition-colors duration-300">
+              <img 
+                :src="inpeLogo" 
+                alt="INPE - Instituto Nacional de Pesquisas Espaciais" 
+                class="max-w-full max-h-full object-contain"
+              />
             </div>
 
-            <div class="flex-1">
-              <p class="text-muted-foreground leading-relaxed text-sm lg:text-base">
-                Produtos de sensoriamento remoto e dados ambientais.
+            <!-- Organization Name -->
+            <div class="space-y-2">
+              <h3 class="text-xl lg:text-2xl font-bold text-foreground tracking-tight">
+                INPE
+              </h3>
+              <p class="text-sm text-muted-foreground font-light">
+                Instituto Nacional de Pesquisas Espaciais
               </p>
             </div>
 
-            <div class="flex items-center gap-2 text-sm lg:text-base text-[#159cfa] font-medium group-hover:gap-3 transition-all w-fit pt-2 border-t border-border/50">
-              <span>Visitar site oficial</span>
-              <svg class="w-4 h-4 lg:w-5 lg:h-5 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+            <!-- External Link Indicator -->
+            <div class="flex items-center gap-2 text-xs text-muted-foreground uppercase tracking-wider font-medium pt-4 border-t border-border/30 w-full justify-center">
+              <span>{{ t('dataSources.officialSite') }}</span>
+              <svg class="w-3 h-3 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
               </svg>
             </div>
           </div>
         </a>
 
+        <!-- Open Meteo Card -->
         <a
           href="https://open-meteo.com"
           target="_blank"
           rel="noopener noreferrer"
-          class="group bg-card border border-border rounded-2xl p-6 lg:p-8 hover:border-[#FA5D19]/50 hover:shadow-xl hover:shadow-[#FA5D19]/10 transition-all duration-300 hover:-translate-y-1 relative overflow-visible block"
-          :class="{ 'opacity-0 translate-y-4': !isVisible[1] }"
+          class="group relative bg-card border border-border/50 rounded-lg p-8 lg:p-10 hover:border-border transition-all duration-300 hover:shadow-lg"
+          :class="{ 'opacity-0 translate-y-8': !isVisible[1] }"
         >
-          <div class="absolute top-0 right-0 w-40 h-40 bg-[#FA5D19]/5 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-          
-          <div class="relative z-10 flex flex-col gap-5 h-full">
-            <div class="flex items-start justify-between gap-4">
-              <div class="flex items-start gap-4 flex-1 min-w-0">
-                <div class="flex-shrink-0">
-                  <div class="bg-background border border-border rounded-xl p-3 lg:p-4 flex items-center justify-center group-hover:border-[#FA5D19]/50 group-hover:shadow-md group-hover:scale-105 transition-all duration-300 w-16 h-16 lg:w-20 lg:h-20">
-                    <img 
-                      :src="openMeteoLogo" 
-                      alt="Open Meteo Logo" 
-                      class="h-10 lg:h-12 w-auto object-contain"
-                    />
-                  </div>
-                </div>
-                
-                <div class="flex-1 min-w-0">
-                  <h3 class="text-lg lg:text-xl font-semibold text-foreground group-hover:text-[#FA5D19] transition-colors leading-tight">
-                    Open Meteo
-                  </h3>
-                </div>
-              </div>
-              
-              <div class="flex-shrink-0">
-                <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#FA5D19]/10 border border-[#FA5D19]/20">
-                  <div class="w-2 h-2 rounded-full bg-[#FA5D19]"></div>
-                  <span class="text-xs font-medium text-[#FA5D19] uppercase tracking-wider">Tempo Real</span>
-                </div>
-              </div>
+          <div class="flex flex-col items-center text-center space-y-8">
+            <!-- Logo Container -->
+            <div class="w-32 h-32 lg:w-40 lg:h-40 flex items-center justify-center bg-background border border-border/30 rounded-lg p-6 group-hover:border-border transition-colors duration-300">
+              <img 
+                :src="openMeteoLogo" 
+                alt="Open Meteo - Weather Data API" 
+                class="max-w-full max-h-full object-contain"
+              />
             </div>
 
-            <!-- Descrição -->
-            <div class="flex-1">
-              <p class="text-muted-foreground leading-relaxed text-sm lg:text-base">
-                Dados meteorológicos globais em tempo quase real.
+            <!-- Organization Name -->
+            <div class="space-y-2">
+              <h3 class="text-xl lg:text-2xl font-bold text-foreground tracking-tight">
+                Open Meteo
+              </h3>
+              <p class="text-sm text-muted-foreground font-light">
+                {{ t('dataSources.openMeteoDesc') }}
               </p>
             </div>
 
-            <div class="flex items-center gap-2 text-sm lg:text-base text-[#FA5D19] font-medium group-hover:gap-3 transition-all w-fit pt-2 border-t border-border/50">
-              <span>Visitar site oficial</span>
-              <svg class="w-4 h-4 lg:w-5 lg:h-5 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+            <!-- External Link Indicator -->
+            <div class="flex items-center gap-2 text-xs text-muted-foreground uppercase tracking-wider font-medium pt-4 border-t border-border/30 w-full justify-center">
+              <span>{{ t('dataSources.officialSite') }}</span>
+              <svg class="w-3 h-3 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
               </svg>
             </div>
           </div>
@@ -131,7 +99,10 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
+import { useI18n } from '@/composables/useI18n'
 import inpeLogoImg from '@/assets/inpe-logo.svg'
+
+const { t } = useI18n()
 import openMeteoLogoImg from '@/assets/open-meteo-logo.png'
 
 const sectionRef = ref(null)
@@ -147,7 +118,7 @@ const handleScroll = () => {
   const rect = section.getBoundingClientRect()
   const windowHeight = window.innerHeight
 
-  if (rect.top < windowHeight * 0.5 && rect.bottom > 0) {
+  if (rect.top < windowHeight * 0.7 && rect.bottom > 0) {
     if (!isVisible.value[0]) {
       setTimeout(() => {
         isVisible.value[0] = true
@@ -156,7 +127,7 @@ const handleScroll = () => {
     if (!isVisible.value[1]) {
       setTimeout(() => {
         isVisible.value[1] = true
-      }, 250)
+      }, 200)
     }
   }
 }
@@ -170,45 +141,3 @@ onUnmounted(() => {
   window.removeEventListener('scroll', handleScroll)
 })
 </script>
-
-<style scoped>
-.tooltip-trigger {
-  position: relative;
-}
-
-.tooltip-text {
-  position: absolute;
-  bottom: 100%;
-  left: 50%;
-  transform: translateX(-50%) translateY(-8px);
-  background-color: hsl(var(--foreground));
-  color: hsl(var(--background));
-  padding: 8px 12px;
-  border-radius: 8px;
-  font-size: 0.875rem;
-  font-weight: 500;
-  white-space: nowrap;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.2s ease, transform 0.2s ease;
-  z-index: 100;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  margin-bottom: 8px;
-}
-
-.tooltip-text::after {
-  content: '';
-  position: absolute;
-  top: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  border: 6px solid transparent;
-  border-top-color: hsl(var(--foreground));
-}
-
-.tooltip-trigger:hover .tooltip-text {
-  opacity: 1;
-  transform: translateX(-50%) translateY(0);
-  pointer-events: auto;
-}
-</style>

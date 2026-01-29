@@ -2,10 +2,10 @@
   <div>
     <div class="text-center mb-10">
       <h2 class="text-3xl font-bold text-gray-900 dark:text-foreground mb-2">
-        Esqueceu sua senha e continue
+        {{ t('forgotPassword.title') }}
       </h2>
       <p class="text-gray-500 dark:text-muted-foreground">
-        Digite seu email para receber o código de verificação
+        {{ t('forgotPassword.subtitle') }}
       </p>
     </div>
 
@@ -14,8 +14,8 @@
         :modelValue="email"
         @update:modelValue="handleEmailUpdate"
         type="email"
-        label="Seu email"
-        placeholder="Digite seu email"
+        :label="t('forgotPassword.yourEmail')"
+        :placeholder="t('forgotPassword.placeholder')"
         :disabled="loading"
         :error="error"
       />
@@ -27,7 +27,7 @@
         variant="primary"
         class="mt-8"
       >
-        Enviar agora
+        {{ t('forgotPassword.sendNow') }}
       </Button>
     </form>
 
@@ -37,7 +37,7 @@
           @click="handleBack"
           class="text-gray-900 dark:text-foreground font-semibold hover:text-orange-600 underline transition-colors cursor-pointer"
         >
-          ← Voltar para login
+          {{ t('forgotPassword.backToLogin') }}
         </span>
       </p>
     </div>
@@ -46,8 +46,11 @@
 
 <script setup>
 import { useAuthStore } from "@/stores/auth";
+import { useI18n } from "@/composables/useI18n";
 import Input from "@/components/Input.vue";
 import Button from "@/components/Button.vue";
+
+const { t } = useI18n()
 
 const props = defineProps({
   email: {

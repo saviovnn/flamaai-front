@@ -1,7 +1,7 @@
 <template>
   <div v-if="error" class="error-container">
     <div class="error-content">
-      <p class="error-title">Erro ao carregar visualização da Terra</p>
+      <p class="error-title">{{ t('globe.loadError') }}</p>
       <p class="error-message">{{ error }}</p>
     </div>
   </div>
@@ -32,6 +32,9 @@
 <script setup>
 import { ref, onMounted, onUnmounted, watch, computed } from 'vue'
 import * as d3 from 'd3'
+import { useI18n } from '@/composables/useI18n'
+
+const { t } = useI18n()
 
 const getOceanFillColor = () => {
   return 'hsl(220, 13%, 10%)'

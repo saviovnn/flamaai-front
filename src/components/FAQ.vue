@@ -4,13 +4,13 @@
       <div class="text-center mb-16">
         <div class="inline-flex items-center gap-2 mb-4 text-[#FA5D19] text-sm font-medium uppercase tracking-wider">
           <span>//</span>
-          <span>FAQ</span>
+          <span>{{ t('faq.sectionLabel') }}</span>
         </div>
         <h2 class="text-3xl md:text-4xl lg:text-5xl font-semibold mb-4 text-foreground">
-          FAQ
+          {{ t('faq.title') }}
         </h2>
         <p class="text-lg text-muted-foreground max-w-2xl mx-auto">
-          Esclarecimentos sobre o funcionamento e os limites do protótipo
+          {{ t('faq.subtitle') }}
         </p>
       </div>
 
@@ -53,40 +53,22 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { ChevronDown } from 'lucide-vue-next'
+import { useI18n } from '@/composables/useI18n'
 
+const { t } = useI18n()
 const sectionRef = ref(null)
 const openItems = ref({})
 
-const faqItems = [
-  {
-    question: 'O que é este sistema?',
-    answer: 'Um protótipo experimental desenvolvido para fins de pesquisa e avaliação.'
-  },
-  {
-    question: 'Como o risco é estimado?',
-    answer: 'Por meio de modelos supervisionados treinados com dados históricos climáticos e ambientais.'
-  },
-  {
-    question: 'Qual a área de cobertura?',
-    answer: 'Todo o território nacional.'
-  },
-  {
-    question: 'Este sistema é um produto comercial?',
-    answer: 'Não. Trata-se de um protótipo de pesquisa.'
-  },
-  {
-    question: 'Os resultados são determinísticos?',
-    answer: 'Não. As estimativas são probabilísticas e dependem da qualidade dos dados.'
-  },
-  {
-  question: 'A MaritacaAI fornece o risco de fogo?',
-  answer: 'Não. A MaritacaAI não participa do processo de estimativa do risco. O sistema utiliza um modelo de linguagem (Sabiá), por meio de créditos concedidos pela MaritacaAI, exclusivamente para a geração de explicações textuais (camada RAG) sobre os resultados previamente calculados pelo modelo de previsão.'
-}
-
-];
-
+const faqItems = computed(() => [
+  { question: t('faq.q1'), answer: t('faq.a1') },
+  { question: t('faq.q2'), answer: t('faq.a2') },
+  { question: t('faq.q3'), answer: t('faq.a3') },
+  { question: t('faq.q4'), answer: t('faq.a4') },
+  { question: t('faq.q5'), answer: t('faq.a5') },
+  { question: t('faq.q6'), answer: t('faq.a6') }
+])
 
 const toggleItem = (index) => {
   openItems.value[index] = !openItems.value[index]

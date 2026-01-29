@@ -5,76 +5,76 @@
         <!-- Logo e frase -->
         <div class="lg:col-span-1 text-center md:text-left">
           <div class="flex items-center justify-center md:justify-start gap-2 mb-4">
-            <img :src="logo" alt="FlamaAI" class="h-6 w-auto" />
-            <h3 class="text-xl font-semibold text-white">FlamaAI</h3>
+            <img :src="logo" :alt="t('app.name')" class="h-6 w-auto" />
+            <h3 class="text-xl font-semibold text-white">{{ t('app.name') }}</h3>
           </div>
           <p class="text-sm text-muted-foreground leading-relaxed mb-4">
-            FlamaAI – Prevenindo incêndios, protegendo o Brasil.
+            {{ t('footer.tagline') }}
           </p>
         </div>
 
         <!-- Links -->
         <div class="text-center md:text-left">
-          <h4 class="text-sm font-semibold mb-4 text-foreground uppercase tracking-wider">Links</h4>
+          <h4 class="text-sm font-semibold mb-4 text-foreground uppercase tracking-wider">{{ t('footer.links') }}</h4>
           <ul class="space-y-3">
             <li>
               <a href="#sobre" class="text-sm text-muted-foreground hover:text-[#FA5D19] transition-colors duration-200">
-                Sobre
+                {{ t('footer.about') }}
               </a>
             </li>
             <li>
               <a href="#funcionalidades" class="text-sm text-muted-foreground hover:text-[#FA5D19] transition-colors duration-200">
-                Funcionalidades
+                {{ t('footer.features') }}
               </a>
             </li>
             <li>
               <a href="#contato" class="text-sm text-muted-foreground hover:text-[#FA5D19] transition-colors duration-200">
-                Contato
+                {{ t('footer.contact') }}
               </a>
             </li>
             <li>
               <a href="#privacidade" class="text-sm text-muted-foreground hover:text-[#FA5D19] transition-colors duration-200">
-                Política de Privacidade
+                {{ t('footer.privacyPolicy') }}
               </a>
             </li>
           </ul>
         </div>
 
         <div class="text-center md:text-left">
-          <h4 class="text-sm font-semibold mb-4 text-foreground uppercase tracking-wider">Contato</h4>
+          <h4 class="text-sm font-semibold mb-4 text-foreground uppercase tracking-wider">{{ t('footer.contact') }}</h4>
           <div class="flex flex-col gap-3 items-center md:items-start">
             <a
               href="https://linkedin.com"
               target="_blank"
               rel="noopener noreferrer"
               class="flex items-center gap-2 text-sm text-muted-foreground hover:text-[#FA5D19] transition-colors duration-200"
-              aria-label="LinkedIn"
+              :aria-label="t('footer.linkedIn')"
             >
               <Linkedin :size="18" />
-              <span>LinkedIn</span>
+              <span>{{ t('footer.linkedIn') }}</span>
             </a>
             <a
               href="mailto:contato@flamaai.com"
               class="flex items-center gap-2 text-sm text-muted-foreground hover:text-[#FA5D19] transition-colors duration-200"
-              aria-label="Email"
+              :aria-label="t('footer.email')"
             >
               <Mail :size="18" />
-              <span>Email</span>
+              <span>{{ t('footer.email') }}</span>
             </a>
           </div>
         </div>
 
         <div class="text-center md:text-left">
-          <h4 class="text-sm font-semibold mb-4 text-foreground uppercase tracking-wider">Legal</h4>
+          <h4 class="text-sm font-semibold mb-4 text-foreground uppercase tracking-wider">{{ t('footer.legal') }}</h4>
           <ul class="space-y-3">
             <li>
               <a href="#privacidade" class="text-sm text-muted-foreground hover:text-[#FA5D19] transition-colors duration-200">
-                Privacidade
+                {{ t('footer.privacy') }}
               </a>
             </li>
             <li>
               <a href="#termos" class="text-sm text-muted-foreground hover:text-[#FA5D19] transition-colors duration-200">
-                Termos
+                {{ t('footer.terms') }}
               </a>
             </li>
           </ul>
@@ -83,12 +83,12 @@
 
       <div class="pt-8 border-t border-border">
         <p class="text-sm text-center text-muted-foreground mb-2">
-          © {{ currentYear }} FlamaAI. Todos os direitos reservados.
+          © {{ currentYear }} {{ t('app.name') }}. {{ t('footer.copyright') }}
         </p>
         <p class="text-xs text-center text-muted-foreground">
-          Protótipo Experimental – Uso acadêmico<br>
-          Este sistema não possui finalidade comercial.<br>
-          Desenvolvido para pesquisa em monitoramento ambiental e apoio à decisão.
+          {{ t('footer.prototype') }}<br>
+          {{ t('footer.noCommercial') }}<br>
+          {{ t('footer.developed') }}
         </p>
       </div>
     </div>
@@ -99,10 +99,12 @@
 import { computed } from 'vue'
 import { Linkedin, Mail } from 'lucide-vue-next'
 import { useGlobalStore } from '@/stores/global'
+import { useI18n } from '@/composables/useI18n'
 import logoLight from '@/assets/logo.svg'
 import logoDark from '@/assets/logo-dark.svg'
 
 const globalStore = useGlobalStore()
+const { t } = useI18n()
 const currentYear = computed(() => new Date().getFullYear())
 const logo = computed(() => logoDark)
 </script>

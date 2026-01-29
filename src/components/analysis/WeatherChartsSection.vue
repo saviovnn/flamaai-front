@@ -11,13 +11,13 @@
         </div>
         <div class="min-w-0">
           <h3 class="text-base sm:text-lg font-black text-gray-800 dark:text-white tracking-tight">
-            {{ preference === 'air' ? 'Qualidade do Ar' : 'Histórico Climático' }}
+            {{ preference === 'air' ? t('analysis.airQuality') : t('analysis.weatherHistory') }}
           </h3>
           <div v-if="preference === 'air'" class="flex items-center gap-1.5 sm:gap-2">
             <span class="text-[11px] sm:text-xs font-bold" :class="aqiColorClass">AQI {{ aqiValue }}</span>
             <span class="text-[9px] sm:text-[10px] text-gray-400 dark:text-muted-foreground font-bold uppercase tracking-widest">{{ aqiLabel }}</span>
           </div>
-          <p v-else class="text-[10px] sm:text-xs font-bold text-gray-400 dark:text-muted-foreground uppercase tracking-widest">Passado e Previsão</p>
+          <p v-else class="text-[10px] sm:text-xs font-bold text-gray-400 dark:text-muted-foreground uppercase tracking-widest">{{ t('analysis.pastAndForecast') }}</p>
         </div>
       </div>
 
@@ -41,10 +41,10 @@
         </div>
         <div class="min-w-0">
           <h3 class="text-base sm:text-lg font-black text-gray-800 dark:text-white tracking-tight">
-            {{ preference === 'air' ? 'Tendência de Partículas' : 'Chuva (próximos dias)' }}
+            {{ preference === 'air' ? t('analysis.particleTrend') : t('analysis.rainNextDays') }}
           </h3> 
           <p class="text-[10px] sm:text-xs font-bold text-gray-400 dark:text-muted-foreground uppercase tracking-widest">
-            {{ preference === 'air' ? 'PM2.5 / PM10' : 'Acumulado diário' }}
+            {{ preference === 'air' ? t('analysis.pm25Pm10') : t('analysis.dailyAccumulated') }}
           </p>
         </div>
       </div>
@@ -64,8 +64,10 @@ import { computed, ref, onMounted, onUnmounted } from 'vue'
 import apexchart from 'vue3-apexcharts'
 import { CloudRain, Wind, Activity, Sun } from 'lucide-vue-next'
 import { useGlobalStore } from '@/stores/global'
+import { useI18n } from '@/composables/useI18n'
 
 const globalStore = useGlobalStore()
+const { t } = useI18n()
 
 // Responsive chart height
 const windowWidth = ref(typeof window !== 'undefined' ? window.innerWidth : 1024)
@@ -113,9 +115,9 @@ const aqiValue = computed(() => {
 
 const aqiLabel = computed(() => {
   const v = aqiValue.value
-  if (v <= 50) return 'Excelente'
-  if (v <= 100) return 'Regular'
-  return 'Preocupante'
+  if (v <= 50) return t('analysis.aqiExcellent')
+  if (v <= 100) return t('analysis.aqiRegular')
+  return t('analysis.aqiConcerning')
 })
 
 const aqiColorClass = computed(() => {
@@ -327,9 +329,9 @@ const weatherHistorySeries = computed(() => {
   const hums = createTimeSeries(pastTimes, pastHumArr, futureTimes, futureHumArr)
   
   return [
-    { name: 'Temp (°C)', data: temps },
-    { name: 'Vento (km/h)', data: winds },
-    { name: 'Umidade (%)', data: hums }
+    { name: t('analysis.seriesTemp'), data: temps },
+    { name: t('analysis.seriesWind'), data: winds },
+    { name: t('analysis.seriesHumidity'), data: hums }
   ]
 })
 
@@ -378,6 +380,6 @@ const precipSeries = computed(() => {
     }
   }
   
-  return [{ name: 'Chuva (mm)', data }]
+  return [{ name: t('analysis.seriesRain'), data }]
 })
 </script>

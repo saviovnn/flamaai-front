@@ -2,10 +2,10 @@
   <div>
     <div class="text-center mb-10">
       <h2 class="text-3xl font-bold text-gray-900 dark:text-foreground mb-2">
-        Verifique seu email para começar
+        {{ t('codeVerification.title') }}
       </h2>
       <p class="text-gray-500 dark:text-muted-foreground">
-        Digite o código de verificação de 6 dígitos
+        {{ t('codeVerification.subtitle') }}
       </p>
     </div>
 
@@ -43,18 +43,18 @@
         variant="primary"
         class="mt-8"
       >
-        Continuar
+        {{ t('codeVerification.continue') }}
       </Button>
     </form>
 
     <div class="text-center mt-6">
       <p class="text-gray-500 dark:text-muted-foreground text-sm">
-        Não recebeu nenhum código?
+        {{ t('codeVerification.noCode') }}
         <span
           @click="handleResend"
           class="resend-link font-semibold underline ml-1 transition-colors cursor-pointer"
         >
-          Reenviar código
+          {{ t('codeVerification.resend') }}
         </span>
       </p>
     </div>
@@ -64,7 +64,10 @@
 <script setup>
 import { ref, watch, nextTick } from "vue";
 import { useAuthStore } from "@/stores/auth";
+import { useI18n } from "@/composables/useI18n";
 import Button from "@/components/Button.vue";
+
+const { t } = useI18n()
 
 const props = defineProps({
   code: {

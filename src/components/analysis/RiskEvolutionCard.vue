@@ -2,8 +2,8 @@
   <div class="md:col-span-1 lg:col-span-2 bg-white dark:bg-card rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 border border-gray-200 dark:border-border">
     <div class="flex items-center justify-between mb-4 sm:mb-6 lg:mb-8">
       <div>
-        <h3 class="text-base sm:text-lg lg:text-xl font-black text-gray-800 dark:text-white tracking-tight">Evolução do Risco</h3>
-        <p class="text-xs sm:text-sm font-medium text-gray-500 dark:text-muted-foreground">Projeção para os próximos 7 dias</p>
+        <h3 class="text-base sm:text-lg lg:text-xl font-black text-gray-800 dark:text-white tracking-tight">{{ t('analysis.riskEvolution') }}</h3>
+        <p class="text-xs sm:text-sm font-medium text-gray-500 dark:text-muted-foreground">{{ t('analysis.projection7days') }}</p>
       </div>
     </div>
     <apexchart type="area" :height="chartHeight" :options="chartOptions" :series="chartSeries" />
@@ -14,8 +14,10 @@
 import { computed, ref, onMounted, onUnmounted } from 'vue'
 import apexchart from 'vue3-apexcharts'
 import { useGlobalStore } from '@/stores/global'
+import { useI18n } from '@/composables/useI18n'
 
 const globalStore = useGlobalStore()
+const { t } = useI18n()
 
 // Responsive chart height
 const windowWidth = ref(typeof window !== 'undefined' ? window.innerWidth : 1024)
@@ -101,7 +103,7 @@ const chartOptions = computed(() => ({
 }))
 
 const chartSeries = computed(() => [{
-  name: 'Risco',
+  name: t('analysis.riskSeries'),
   data: dailyRisks.value.map(d => ({ 
     x: new Date(d.day).getTime(), 
     y: Math.round(d.risk * 100) 

@@ -7,13 +7,13 @@
             <h2
               class="text-3xl font-bold text-gray-900 dark:text-foreground mb-2"
             >
-              {{ isSignUp ? "Começar" : "Bem-vindo de volta" }}
+              {{ isSignUp ? t('login.getStarted') : t('login.welcomeBack') }}
             </h2>
             <p class="text-gray-500 dark:text-muted-foreground">
               {{
                 isSignUp
-                  ? "Bem-vindo ao FlamaAI, vamos prever as queimadas"
-                  : "Entre para continuar na sua conta"
+                  ? t('login.welcomeSubtitle')
+                  : t('login.enterToContinue')
               }}
             </p>
           </div>
@@ -26,7 +26,7 @@
         :modelValue="formData.email"
         @update:modelValue="(value) => { updateEmail(value); clearError('email'); }"
         type="email"
-        label="Seu email"
+        :label="t('login.yourEmail')"
         placeholder="seu@email.com"
         :disabled="loading"
         :error="errors.email"
@@ -39,7 +39,7 @@
           :modelValue="formData.name"
           @update:modelValue="(value) => { updateName(value); clearError('name'); }"
           type="text"
-          label="Seu nome"
+          :label="t('login.yourName')"
           placeholder="João Silva"
           :disabled="loading"
           :error="errors.name"
@@ -50,7 +50,7 @@
         <Input
           :modelValue="formData.password"
           @update:modelValue="(value) => { updatePassword(value); clearError('password'); }"
-          :label="isSignUp ? 'Crie uma senha' : 'Sua senha'"
+          :label="isSignUp ? t('login.createPassword') : t('login.yourPassword')"
           placeholder="••••••••••"
           :disabled="loading"
           :error="errors.password"
@@ -58,12 +58,12 @@
         />
         <div class="flex justify-end mt-2">
           <p class="text-xs text-gray-500 dark:text-muted-foreground">
-            Esqueceu sua senha?
+            {{ t('login.forgotPassword') }}
             <span
               @click="$emit('forgot-password')"
               class="text-orange-500 font-semibold hover:text-orange-600 underline ml-1 transition-colors cursor-pointer"
             >
-              Recuperar
+              {{ t('login.recover') }}
             </span>
           </p>
         </div>
@@ -76,18 +76,18 @@
         variant="primary"
         class="mt-8"
       >
-        {{ isSignUp ? "Criar conta" : "Entrar" }}
+        {{ isSignUp ? t('login.createAccount') : t('login.enter') }}
       </Button>
     </form>
 
     <div class="text-center mt-6">
       <p class="text-gray-500 dark:text-muted-foreground text-sm">
-        {{ isSignUp ? "Já tem uma conta?" : "Não tem uma conta?" }}
+        {{ isSignUp ? t('login.alreadyHaveAccount') : t('login.noAccount') }}
         <span
           @click="$emit('toggle-mode')"
           class="text-gray-900 dark:text-foreground font-semibold hover:text-orange-600 underline ml-1 transition-colors cursor-pointer"
         >
-          {{ isSignUp ? "Entrar" : "Cadastrar" }}
+          {{ isSignUp ? t('login.signIn') : t('login.signUp') }}
         </span>
       </p>
     </div>
@@ -97,8 +97,11 @@
 <script setup>
 import { computed } from "vue";
 import { useAuthStore } from "@/stores/auth";
+import { useI18n } from "@/composables/useI18n";
 import Input from "@/components/Input.vue";
 import Button from "@/components/Button.vue";
+
+const { t } = useI18n()
 
 const props = defineProps({
   isSignUp: {

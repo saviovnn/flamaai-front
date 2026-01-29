@@ -23,7 +23,7 @@
           class="w-full flex items-center gap-2.5 px-3 py-2 hover:bg-gray-50 dark:hover:bg-secondary transition-colors text-left"
         >
           <Settings :size="16" class="text-gray-600 dark:text-muted-foreground" />
-          <span class="text-sm text-gray-700 dark:text-muted-foreground">Configurações</span>
+          <span class="text-sm text-gray-700 dark:text-muted-foreground">{{ t('userMenu.settings') }}</span>
         </button>
         
         <button
@@ -31,7 +31,7 @@
           class="w-full flex items-center gap-2.5 px-3 py-2 hover:bg-gray-50 dark:hover:bg-secondary transition-colors text-left"
         >
           <LogOut :size="16" class="text-gray-600 dark:text-muted-foreground" />
-          <span class="text-sm text-gray-700 dark:text-muted-foreground">Sair</span>
+          <span class="text-sm text-gray-700 dark:text-muted-foreground">{{ t('userMenu.logout') }}</span>
         </button>
       </div>
     </Transition>
@@ -52,7 +52,10 @@ import { Settings, LogOut, MoreVertical } from 'lucide-vue-next'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useGlobalStore } from '@/stores/global'
+import { useI18n } from '@/composables/useI18n'
 import SettingsModal from './SettingsModal.vue'
+
+const { t } = useI18n()
 
 const props = defineProps({
   userName: {

@@ -9,13 +9,13 @@
         <div>
           <div class="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 dark:text-muted-foreground">
             <Activity :size="14" class="text-gray-400 dark:text-muted-foreground" />
-            Risco de Fogo
+            {{ t('analysis.fireRisk') }}
           </div>
           <h2 class="text-xl sm:text-2xl lg:text-3xl font-black mt-2 tracking-tight">
             {{ dateLabel }}: <span :class="riskTone.labelText">{{ todayRiskLabel }}</span>
           </h2>
           <p class="text-xs sm:text-sm text-gray-600 dark:text-muted-foreground font-medium mt-1">
-            Média semanal: <span class="font-black">{{ (globalStore.orchestratorResponse?.fire_risk_result?.weekly_risk_mean * 100).toFixed(0) }}%</span> • Nível
+            {{ t('analysis.weeklyMean') }}: <span class="font-black">{{ (globalStore.orchestratorResponse?.fire_risk_result?.weekly_risk_mean * 100).toFixed(0) }}%</span> • {{ t('analysis.level') }}
             <span class="font-black">{{ weeklyRiskLabel }}</span>
           </p>
         </div>
@@ -72,8 +72,10 @@
 import { computed } from 'vue'
 import { Activity, Flame } from 'lucide-vue-next'
 import { useGlobalStore } from '@/stores/global'
+import { useI18n } from '@/composables/useI18n'
 
 const globalStore = useGlobalStore()
+const { t } = useI18n()
 
 // Dados do store
 const fireRiskResult = computed(() => globalStore.orchestratorResponse?.fire_risk_result)
@@ -81,7 +83,7 @@ const fireRiskResult = computed(() => globalStore.orchestratorResponse?.fire_ris
 // Verifica se a data é hoje e formata adequadamente
 const dateLabel = computed(() => {
   const createdAt = globalStore.orchestratorResponse?.geocoding_result?.created_at
-  if (!createdAt) return 'Hoje'
+  if (!createdAt) return t('analysis.today')
   
   const dataCreatedAt = new Date(createdAt)
   const hoje = new Date()
@@ -92,10 +94,12 @@ const dateLabel = computed(() => {
                  dataCreatedAt.getFullYear() === hoje.getFullYear()
   
   if (ehHoje) {
-    return 'Hoje'
+    return t('analysis.today')
   }
   
-  return dataCreatedAt.toLocaleDateString('pt-BR', { 
+  const localeMap = { pt: 'pt-BR', en: 'en-US', es: 'es-ES' }
+  const locale = localeMap[globalStore.locale] || 'en-US'
+  return dataCreatedAt.toLocaleDateString(locale, { 
     day: '2-digit', 
     month: 'long', 
     year: 'numeric' 
@@ -116,16 +120,22 @@ const todayRiskPercent = computed(() => todayRisk.value * 100)
 
 const todayRiskLabel = computed(() => {
   const p = todayRiskPercent.value
-  if (p < 20) return 'Mínimo'
-  if (p < 40) return 'Baixo'
-  if (p < 60) return 'Moderado'
-  if (p < 80) return 'Elevado'
-  return 'Extremo'
+  if (p < 20) return t('analysis.riskMin')
+  if (p < 40) return t('analysis.riskLow')
+  if (p < 60) return t('analysis.riskModerate')
+  if (p < 80) return t('analysis.riskHigh')
+  return t('analysis.riskExtreme')
 })
 
 const weeklyRiskLabel = computed(() => {
   const level = fireRiskResult.value?.risk_level
-  const labels = { baixo: 'Baixo', regular: 'Regular', medio: 'Médio', alto: 'Alto', critico: 'Crítico' }
+  const labels = { 
+    baixo: t('analysis.weeklyBaixo'), 
+    regular: t('analysis.weeklyRegular'), 
+    medio: t('analysis.weeklyMedio'), 
+    alto: t('analysis.weeklyAlto'), 
+    critico: t('analysis.weeklyCritico') 
+  }
   return labels[level] || '—'
 })
 
@@ -136,7 +146,7 @@ const toneForPercent = (percent) => {
       labelText: 'text-emerald-600 dark:text-emerald-400',
       iconText: 'text-emerald-600 dark:text-emerald-400',
       badge: 'bg-emerald-50 text-emerald-700 border-emerald-100 dark:bg-emerald-900/20 dark:text-emerald-300 dark:border-emerald-900/40',
-      badgeText: 'Risco mínimo',
+      badgeText: t('analysis.riskBadgeMin'),
       fill: 'bg-emerald-500',
       chart: '#10b981'
     }
@@ -147,7 +157,7 @@ const toneForPercent = (percent) => {
       labelText: 'text-teal-700 dark:text-teal-300',
       iconText: 'text-teal-700 dark:text-teal-300',
       badge: 'bg-teal-50 text-teal-700 border-teal-100 dark:bg-teal-900/20 dark:text-teal-200 dark:border-teal-900/40',
-      badgeText: 'Risco baixo',
+      badgeText: t('analysis.riskBadgeLow'),
       fill: 'bg-teal-500',
       chart: '#14b8a6'
     }
@@ -158,7 +168,7 @@ const toneForPercent = (percent) => {
       labelText: 'text-amber-700 dark:text-amber-300',
       iconText: 'text-amber-700 dark:text-amber-300',
       badge: 'bg-amber-50 text-amber-800 border-amber-100 dark:bg-amber-900/20 dark:text-amber-200 dark:border-amber-900/40',
-      badgeText: 'Risco moderado',
+      badgeText: t('analysis.riskBadgeModerate'),
       fill: 'bg-amber-500',
       chart: '#f59e0b'
     }
@@ -169,7 +179,7 @@ const toneForPercent = (percent) => {
       labelText: 'text-orange-700 dark:text-orange-300',
       iconText: 'text-orange-700 dark:text-orange-300',
       badge: 'bg-orange-50 text-orange-800 border-orange-100 dark:bg-orange-900/20 dark:text-orange-200 dark:border-orange-900/40',
-      badgeText: 'Risco elevado',
+      badgeText: t('analysis.riskBadgeHigh'),
       fill: 'bg-orange-500',
       chart: '#f97316'
     }
@@ -179,18 +189,23 @@ const toneForPercent = (percent) => {
     labelText: 'text-rose-700 dark:text-rose-500',
     iconText: 'text-rose-700 dark:text-rose-500',
     badge: 'bg-rose-50 text-rose-800 border-rose-100 dark:bg-rose-900/20 dark:text-rose-200 dark:border-rose-900/40',
-    badgeText: 'Risco extremo',
+    badgeText: t('analysis.riskBadgeExtreme'),
     fill: 'bg-rose-600',
     chart: '#e11d48'
   }
 }
 
-const riskTone = computed(() => toneForPercent(todayRiskPercent.value))
+const riskTone = computed(() => {
+  globalStore.locale // dependência para reavaliar ao trocar idioma
+  return toneForPercent(todayRiskPercent.value)
+})
 const toneForRisk = (risk) => toneForPercent((risk || 0) * 100)
 
 const formatDayShort = (iso) => {
   try {
-    return new Date(iso).toLocaleDateString('pt-BR', { weekday: 'short' }).replace('.', '')
+    const localeMap = { pt: 'pt-BR', en: 'en-US', es: 'es-ES' }
+    const locale = localeMap[globalStore.locale] || 'en-US'
+    return new Date(iso).toLocaleDateString(locale, { weekday: 'short' }).replace('.', '')
   } catch {
     return '—'
   }

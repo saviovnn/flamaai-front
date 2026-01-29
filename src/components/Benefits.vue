@@ -6,13 +6,13 @@
       <div class="text-center mb-16">
         <div class="inline-flex items-center gap-2 mb-4 text-[#FA5D19] text-sm font-medium uppercase tracking-wider">
           <span>//</span>
-          <span>Diferenciais</span>
+          <span>{{ t('benefits.sectionLabel') }}</span>
         </div>
         <h2 class="text-3xl md:text-4xl lg:text-5xl font-semibold mb-4 text-foreground">
-          Características do sistema
+          {{ t('benefits.title') }}
         </h2>
         <p class="text-lg text-muted-foreground max-w-2xl mx-auto">
-          Funcionalidades desenvolvidas para apoio à análise e tomada de decisão
+          {{ t('benefits.subtitle') }}
         </p>
       </div>
 
@@ -74,45 +74,47 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { MapPin, ShieldCheck, History, Sparkles, FileText, ChartArea } from 'lucide-vue-next'
 import { cn } from '@/lib/utils'
+import { useI18n } from '@/composables/useI18n'
 
+const { t } = useI18n()
 const sectionRef = ref(null)
 const isVisible = ref([false, false, false, false, false, false, false])
 
-const benefits = [
+const benefits = computed(() => [
   {
     icon: MapPin,
-    title: 'Escala nacional',
-    description: 'Processamento para múltiplas regiões do Brasil.'
+    title: t('benefits.benefit1Title'),
+    description: t('benefits.benefit1Desc')
   },
   {
     icon: ShieldCheck,
-    title: 'Fontes oficiais',
-    description: 'Integração com bases públicas de sensoriamento remoto e meteorologia.'
+    title: t('benefits.benefit2Title'),
+    description: t('benefits.benefit2Desc')
   },
   {
     icon: History,
-    title: 'Rastreabilidade',
-    description: 'Histórico de consultas e comparações temporais.'
+    title: t('benefits.benefit3Title'),
+    description: t('benefits.benefit3Desc')
   },
   {
     icon: Sparkles,
-    title: 'Modelo explicável',
-    description: 'Geração de justificativas para cada estimativa de risco.'
+    title: t('benefits.benefit4Title'),
+    description: t('benefits.benefit4Desc')
   },
   {
     icon: ChartArea,
-    title: 'Visualização analítica',
-    description: 'Gráficos e painéis interativos para apoio à decisão.'
+    title: t('benefits.benefit5Title'),
+    description: t('benefits.benefit5Desc')
   },
   {
     icon: FileText,
-    title: 'Abordagem preventiva',
-    description: 'Ferramenta para análise prospectiva de risco.'
+    title: t('benefits.benefit6Title'),
+    description: t('benefits.benefit6Desc')
   }
-]
+])
 
 const handleScroll = () => {
   if (!sectionRef.value) return
@@ -122,7 +124,7 @@ const handleScroll = () => {
   const windowHeight = window.innerHeight
 
   if (rect.top < windowHeight * 0.7 && rect.bottom > 0) {
-    benefits.forEach((_, index) => {
+    benefits.value.forEach((_, index) => {
       if (!isVisible.value[index]) {
         setTimeout(() => {
           isVisible.value[index] = true

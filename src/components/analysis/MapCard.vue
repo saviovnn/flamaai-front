@@ -2,14 +2,14 @@
   <div class="lg:col-span-4 bg-white dark:bg-card rounded-2xl sm:rounded-3xl p-4 sm:p-5 lg:p-6 border border-gray-200 dark:border-border">
     <div class="flex items-start justify-between gap-2 sm:gap-3">
       <div>
-        <div class="text-[9px] sm:text-[10px] font-black text-gray-400 dark:text-muted-foreground uppercase tracking-widest">Mapa</div>
-        <h3 class="text-base sm:text-lg font-black text-gray-800 dark:text-white tracking-tight mt-1">Área analisada</h3>
+        <div class="text-[9px] sm:text-[10px] font-black text-gray-400 dark:text-muted-foreground uppercase tracking-widest">{{ t('analysis.map') }}</div>
+        <h3 class="text-base sm:text-lg font-black text-gray-800 dark:text-white tracking-tight mt-1">{{ t('analysis.analyzedArea') }}</h3>
         <p class="text-[11px] sm:text-xs font-medium text-gray-500 dark:text-muted-foreground mt-1">
           {{ geocodingResult?.bioma }} • IBGE {{ geocodingResult?.ibge_id }}
         </p>
       </div>
       <div class="text-right flex-shrink-0">
-        <div class="text-[9px] sm:text-[10px] font-black text-gray-400 dark:text-muted-foreground uppercase tracking-widest">Preferência</div>
+        <div class="text-[9px] sm:text-[10px] font-black text-gray-400 dark:text-muted-foreground uppercase tracking-widest">{{ t('analysis.preference') }}</div>
         <button
           @click="togglePreference"
           class="mt-1 inline-flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full bg-gray-100 dark:bg-secondary text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-gray-600 dark:text-muted-foreground hover:bg-gray-200 dark:hover:bg-secondary/80 transition-all cursor-pointer active:scale-95"
@@ -34,12 +34,12 @@
         <!-- Tooltip -->
         <div class="absolute bottom-full right-0 mb-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible pointer-events-none">
           <div class="bg-white dark:bg-card text-gray-800 dark:text-white text-[10px] font-medium px-3 py-2 rounded-lg shadow-xl border border-gray-200 dark:border-border whitespace-nowrap">
-            <div class="text-gray-400 dark:text-muted-foreground uppercase tracking-wider mb-1">Créditos</div>
+            <div class="text-gray-400 dark:text-muted-foreground uppercase tracking-wider mb-1">{{ t('analysis.credits') }}</div>
             <div>© Stadia Maps</div>
             <div>© OpenMapTiles</div>
             <div>© OpenStreetMap</div>
             <div class="mt-1.5 pt-1.5 border-t border-gray-200 dark:border-border">
-              <span class="text-gray-400 dark:text-muted-foreground">Tema:</span> {{ globalStore.isDark ? 'Alidade Smooth Dark' : 'Alidade Smooth' }}
+              <span class="text-gray-400 dark:text-muted-foreground">{{ t('analysis.theme') }}:</span> {{ globalStore.isDark ? t('analysis.themeAlidadeDark') : t('analysis.themeAlidadeLight') }}
             </div>
           </div>
           <div class="absolute -bottom-1 right-2 w-2 h-2 bg-white dark:bg-card border-r border-b border-gray-200 dark:border-border rotate-45"></div>
@@ -54,8 +54,10 @@ import { computed, onMounted, onUnmounted, watch, nextTick } from 'vue'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { useGlobalStore } from '@/stores/global'
+import { useI18n } from '@/composables/useI18n'
 
 const globalStore = useGlobalStore()
+const { t } = useI18n()
 let map = null
 
 const geocodingResult = computed(() => globalStore.orchestratorResponse?.geocoding_result)
