@@ -19,6 +19,16 @@ const routes = [
     component: () => import('@/views/Dashboard.vue'),
     beforeEnter: requireAuth
   },
+  {
+    path: '/termos-de-uso',
+    name: 'TermosDeUso',
+    component: () => import('@/views/TermosDeUso.vue')
+  },
+  {
+    path: '/politica-de-privacidade',
+    name: 'PoliticaPrivacidade',
+    component: () => import('@/views/PoliticaPrivacidade.vue')
+  },
 ]
 
 const router = createRouter({

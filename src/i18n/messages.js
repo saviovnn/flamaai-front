@@ -220,6 +220,7 @@ export const messages = {
       seriesRain: 'Chuva (mm)'
     },
     login: {
+      back: 'Voltar',
       welcomeBack: 'Bem-vindo de volta',
       getStarted: 'Começar',
       welcomeSubtitle: 'Bem-vindo ao FlamaAI, vamos prever as queimadas',
@@ -236,7 +237,7 @@ export const messages = {
       noAccount: 'Não tem uma conta?',
       signIn: 'Entrar',
       signUp: 'Cadastrar',
-      loginSidebarTitle: 'Antecipe queimadas e tome decisões melhores com o poder do FlamaAI.'
+      loginSidebarTitle: 'Antecipe a ocorrência de queimadas e subsidie decisões estratégicas por meio do FlamaAI.'
     },
     forgotPassword: {
       title: 'Esqueceu sua senha e continue',
@@ -266,6 +267,33 @@ export const messages = {
       continue: 'Continuar',
       cancel: 'Cancelar',
       backToLogin: '← Voltar para login'
+    },
+    terms: {
+      back: 'Voltar',
+      title: 'Termos de Uso',
+      lastUpdate: 'Última atualização: janeiro de 2026',
+      intro: 'O uso desta aplicação está sujeito à Licença Acadêmica Não Comercial com Opção Comercial (versão 1.2 – 2026).',
+      intro2: 'É concedida permissão, gratuitamente, a qualquer pessoa que obtenha uma cópia deste software e arquivos de documentação associados (o "Software"), para usar, copiar, modificar e distribuir o Software exclusivamente para fins acadêmicos, educacionais e de pesquisa, desde que as seguintes condições sejam cumpridas:',
+      section1Title: '1. Atribuição',
+      section1Text: 'Todas as cópias ou partes substanciais do Software devem incluir: nome do autor (Sávio Jenner Vianna Silva Rennó), nome do projeto e referência ao repositório ou publicação original.',
+      section2Title: '2. Restrição Não Comercial',
+      section2Text: 'O Software não pode ser usado, no todo ou em parte, para fins comerciais, incluindo, mas não se limitando a: venda, licenciamento ou sublicenciamento; oferta do Software ou de seus resultados como serviço pago (SaaS, API, plataforma etc.); incorporação em produtos comerciais ou proprietários; ou qualquer uso com ganho direto ou indireto.',
+      section3Title: '3. Opção de Licença Comercial',
+      section3Text: 'O uso comercial não é permitido sob esta licença. O autor oferece a possibilidade de licença comercial separada. Pessoas ou organizações que desejem usar este Software para fins comerciais devem obter permissão prévia por escrito e acordo de licença comercial pago com o detentor dos direitos autorais. Contato: saviovnndev@gmail.com',
+      section4Title: '4. Propriedade e Isenção',
+      section4Text: 'Esta licença não transfere a propriedade do Software. Todos os direitos não expressamente concedidos permanecem com o autor. O SOFTWARE É FORNECIDO "COMO ESTÁ", SEM GARANTIA DE QUALQUER TIPO. Em nenhuma hipótese os autores ou detentores dos direitos serão responsáveis por quaisquer reivindicações ou danos.'
+    },
+    privacy: {
+      back: 'Voltar',
+      title: 'Política de Privacidade',
+      lastUpdate: 'Última atualização: janeiro de 2026',
+      intro: 'O FlamaAI é um projeto acadêmico de pesquisa, desenvolvido no âmbito de trabalho de conclusão de curso (TCC/graduação). Não se trata de produto ou serviço comercial. Esta política descreve aspectos gerais do uso de dados na plataforma, em contexto exclusivamente educacional e de pesquisa.',
+      section1Title: '1. Natureza do Projeto e Responsabilidade do Usuário',
+      section1Text: 'Ao utilizar esta plataforma, o usuário declara estar ciente de que se trata de protótipo acadêmico e aceita utilizar o serviço por sua conta e risco. O usuário é integralmente responsável pelas informações que optar por cadastrar, enviar ou armazenar na aplicação. O uso da plataforma implica aceitação destes termos e da natureza experimental do projeto, sem que haja qualquer garantia ou compromisso de disponibilidade, segurança ou tratamento de dados além do que for explicitamente previsto para fins de pesquisa acadêmica.',
+      section2Title: '2. Dados e Uso Acadêmico',
+      section2Text: 'Dados de cadastro (como nome e e-mail) e dados de uso da plataforma podem ser utilizados para fins de funcionamento do protótipo e, quando aplicável, para fins de pesquisa e desenvolvimento acadêmico, em conformidade com a licença e o contexto educacional do projeto. O usuário é responsável por avaliar se deseja fornecer tais dados, ciente da natureza do projeto.',
+      section3Title: '3. Isenção de Responsabilidade',
+      section3Text: 'Este projeto é fornecido "como está", sem garantias. Não há compromisso de confidencialidade, segurança ou tratamento profissional de dados. Qualquer uso que o usuário fizer da plataforma, incluindo o fornecimento de dados pessoais, é de sua exclusiva responsabilidade. O projeto e seus desenvolvedores não se responsabilizam por perdas, vazamentos, uso indevido de dados ou quaisquer consequências decorrentes do uso desta aplicação acadêmica.'
     },
     common: {
       pleaseEnterEmail: 'Por favor, insira seu email',
@@ -519,6 +547,7 @@ export const messages = {
       seriesRain: 'Rain (mm)'
     },
     login: {
+      back: 'Back',
       welcomeBack: 'Welcome back',
       getStarted: 'Get started',
       welcomeSubtitle: 'Welcome to FlamaAI, let\'s predict wildfires',
@@ -535,7 +564,7 @@ export const messages = {
       noAccount: "Don't have an account?",
       signIn: 'Sign in',
       signUp: 'Sign up',
-      loginSidebarTitle: 'Anticipate wildfires and make better decisions with the power of FlamaAI.'
+      loginSidebarTitle: 'Anticipate the occurrence of wildfires and support strategic decisions through FlamaAI.'
     },
     forgotPassword: {
       title: 'Forgot your password? Continue here',
@@ -565,6 +594,33 @@ export const messages = {
       continue: 'Continue',
       cancel: 'Cancel',
       backToLogin: '← Back to login'
+    },
+    terms: {
+      back: 'Back',
+      title: 'Terms of Use',
+      lastUpdate: 'Last updated: January 2026',
+      intro: 'Use of this application is subject to the Academic Non-Commercial License with Commercial Option (version 1.2 – 2026).',
+      intro2: 'Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to use, copy, modify, and distribute the Software solely for academic, educational, and research purposes, provided that the following conditions are met:',
+      section1Title: '1. Attribution',
+      section1Text: 'All copies or substantial portions of the Software must include: author name (Sávio Jenner Vianna Silva Rennó), project name, and reference to the original repository or publication.',
+      section2Title: '2. Non-Commercial Restriction',
+      section2Text: 'The Software may not be used, in whole or in part, for any commercial purpose, including but not limited to: selling, licensing, or sublicensing the Software; providing the Software or its results as a paid service (SaaS, API, platform, etc.); embedding the Software in commercial or proprietary products; or any use intended for direct or indirect monetary gain.',
+      section3Title: '3. Commercial Licensing Option',
+      section3Text: 'Commercial use is not permitted under this license. The author offers the possibility of a separate commercial license. Any person or organization wishing to use this Software for commercial purposes must obtain prior written permission and a paid commercial license agreement from the copyright holder. Contact: saviovnndev@gmail.com',
+      section4Title: '4. Ownership and Disclaimer',
+      section4Text: 'This license does not transfer ownership of the Software. All rights not expressly granted are reserved by the author. THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY.'
+    },
+    privacy: {
+      back: 'Back',
+      title: 'Privacy Policy',
+      lastUpdate: 'Last updated: January 2026',
+      intro: 'FlamaAI is an academic research project, developed as part of undergraduate thesis work (TCC/graduation). It is not a commercial product or service. This policy describes general aspects of data use on the platform, in an exclusively educational and research context.',
+      section1Title: '1. Nature of the Project and User Responsibility',
+      section1Text: 'By using this platform, the user declares that they are aware that it is an academic prototype and accept to use the service at their own risk. The user is solely responsible for the information they choose to register, submit or store in the application. Use of the platform implies acceptance of these terms and of the experimental nature of the project, without any guarantee or commitment regarding availability, security or data processing beyond what is explicitly intended for academic research purposes.',
+      section2Title: '2. Data and Academic Use',
+      section2Text: 'Registration data (such as name and email) and platform usage data may be used for the operation of the prototype and, when applicable, for research and academic development purposes, in accordance with the license and educational context of the project. The user is responsible for assessing whether they wish to provide such data, being aware of the nature of the project.',
+      section3Title: '3. Disclaimer of Liability',
+      section3Text: 'This project is provided "as is", without warranties. There is no commitment to confidentiality, security or professional data processing. Any use the user makes of the platform, including the provision of personal data, is their sole responsibility. The project and its developers are not liable for losses, leaks, misuse of data or any consequences arising from the use of this academic application.'
     },
     common: {
       pleaseEnterEmail: 'Please enter your email',
@@ -818,6 +874,7 @@ export const messages = {
       seriesRain: 'Lluvia (mm)'
     },
     login: {
+      back: 'Volver',
       welcomeBack: 'Bienvenido de nuevo',
       getStarted: 'Comenzar',
       welcomeSubtitle: 'Bienvenido a FlamaAI, vamos a predecir incendios',
@@ -834,7 +891,7 @@ export const messages = {
       noAccount: '¿No tienes una cuenta?',
       signIn: 'Iniciar sesión',
       signUp: 'Registrarse',
-      loginSidebarTitle: 'Anticipa incendios y toma mejores decisiones con el poder de FlamaAI.'
+      loginSidebarTitle: 'Anticipa la ocurrencia de incendios y apoya decisiones estratégicas mediante FlamaAI.'
     },
     forgotPassword: {
       title: '¿Olvidaste tu contraseña? Continúa aquí',
@@ -864,6 +921,33 @@ export const messages = {
       continue: 'Continuar',
       cancel: 'Cancelar',
       backToLogin: '← Volver al login'
+    },
+    terms: {
+      back: 'Volver',
+      title: 'Términos de Uso',
+      lastUpdate: 'Última actualización: enero de 2026',
+      intro: 'El uso de esta aplicación está sujeto a la Licencia Académica No Comercial con Opción Comercial (versión 1.2 – 2026).',
+      intro2: 'Se concede permiso, de forma gratuita, a cualquier persona que obtenga una copia de este software y archivos de documentación asociados (el "Software"), para usar, copiar, modificar y distribuir el Software exclusivamente con fines académicos, educativos y de investigación, siempre que se cumplan las siguientes condiciones:',
+      section1Title: '1. Atribución',
+      section1Text: 'Todas las copias o partes sustanciales del Software deben incluir: nombre del autor (Sávio Jenner Vianna Silva Rennó), nombre del proyecto y referencia al repositorio o publicación original.',
+      section2Title: '2. Restricción No Comercial',
+      section2Text: 'El Software no puede ser usado, en su totalidad o en parte, con fines comerciales, incluyendo pero no limitándose a: venta, licenciamiento o sublicenciamiento; oferta del Software o de sus resultados como servicio de pago (SaaS, API, plataforma, etc.); incorporación en productos comerciales o propietarios; o cualquier uso con ganancia directa o indirecta.',
+      section3Title: '3. Opción de Licencia Comercial',
+      section3Text: 'El uso comercial no está permitido bajo esta licencia. El autor ofrece la posibilidad de una licencia comercial separada. Las personas u organizaciones que deseen usar este Software con fines comerciales deben obtener permiso previo por escrito y un acuerdo de licencia comercial de pago con el titular de los derechos de autor. Contacto: saviovnndev@gmail.com',
+      section4Title: '4. Propiedad y Exención',
+      section4Text: 'Esta licencia no transfiere la propiedad del Software. Todos los derechos no expresamente concedidos permanecen con el autor. EL SOFTWARE SE PROPORCIONA "TAL CUAL", SIN GARANTÍA DE NINGÚN TIPO. EN NINGÚN CASO LOS AUTORES O TITULARES DE DERECHOS SERÁN RESPONSABLES POR RECLAMACIONES O DAÑOS.'
+    },
+    privacy: {
+      back: 'Volver',
+      title: 'Política de Privacidad',
+      lastUpdate: 'Última actualización: enero de 2026',
+      intro: 'FlamaAI es un proyecto académico de investigación, desarrollado en el marco del trabajo de conclusión de curso (TCC/graduación). No es un producto o servicio comercial. Esta política describe aspectos generales del uso de datos en la plataforma, en un contexto exclusivamente educativo y de investigación.',
+      section1Title: '1. Naturaleza del Proyecto y Responsabilidad del Usuario',
+      section1Text: 'Al utilizar esta plataforma, el usuario declara estar consciente de que se trata de un prototipo académico y acepta utilizar el servicio bajo su propia cuenta y riesgo. El usuario es íntegramente responsable de la información que opte por registrar, enviar o almacenar en la aplicación. El uso de la plataforma implica la aceptación de estos términos y de la naturaleza experimental del proyecto, sin que exista garantía o compromiso de disponibilidad, seguridad o tratamiento de datos más allá de lo expresamente previsto para fines de investigación académica.',
+      section2Title: '2. Datos y Uso Académico',
+      section2Text: 'Los datos de registro (como nombre y correo electrónico) y los datos de uso de la plataforma pueden ser utilizados para el funcionamiento del prototipo y, cuando corresponda, para fines de investigación y desarrollo académico, de conformidad con la licencia y el contexto educativo del proyecto. El usuario es responsable de evaluar si desea proporcionar dichos datos, con conocimiento de la naturaleza del proyecto.',
+      section3Title: '3. Exención de Responsabilidad',
+      section3Text: 'Este proyecto se proporciona "tal cual", sin garantías. No existe compromiso de confidencialidad, seguridad o tratamiento profesional de datos. Cualquier uso que el usuario haga de la plataforma, incluida la provisión de datos personales, es de su exclusiva responsabilidad. El proyecto y sus desarrolladores no se responsabilizan por pérdidas, fugas, uso indebido de datos o cualquier consecuencia derivada del uso de esta aplicación académica.'
     },
     common: {
       pleaseEnterEmail: 'Por favor, ingresa tu correo',
