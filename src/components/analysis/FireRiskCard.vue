@@ -145,24 +145,24 @@ const weeklyRiskLabel = computed(() => {
 const toneForPercent = (percent) => {
   if (percent < 20) {
     return {
-      topBar: 'bg-emerald-500',
-      labelText: 'text-emerald-600 dark:text-emerald-400',
-      iconText: 'text-emerald-600 dark:text-emerald-400',
-      badge: 'bg-emerald-50 text-emerald-700 border-emerald-100 dark:bg-emerald-900/20 dark:text-emerald-300 dark:border-emerald-900/40',
+      topBar: 'bg-sky-500',
+      labelText: 'text-sky-600 dark:text-sky-400',
+      iconText: 'text-sky-600 dark:text-sky-400',
+      badge: 'bg-sky-50 text-sky-700 border-sky-100 dark:bg-sky-900/20 dark:text-sky-300 dark:border-sky-900/40',
       badgeText: t('analysis.riskBadgeMin'),
-      fill: 'bg-emerald-500',
-      chart: '#10b981'
+      fill: 'bg-sky-500',
+      chart: '#06b6d4'
     }
   }
   if (percent < 40) {
     return {
-      topBar: 'bg-teal-500',
-      labelText: 'text-teal-700 dark:text-teal-300',
-      iconText: 'text-teal-700 dark:text-teal-300',
-      badge: 'bg-teal-50 text-teal-700 border-teal-100 dark:bg-teal-900/20 dark:text-teal-200 dark:border-teal-900/40',
+      topBar: 'bg-emerald-500',
+      labelText: 'text-emerald-600 dark:text-emerald-400',
+      iconText: 'text-emerald-600 dark:text-emerald-400',
+      badge: 'bg-emerald-50 text-emerald-700 border-emerald-100 dark:bg-emerald-900/20 dark:text-emerald-300 dark:border-emerald-900/40',
       badgeText: t('analysis.riskBadgeLow'),
-      fill: 'bg-teal-500',
-      chart: '#14b8a6'
+      fill: 'bg-emerald-500',
+      chart: '#10b981'
     }
   }
   if (percent < 60) {

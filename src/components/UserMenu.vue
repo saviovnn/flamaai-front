@@ -16,22 +16,22 @@
     <Transition name="menu">
       <div 
         v-if="isOpen"
-        class="absolute bottom-full left-0 mb-2 bg-white dark:bg-card rounded-xl shadow-lg border border-gray-200 dark:border-border py-1.5 z-50 whitespace-nowrap"
+        class="absolute bottom-full left-0 mb-2 w-[11rem] min-w-[11rem] bg-white dark:bg-card rounded-xl shadow-lg border border-gray-200 dark:border-border py-1.5 z-50"
       >
         <button
           @click="handleConfiguracao"
-          class="w-full flex items-center gap-2.5 px-3 py-2 hover:bg-gray-50 dark:hover:bg-secondary transition-colors text-left"
+          class="w-full flex items-center gap-2.5 px-3 py-2 hover:bg-gray-50 dark:hover:bg-secondary transition-colors text-left min-w-0"
         >
-          <Settings :size="16" class="text-gray-600 dark:text-muted-foreground" />
-          <span class="text-sm text-gray-700 dark:text-muted-foreground">{{ t('userMenu.settings') }}</span>
+          <Settings :size="16" class="text-gray-600 dark:text-muted-foreground flex-shrink-0" />
+          <span class="text-sm text-gray-700 dark:text-muted-foreground truncate">{{ t('userMenu.settings') }}</span>
         </button>
         
         <button
           @click="handleLogout"
-          class="w-full flex items-center gap-2.5 px-3 py-2 hover:bg-gray-50 dark:hover:bg-secondary transition-colors text-left"
+          class="w-full flex items-center gap-2.5 px-3 py-2 hover:bg-gray-50 dark:hover:bg-secondary transition-colors text-left min-w-0"
         >
-          <LogOut :size="16" class="text-gray-600 dark:text-muted-foreground" />
-          <span class="text-sm text-gray-700 dark:text-muted-foreground">{{ t('userMenu.logout') }}</span>
+          <LogOut :size="16" class="text-gray-600 dark:text-muted-foreground flex-shrink-0" />
+          <span class="text-sm text-gray-700 dark:text-muted-foreground truncate">{{ t('userMenu.logout') }}</span>
         </button>
       </div>
     </Transition>

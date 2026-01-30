@@ -7,7 +7,7 @@
       <div class="p-3 sm:p-4">
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-2">
-            <img :src="logo" :alt="t('app.name')" class="w-7 h-7 sm:w-8 sm:h-8 flex-shrink-0" />
+            <Logo brand class="w-5 h-5 sm:w-6 sm:h-6 flex-shrink-0" />
             <span class="text-lg sm:text-2xl font-bold text-gray-900 dark:text-foreground font-inter">{{ t('app.name') }}</span>
           </div>
           <Tooltip :text="t('sidebar.closeSidebar')" position="bottom">
@@ -46,9 +46,8 @@
             >
               <p class="text-xs sm:text-sm text-gray-900 dark:text-foreground truncate flex items-center gap-1.5">
                 <Tooltip :text="getRiscoTooltip(search.data.risco_medio)" position="right">
-                  <img 
-                    :src="getRiscoLogo(search.data.risco_medio)" 
-                    :alt="search.data.risco_medio"
+                  <Logo 
+                    :risk="search.data.risco_medio" 
                     class="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0 cursor-pointer"
                   />
                 </Tooltip>
@@ -78,45 +77,21 @@
 import { computed, onMounted, watch } from 'vue'
 import { BadgePlus, PanelRight } from 'lucide-vue-next'
 import { useI18n } from '@/composables/useI18n'
-import logoLight from '@/assets/logo.svg'
-import logoDark from '@/assets/logo-dark.svg'
-import logoAlto from '@/assets/logo-alto.svg'
-import logoAltoDark from '@/assets/logo-alto-dark.svg'
-import logoMedio from '@/assets/logo-medio.svg'
-import logoMedioDark from '@/assets/logo-medio-dark.svg'
-import logoBaixo from '@/assets/logo-baixo.svg'
-import logoBaixoDark from '@/assets/logo-baixo-dark.svg'
-import logoUndefined from '@/assets/logo-undefined.svg'
-import logoUndefinedDark from '@/assets/logo-undefined-dark.svg'
+import Logo from '@/components/ui/logo.vue'
 import { useGlobalStore } from '@/stores/global'
 import { useAuthStore } from '@/stores/auth'
 import { getAllSearchHistoryService, orchestratorService } from '@/api/services'
 import UserMenu from './UserMenu.vue'
 import Tooltip from './Tooltip.vue'
 
-const riscoLogosLight = {
-  alto: logoAlto,
-  medio: logoMedio,
-  baixo: logoBaixo,
-  undefined: logoUndefined
-}
-
-const riscoLogosDark = {
-  alto: logoAltoDark,
-  medio: logoMedioDark,
-  baixo: logoBaixoDark,
-  undefined: logoUndefinedDark
-}
-
 const { t } = useI18n()
 
 const riscoTooltips = computed(() => ({
-  alto: t('sidebar.riskHigh'),
-  medio: t('sidebar.riskMedium'),
-  baixo: t('sidebar.riskLow'),
-  regular: t('sidebar.riskRegular'),
-  low: t('sidebar.riskLow'),
-  high: t('sidebar.riskHigh'),
+  critico: t('analysis.weeklyCritico'),
+  alto: t('analysis.weeklyAlto'),
+  medio: t('analysis.weeklyMedio'),
+  regular: t('analysis.weeklyRegular'),
+  baixo: t('analysis.weeklyBaixo'),
   undefined: t('sidebar.riskUndefined')
 }))
 
@@ -124,23 +99,25 @@ const globalStore = useGlobalStore()
 const authStore = useAuthStore()
 
 const mapRiskLevel = (riskLevel) => {
-  const mapping = {
-    'high': 'alto',
-    'regular': 'medio',
-    'low': 'baixo',
-    'N/A': 'undefined'
-  }
-  return mapping[riskLevel] || 'undefined'
+  const normalized = ['baixo', 'regular', 'medio', 'alto', 'critico'].includes(riskLevel)
+    ? riskLevel
+    : { high: 'alto', regular: 'medio', low: 'baixo', 'N/A': 'undefined' }[riskLevel] ?? 'undefined'
+  return normalized
 }
 
-const getRiscoLogo = (riscoMedio) => {
-  const logos = globalStore.isDark ? riscoLogosDark : riscoLogosLight
-  const fallback = globalStore.isDark ? logoUndefinedDark : logoUndefined
-  return logos[riscoMedio] || fallback
+const riscoRules = {
+  baixo: '< 20%',
+  regular: '20% - 40%',
+  medio: '40% - 60%',
+  alto: '60% - 80%',
+  critico: '≥ 80%',
+  undefined: '—'
 }
 
 const getRiscoTooltip = (riscoMedio) => {
-  return riscoTooltips.value[riscoMedio] || riscoTooltips.value.undefined
+  const label = riscoTooltips.value[riscoMedio] || riscoTooltips.value.undefined
+  const rule = riscoRules[riscoMedio] ?? riscoRules.undefined
+  return rule !== '—' ? `${label} (${rule})` : label
 }
 
 onMounted(async () => {
@@ -165,8 +142,6 @@ watch(() => globalStore.user.id, async (newUserId) => {
   }
 })
 
-const logo = computed(() => globalStore.isDark ? logoDark : logoLight)
-
 const props = defineProps({
   userName: {
     type: String,
@@ -184,7 +159,7 @@ const closeSidebar = () => {
 
 const handleNewAnalysis = () => {
   globalStore.selectedSearch = null
-  globalStore.isSidebarOpen = false
+  globalStore.setSearchQuery('')
   globalStore.setOrchestratorResponse(null)
   globalStore.setSearchSubmitData({
     query: null,
@@ -196,8 +171,6 @@ const handleNewAnalysis = () => {
 const handleSelectSearch = async (search) => {
   try {
     globalStore.setSearchLoading(true)
-    
-    globalStore.isSidebarOpen = false
     
     const location_id = search.data?.id || search.rawData?.id
     
@@ -243,6 +216,8 @@ const parsedSearches = computed(() => {
   }
   
   for (const [key, value] of Object.entries(globalStore.searchHistory)) {
+    const id = value?.id ?? value?.rawData?.id
+    if (id == null) continue
     const parts = key.split('-')
     const day = parts[parts.length - 3]
     const month = parts[parts.length - 2]
@@ -261,7 +236,9 @@ const parsedSearches = computed(() => {
     })
   }
   
-  return searches.sort((a, b) => b.dateObj - a.dateObj)
+  return searches
+    .filter((s) => (s.data?.id ?? s.rawData?.id) != null)
+    .sort((a, b) => b.dateObj - a.dateObj)
 })
 
 const groupedSearches = computed(() => {

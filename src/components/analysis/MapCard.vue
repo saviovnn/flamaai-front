@@ -74,8 +74,8 @@ const weeklyRiskPercent = computed(() => weeklyRiskMean.value * 100)
 
 const riskColor = computed(() => {
   const percent = weeklyRiskPercent.value
-  if (percent < 20) return '#10b981'
-  if (percent < 40) return '#14b8a6'
+  if (percent < 20) return '#06b6d4'
+  if (percent < 40) return '#10b981'
   if (percent < 60) return '#f59e0b'
   if (percent < 80) return '#f97316'
   return '#e11d48'

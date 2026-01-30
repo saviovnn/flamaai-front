@@ -214,9 +214,13 @@ const handleLogout = async () => {
 }
 
 const openTermos = () => {
+  closeModal()
+  router.push('/termos-de-uso')
 }
 
 const openPrivacidade = () => {
+  closeModal()
+  router.push('/politica-de-privacidade')
 }
 </script>
 

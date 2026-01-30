@@ -4,14 +4,20 @@
       <LoginSidebar />
 
       <div
-        class="w-full lg:w-1/2 flex items-center justify-center p-8 lg:p-16 bg-gray-50 dark:bg-background"
+        class="w-full lg:w-1/2 flex items-center justify-center p-8 lg:p-16 bg-gray-50 dark:bg-background relative"
       >
+        <RouterLink
+          to="/"
+          class="absolute top-6 left-6 lg:left-8 inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+        >
+          <ArrowLeft :size="18" />
+          {{ t('login.back') }}
+        </RouterLink>
         <div class="w-full max-w-md">
           <div class="flex justify-center mb-8">
-            <img :src="logo" alt="FlamaAI" class="w-16 h-16" />
+            <Logo brand class="w-16 h-16" />
           </div>
 
-          <!-- Login/Signup Form -->
           <Transition name="slide-fade" mode="out-in">
             <LoginForm
               v-if="!forgotPasswordStep"
@@ -24,7 +30,6 @@
               @clear-error="clearLoginError"
             />
 
-            <!-- Forgot Password - Email Step -->
             <ForgotPasswordEmail
               v-else-if="forgotPasswordStep === 'email'"
               :email="authStore.forgotPassword.email"
@@ -32,7 +37,6 @@
               :error="errors.forgotEmail"
             />
 
-            <!-- Forgot Password - Code Verification Step -->
             <CodeVerification
               v-else-if="forgotPasswordStep === 'code'"
               :code="authStore.forgotPassword.code"
@@ -40,7 +44,6 @@
               :error="errors.forgotCode"
             />
 
-            <!-- Forgot Password - Reset Password Step -->
             <ResetPassword
               v-else-if="forgotPasswordStep === 'reset'"
               :newPassword="authStore.forgotPassword.newPassword"
@@ -56,11 +59,12 @@
 
 <script setup>
 import { ref, reactive, computed, watch } from "vue";
-import { useRouter } from "vue-router";
+import { useRouter, RouterLink } from "vue-router";
+import { ArrowLeft } from "lucide-vue-next";
 import { authService } from "@/api/services";
 import { useNotification } from "@/composables/useNotification";
-import logoLight from "@/assets/logo.svg";
-import logoDark from "@/assets/logo-dark.svg";
+import { useI18n } from "@/composables/useI18n";
+import Logo from "@/components/ui/logo.vue";
 import { useGlobalStore } from "@/stores/global";
 import { useAuthStore } from "@/stores/auth";
 import LoginForm from "@/components/LoginForm.vue";
@@ -70,15 +74,14 @@ import CodeVerification from "@/components/CodeVerification.vue";
 import ResetPassword from "@/components/ResetPassword.vue";
 
 const router = useRouter();
+const { t } = useI18n();
 const { notifySuccess, notifyError } = useNotification();
 const globalStore = useGlobalStore();
 const authStore = useAuthStore();
 
-const logo = computed(() => (globalStore.isDark ? logoDark : logoLight));
-
 const isSignUp = ref(false);
 const loading = ref(false);
-const forgotPasswordStep = ref(null); // null, 'email', 'code', 'reset'
+  const forgotPasswordStep = ref(null);
 
 const loginErrors = reactive({
   email: "",
@@ -98,15 +101,12 @@ const resetErrors = computed(() => ({
   confirmPassword: errors.confirmPassword,
 }));
 
-// Watch para detectar mudanças no código de verificação
 watch(
   () => authStore.forgotPassword.code,
   (newCode) => {
-    // Atualiza quando o código muda
   }
 );
 
-// Watch para detectar quando o submit do código é acionado
 watch(
   () => authStore.codeVerificationSubmit,
   () => {
@@ -114,7 +114,6 @@ watch(
   }
 );
 
-// Watch para detectar quando o resend do código é acionado
 watch(
   () => authStore.codeVerificationResend,
   () => {
@@ -122,7 +121,6 @@ watch(
   }
 );
 
-// Watch para detectar quando limpar erro do código é acionado
 watch(
   () => authStore.codeVerificationClearError,
   () => {
@@ -130,7 +128,6 @@ watch(
   }
 );
 
-// Watch para detectar quando o submit do email é acionado
 watch(
   () => authStore.forgotPasswordEmailSubmit,
   () => {
@@ -138,7 +135,6 @@ watch(
   }
 );
 
-// Watch para detectar quando o back do email é acionado
 watch(
   () => authStore.forgotPasswordEmailBack,
   () => {
@@ -146,7 +142,6 @@ watch(
   }
 );
 
-// Watch para detectar quando limpar erro do email é acionado
 watch(
   () => authStore.forgotPasswordEmailClearError,
   () => {
@@ -154,7 +149,6 @@ watch(
   }
 );
 
-// Watch para detectar quando o submit da senha é acionado
 watch(
   () => authStore.resetPasswordSubmit,
   () => {
@@ -162,7 +156,6 @@ watch(
   }
 );
 
-// Watch para detectar quando o cancel da senha é acionado
 watch(
   () => authStore.resetPasswordCancel,
   () => {
@@ -170,7 +163,6 @@ watch(
   }
 );
 
-// Watch para detectar quando limpar erro da senha é acionado
 watch(
   () => authStore.resetPasswordClearError,
   (field) => {
@@ -231,7 +223,6 @@ const handleForgotPasswordEmail = async () => {
     return;
   }
 
-  // Validação customizada de email
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!emailRegex.test(email)) {
     errors.forgotEmail = `Inclua um "@" no endereço de e-mail. "${email}" está com um "@" faltando.`;
@@ -369,7 +360,6 @@ const handleSubmit = async () => {
       loginErrors.email = "Por favor, insira seu email";
       hasError = true;
     } else {
-      // Validação customizada de email
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(email)) {
         loginErrors.email = `Inclua um "@" no endereço de e-mail. "${email}" está com um "@" faltando.`;
@@ -446,7 +436,6 @@ const handleSubmit = async () => {
       loginErrors.email = "Por favor, insira seu email";
       hasError = true;
     } else {
-      // Validação customizada de email
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(email)) {
         loginErrors.email = `Inclua um "@" no endereço de e-mail. "${email}" está com um "@" faltando.`;

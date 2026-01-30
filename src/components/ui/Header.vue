@@ -21,7 +21,7 @@
       )"
     >
       <RouterLink to="/" aria-label="home" class="flex items-center gap-2">
-        <img :src="logo" :alt="t('app.name')" class="h-4 w-auto" />
+        <Logo brand class="h-4 w-auto" />
         <span :class="cn('text-lg font-bold font-inter', !scrolled ? 'text-white' : 'text-foreground')">{{ t('app.name') }}</span>
       </RouterLink>
       
@@ -143,13 +143,11 @@ import { cn } from '@/lib/utils'
 import { useScroll } from '@/composables/useScroll'
 import { useGlobalStore } from '@/stores/global'
 import { useI18n } from '@/composables/useI18n'
-import logoDark from '@/assets/logo-dark.svg'
+import Logo from '@/components/ui/logo.vue'
 
 const globalStore = useGlobalStore()
 const open = ref(false)
 const scrolled = useScroll(10)
-
-const logo = computed(() => logoDark)
 
 const { t } = useI18n()
 const links = computed(() => [

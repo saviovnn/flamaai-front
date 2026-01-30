@@ -21,10 +21,10 @@
       >
         <template v-if="!globalStore.dashboard">
           <div v-if="!globalStore.isSearchLoading" class="flex items-center gap-2 sm:gap-3 mb-6 sm:mb-9 px-2 sm:px-0">
-            <img 
+            <Logo 
               v-if="!globalStore.searchError"
-              :src="logo" 
-              alt="FlamaAI" 
+              brand
+              :risk="dashboardRiskLevel"
               class="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0" 
             />
             <h1 
@@ -36,7 +36,6 @@
               {{ globalStore.searchError || t('dashboard.whatRegion') }}
             </h1>
           </div>
-          
           <div class="w-full flex justify-center">
             <SearchInput
               v-if="!globalStore.isSearchLoading"
@@ -68,10 +67,7 @@ import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useGlobalStore } from '@/stores/global'
 import { useI18n } from '@/composables/useI18n'
-
-const { t } = useI18n()
-import logoLight from '@/assets/logo.svg'
-import logoDark from '@/assets/logo-dark.svg'
+import Logo from '@/components/ui/logo.vue'
 import SearchInput from '@/components/SearchInput.vue'
 import HeaderControls from '@/components/HeaderControls.vue'
 import Sidebar from '@/components/Sidebar.vue'
@@ -81,6 +77,7 @@ import LocationAnalysis from '@/components/LocationAnalysis.vue'
 const router = useRouter()
 const authStore = useAuthStore()
 const globalStore = useGlobalStore()
+const { t } = useI18n()
 
 onMounted(() => {
   const token = localStorage.getItem('token')
@@ -102,7 +99,7 @@ onMounted(() => {
   }
 })
 
-const logo = computed(() => globalStore.isDark ? logoDark : logoLight)
+const dashboardRiskLevel = computed(() => globalStore.orchestratorResponse?.fire_risk_result?.risk_level ?? null)
 
 const userName = computed(() => {
   return globalStore.user?.name || t('dashboard.user')
@@ -138,41 +135,9 @@ watch(() => globalStore.selectedSearch, (newSearch) => {
   }
 })
 
-watch(() => globalStore.searchSubmitData, (newData) => {
-  if (newData && newData.query) {
-    handleSearch(newData)
-  }
-}, { deep: true })
-
 const handleNewChat = () => {
   globalStore.setSearchQuery('')
 }
-
-const addSearchToHistory = (location, searchData) => {
-  const today = new Date()
-  const dateStr = `${today.getDate()}-${today.getMonth() + 1}-${today.getFullYear()}`
-  const key = `${location}-${dateStr}`
-  
-  globalStore.searchHistory[key] = searchData
-}
-
-const handleSearch = (data) => {
-  
-  const location = data.query.toLowerCase().replace(/\s+/g, '-')
-  
-  const searchData = {
-    risco: [],
-    humidade: [],
-    temperatura: [],
-    climaTempo: data.climaTempo,
-    qualidadeAr: data.qualidadeAr,
-    explicacao: 'Análise em andamento...'
-  }
-  
-  addSearchToHistory(location, searchData)
-  
-}
-
 
 function navigateTo(path) {
   router.push(path)

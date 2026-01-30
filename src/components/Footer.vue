@@ -5,7 +5,7 @@
         <!-- Logo e frase -->
         <div class="lg:col-span-1 text-center md:text-left">
           <div class="flex items-center justify-center md:justify-start gap-2 mb-4">
-            <img :src="logo" :alt="t('app.name')" class="h-6 w-auto" />
+            <Logo brand class="h-6 w-auto" />
             <h3 class="text-xl font-semibold text-white">{{ t('app.name') }}</h3>
           </div>
           <p class="text-sm text-muted-foreground leading-relaxed mb-4">
@@ -33,9 +33,9 @@
               </a>
             </li>
             <li>
-              <a href="#privacidade" class="text-sm text-muted-foreground hover:text-[#FA5D19] transition-colors duration-200">
+              <RouterLink to="/politica-de-privacidade" class="text-sm text-muted-foreground hover:text-[#FA5D19] transition-colors duration-200">
                 {{ t('footer.privacyPolicy') }}
-              </a>
+              </RouterLink>
             </li>
           </ul>
         </div>
@@ -68,14 +68,14 @@
           <h4 class="text-sm font-semibold mb-4 text-foreground uppercase tracking-wider">{{ t('footer.legal') }}</h4>
           <ul class="space-y-3">
             <li>
-              <a href="#privacidade" class="text-sm text-muted-foreground hover:text-[#FA5D19] transition-colors duration-200">
+              <RouterLink to="/politica-de-privacidade" class="text-sm text-muted-foreground hover:text-[#FA5D19] transition-colors duration-200">
                 {{ t('footer.privacy') }}
-              </a>
+              </RouterLink>
             </li>
             <li>
-              <a href="#termos" class="text-sm text-muted-foreground hover:text-[#FA5D19] transition-colors duration-200">
+              <RouterLink to="/termos-de-uso" class="text-sm text-muted-foreground hover:text-[#FA5D19] transition-colors duration-200">
                 {{ t('footer.terms') }}
-              </a>
+              </RouterLink>
             </li>
           </ul>
         </div>
@@ -97,16 +97,15 @@
 
 <script setup>
 import { computed } from 'vue'
+import { RouterLink } from 'vue-router'
 import { Linkedin, Mail } from 'lucide-vue-next'
 import { useGlobalStore } from '@/stores/global'
 import { useI18n } from '@/composables/useI18n'
-import logoLight from '@/assets/logo.svg'
-import logoDark from '@/assets/logo-dark.svg'
+import Logo from '@/components/ui/logo.vue'
 
 const globalStore = useGlobalStore()
 const { t } = useI18n()
 const currentYear = computed(() => new Date().getFullYear())
-const logo = computed(() => logoDark)
 </script>
 
 <style scoped>

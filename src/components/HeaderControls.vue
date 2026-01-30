@@ -1,12 +1,7 @@
 <template>
   <div v-if="!globalStore.isSidebarOpen" class="flex items-center gap-2">
-      <div class="flex items-center justify-center">
-        <img 
-          :src="logo" 
-          alt="FlamaAI" 
-          class="w-7 h-7 cursor-pointer" 
-          @click="toggleSidebar()"
-        />
+      <div class="flex items-center justify-center cursor-pointer" @click="toggleSidebar()">
+        <Logo brand class="w-7 h-7" />
       </div>
       
       <div class="flex items-center gap-1 bg-white dark:bg-card rounded-full border border-gray-200 dark:border-border p-0.5">
@@ -32,18 +27,14 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
 import { BadgePlus, PanelLeft } from 'lucide-vue-next'
-import logoLight from '@/assets/logo.svg'
-import logoDark from '@/assets/logo-dark.svg'
+import Logo from '@/components/ui/logo.vue'
 import Tooltip from './Tooltip.vue'
 import { useGlobalStore } from '@/stores/global'
 import { useI18n } from '@/composables/useI18n'
 
 const globalStore = useGlobalStore()
 const { t } = useI18n()
-
-const logo = computed(() => globalStore.isDark ? logoDark : logoLight)
 
 defineEmits(['new-chat'])
 
@@ -53,7 +44,7 @@ const toggleSidebar = () => {
 
 const handleNewAnalysis = () => {
   globalStore.selectedSearch = null
-  globalStore.isSidebarOpen = false
+  globalStore.setSearchQuery('')
   globalStore.setOrchestratorResponse(null)
   globalStore.setSearchSubmitData({
     query: null,
