@@ -43,7 +43,7 @@ const BRAND_COLORS = {
   dark: { borda: '#FA5D19', dentro: '#342827' }
 }
 
-// Mesmas cores do FireRiskCard; borda = cor cheia, dentro = mesma cor com 20% opacidade
+// Cores default
 const LOGO_COLORS = {
   critico: { borda: '#e11d48', dentro: '#e11d4833' },
   alto: { borda: '#f97316', dentro: '#f9731633' },
