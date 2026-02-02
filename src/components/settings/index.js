@@ -1,0 +1,5 @@
+export { default as SettingsSidebar } from './SettingsSidebar.vue'
+export { default as SettingsGeneral } from './SettingsGeneral.vue'
+export { default as SettingsProfile } from './SettingsProfile.vue'
+export { default as SettingsAbout } from './SettingsAbout.vue'
+export { default as ImageCropModal } from './ImageCropModal.vue'

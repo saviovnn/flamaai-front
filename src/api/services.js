@@ -56,6 +56,21 @@ export const authService = {
     } catch (error) {
       throw error
     }
+  },
+
+  async updateProfileImage(imageBase64, userId) {
+    const response = await api.post('/user/profile-image', {
+      image: imageBase64,
+      userId,
+    }, {
+      timeout: 30000,
+    })
+    return response.data
+  },
+
+  async clearProfileImage(userId) {
+    const response = await api.post('/user/profile-image/clear', { userId })
+    return response.data
   }
 }
 
@@ -97,13 +112,16 @@ export const orchestratorService = {
   }
 }
 
-export const getAllSearchHistoryService = async (userId) => {
+export const getAllSearchHistoryService = async (userId, search = undefined) => {
   try {
     const body = {
       user_id: String(userId).trim(),
     }
+    if (search != null && String(search).trim() !== '') {
+      body.search = String(search).trim()
+    }
     const response = await api.post('/orchestrator/all', body)
-    
+
     return response.data || []
   } catch (error) {
     console.error('Erro ao buscar histórico de buscas:', error)

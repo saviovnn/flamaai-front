@@ -28,15 +28,19 @@ api.interceptors.response.use(
   (error) => {
     if (error.response) {
       switch (error.response.status) {
-        case 401:
-          import('@/stores/auth').then(({ useAuthStore }) => {
-            const authStore = useAuthStore()
-            authStore.logout()
-          }).catch(() => {
-            localStorage.removeItem('token')
-          })
-          window.location.href = '/login'
+        case 401: {
+          const isProfileImage = error.config?.url?.includes('/user/profile-image')
+          if (!isProfileImage) {
+            import('@/stores/auth').then(({ useAuthStore }) => {
+              const authStore = useAuthStore()
+              authStore.logout()
+            }).catch(() => {
+              localStorage.removeItem('token')
+            })
+            window.location.href = '/login'
+          }
           break
+        }
         case 403:
           console.error('Acesso proibido')
           break

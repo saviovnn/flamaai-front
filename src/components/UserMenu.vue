@@ -4,8 +4,14 @@
       @click="toggleMenu"
       class="w-full flex items-center gap-2.5 px-2 py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-accent transition-colors"
     >
-      <div class="w-8 h-8 bg-gradient-to-br from-orange-500 to-orange-600 rounded-full flex items-center justify-center flex-shrink-0">
-        <span class="text-xs font-semibold text-white">{{ userInitials }}</span>
+      <div class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden border border-gray-200 dark:border-border bg-gradient-to-br from-orange-500 to-orange-600">
+        <img
+          v-if="userImage"
+          :src="userImage"
+          alt=""
+          class="w-full h-full object-cover"
+        />
+        <span v-else class="text-xs font-semibold text-white">{{ userInitials }}</span>
       </div>
       <div class="flex-1 min-w-0 text-left">
         <p class="text-sm font-medium text-gray-900 dark:text-foreground truncate">{{ userName }}</p>
@@ -65,6 +71,10 @@ const props = defineProps({
   userInitials: {
     type: String,
     default: 'U'
+  },
+  userImage: {
+    type: String,
+    default: null
   }
 })
 
