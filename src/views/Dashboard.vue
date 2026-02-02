@@ -3,6 +3,7 @@
     <Sidebar
       :userName="userName"
       :userInitials="userInitials"
+      :userImage="userImage"
     />
 
     <div 
@@ -58,11 +59,13 @@
       class="fixed inset-0 bg-black/30 z-30 lg:hidden"
       @click="globalStore.isSidebarOpen = false"
     ></div>
+
+    <CommandKModal />
   </div>
 </template>
 
 <script setup>
-import { ref, computed, watch, onMounted } from 'vue'
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useGlobalStore } from '@/stores/global'
@@ -73,11 +76,19 @@ import HeaderControls from '@/components/HeaderControls.vue'
 import Sidebar from '@/components/Sidebar.vue'
 import Loading from '@/components/Loading.vue'
 import LocationAnalysis from '@/components/LocationAnalysis.vue'
+import CommandKModal from '@/components/CommandKModal.vue'
 
 const router = useRouter()
 const authStore = useAuthStore()
 const globalStore = useGlobalStore()
 const { t } = useI18n()
+
+function handleCommandKShortcut(e) {
+  if ((e.ctrlKey || e.metaKey) && e.key?.toLowerCase() === 'k') {
+    e.preventDefault()
+    globalStore.isCommandKOpen = !globalStore.isCommandKOpen
+  }
+}
 
 onMounted(() => {
   const token = localStorage.getItem('token')
@@ -97,6 +108,12 @@ onMounted(() => {
       localStorage.removeItem('user')
     }
   }
+
+  window.addEventListener('keydown', handleCommandKShortcut)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('keydown', handleCommandKShortcut)
 })
 
 const dashboardRiskLevel = computed(() => globalStore.orchestratorResponse?.fire_risk_result?.risk_level ?? null)
@@ -113,6 +130,8 @@ const userInitials = computed(() => {
   }
   return name[0]?.toUpperCase() || 'U'
 })
+
+const userImage = computed(() => globalStore.user?.image || null)
 
 authStore.isAuthenticated = true
 

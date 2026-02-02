@@ -393,7 +393,7 @@ const handleSubmit = async () => {
       const response = await authService.register(registerData);
 
 
-      const token = response.token || response.session?.token;
+      const token = response.token ?? response.session?.token ?? response.session?.sessionToken ?? (response.session && typeof response.session === 'object' ? response.session.token : null);
       if (token) {
         authStore.setToken(token);
       }
@@ -402,7 +402,8 @@ const handleSubmit = async () => {
         const userData = {
           id: response.user.id,
           name: response.user.name,
-          email: response.user.email
+          email: response.user.email,
+          image: response.user.image ?? null
         };
         globalStore.setUser(userData);
         authStore.setUser(userData);
@@ -463,7 +464,7 @@ const handleSubmit = async () => {
       const response = await authService.login(loginData);
 
 
-      const token = response.token || response.session?.token;
+      const token = response.token ?? response.session?.token ?? response.session?.sessionToken ?? (response.session && typeof response.session === 'object' ? response.session.token : null);
       if (token) {
         authStore.setToken(token);
       }
@@ -472,7 +473,8 @@ const handleSubmit = async () => {
         const userData = {
           id: response.user.id,
           name: response.user.name,
-          email: response.user.email
+          email: response.user.email,
+          image: response.user.image ?? null
         };
         globalStore.setUser(userData);
         authStore.setUser(userData);

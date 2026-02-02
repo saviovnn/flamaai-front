@@ -66,7 +66,7 @@
         <div class="absolute bottom-full left-0 right-0 h-20 pointer-events-none sidebar-gradient"></div>
         
         <div class="px-2 sm:px-2 py-1.5 bg-white dark:bg-card">
-          <UserMenu :userName="userName" :userInitials="userInitials" />
+          <UserMenu :userName="userName" :userInitials="userInitials" :userImage="userImage" />
         </div>
       </div>
     </aside>
@@ -74,7 +74,7 @@
 </template>
 
 <script setup>
-import { computed, onMounted, watch } from 'vue'
+import { computed, onMounted, onUnmounted, watch } from 'vue'
 import { BadgePlus, PanelRight } from 'lucide-vue-next'
 import { useI18n } from '@/composables/useI18n'
 import Logo from '@/components/ui/logo.vue'
@@ -101,7 +101,7 @@ const authStore = useAuthStore()
 const mapRiskLevel = (riskLevel) => {
   const normalized = ['baixo', 'regular', 'medio', 'alto', 'critico'].includes(riskLevel)
     ? riskLevel
-    : { high: 'alto', regular: 'medio', low: 'baixo', 'N/A': 'undefined' }[riskLevel] ?? 'undefined'
+    : { high: 'alto', regular: 'regular', low: 'baixo', 'N/A': 'undefined' }[riskLevel] ?? 'undefined'
   return normalized
 }
 
@@ -150,12 +150,35 @@ const props = defineProps({
   userInitials: {
     type: String,
     default: 'U'
+  },
+  userImage: {
+    type: String,
+    default: null
   }
 })
 
 const closeSidebar = () => {
   globalStore.isSidebarOpen = false
 }
+
+const toggleSidebar = () => {
+  globalStore.isSidebarOpen = !globalStore.isSidebarOpen
+}
+
+const handleSidebarShortcut = (e) => {
+  if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key?.toLowerCase() === 's') {
+    e.preventDefault()
+    toggleSidebar()
+  }
+}
+
+onMounted(() => {
+  window.addEventListener('keydown', handleSidebarShortcut)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('keydown', handleSidebarShortcut)
+})
 
 const handleNewAnalysis = () => {
   globalStore.selectedSearch = null

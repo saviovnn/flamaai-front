@@ -4,6 +4,7 @@ import { defineStore } from 'pinia'
 export const useGlobalStore = defineStore('global', () => {
   const isSidebarOpen = ref(false)
   const isSettingsOpen = ref(false)
+  const isCommandKOpen = ref(false)
   
   const theme = ref('system')
   const locale = ref('pt')
@@ -100,10 +101,15 @@ export const useGlobalStore = defineStore('global', () => {
   })
   const searchHistory = ref({})
   const searchHistoryList = ref([])
+  const commandKSearchResults = ref([])
   const selectedSearch = ref(null)
-  
+
   const setSearchHistoryList = (historyArray) => {
     searchHistoryList.value = historyArray || []
+  }
+
+  const setCommandKSearchResults = (results) => {
+    commandKSearchResults.value = results || []
   }
   
   const searchQuery = ref('')
@@ -192,7 +198,8 @@ export const useGlobalStore = defineStore('global', () => {
   const user = ref({
     id: null,
     name: null,
-    email: null
+    email: null,
+    image: null
   })
   
   const setUser = (userData) => {
@@ -200,7 +207,8 @@ export const useGlobalStore = defineStore('global', () => {
       user.value = {
         id: userData.id || null,
         name: userData.name || null,
-        email: userData.email || null
+        email: userData.email || null,
+        image: userData.image ?? null
       }
       localStorage.setItem('user', JSON.stringify(user.value))
     }
@@ -210,7 +218,8 @@ export const useGlobalStore = defineStore('global', () => {
     user.value = {
       id: null,
       name: null,
-      email: null
+      email: null,
+      image: null
     }
     localStorage.removeItem('user')
   }
@@ -225,7 +234,8 @@ export const useGlobalStore = defineStore('global', () => {
             user.value = {
               id: userData.id || null,
               name: userData.name || null,
-              email: userData.email || null
+              email: userData.email || null,
+              image: userData.image ?? null
             }
           }
         } catch (error) {
@@ -248,7 +258,8 @@ export const useGlobalStore = defineStore('global', () => {
               user.value = {
                 id: userData.id || null,
                 name: userData.name || null,
-                email: userData.email || null
+                email: userData.email || null,
+                image: userData.image ?? null
               }
             }
           } catch (error) {
@@ -271,7 +282,8 @@ export const useGlobalStore = defineStore('global', () => {
               user.value = {
                 id: userData.id || null,
                 name: userData.name || null,
-                email: userData.email || null
+                email: userData.email || null,
+                image: userData.image ?? null
               }
             }
           } catch (error) {
@@ -289,9 +301,12 @@ export const useGlobalStore = defineStore('global', () => {
   return {
     isSidebarOpen,
     isSettingsOpen,
+    isCommandKOpen,
     searchHistory,
     searchHistoryList,
     setSearchHistoryList,
+    commandKSearchResults,
+    setCommandKSearchResults,
     selectedSearch,
     searchQuery,
     setSearchQuery,

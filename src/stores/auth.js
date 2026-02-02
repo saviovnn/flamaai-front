@@ -50,7 +50,6 @@ export const useAuthStore = defineStore('auth', () => {
     dispatchStorageEvent('user', null)
     isAuthenticated.value = false
     
-    // Limpa os dados do usuário no store global
     const { useGlobalStore } = await import('@/stores/global')
     const globalStore = useGlobalStore()
     globalStore.clearUser()
@@ -68,11 +67,11 @@ export const useAuthStore = defineStore('auth', () => {
 
   const setUser = (userData) => {
     if (userData) {
-      // Garante que o id está presente
       const userToSave = {
         id: userData.id || null,
         name: userData.name || null,
-        email: userData.email || null
+        email: userData.email || null,
+        image: userData.image ?? null
       }
       localStorage.setItem('user', JSON.stringify(userToSave))
       dispatchStorageEvent('user', userToSave)
@@ -154,7 +153,6 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
   
-  // Code Verification actions
   const codeVerificationSubmit = ref(false)
   const codeVerificationResend = ref(false)
   const codeVerificationClearError = ref(false)
@@ -171,7 +169,6 @@ export const useAuthStore = defineStore('auth', () => {
     codeVerificationClearError.value = !codeVerificationClearError.value
   }
   
-  // Forgot Password Email actions
   const forgotPasswordEmailSubmit = ref(false)
   const forgotPasswordEmailBack = ref(false)
   const forgotPasswordEmailClearError = ref(false)
@@ -188,7 +185,6 @@ export const useAuthStore = defineStore('auth', () => {
     forgotPasswordEmailClearError.value = !forgotPasswordEmailClearError.value
   }
   
-  // Reset Password actions
   const resetPasswordSubmit = ref(false)
   const resetPasswordCancel = ref(false)
   const resetPasswordClearError = ref(null)
@@ -230,21 +226,18 @@ export const useAuthStore = defineStore('auth', () => {
     setRegisterName,
     setRegisterPassword,
     resetRegister,
-    // Code Verification
     codeVerificationSubmit,
     codeVerificationResend,
     codeVerificationClearError,
     triggerCodeVerificationSubmit,
     triggerCodeVerificationResend,
     triggerCodeVerificationClearError,
-    // Forgot Password Email
     forgotPasswordEmailSubmit,
     forgotPasswordEmailBack,
     forgotPasswordEmailClearError,
     triggerForgotPasswordEmailSubmit,
     triggerForgotPasswordEmailBack,
     triggerForgotPasswordEmailClearError,
-    // Reset Password
     resetPasswordSubmit,
     resetPasswordCancel,
     resetPasswordClearError,
