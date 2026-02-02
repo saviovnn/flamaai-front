@@ -21,7 +21,15 @@ export const messages = {
       logout: 'Sair',
       termsOfUse: 'Termos de Uso',
       privacyPolicy: 'Política de Privacidade',
-      view: 'Ver'
+      view: 'Ver',
+      addImage: 'Adicionar imagem',
+      changeImage: 'Alterar imagem',
+      imageTooBig: 'Imagem muito grande. Máximo 5 MB.',
+      cropImage: 'Ajustar foto',
+      cropConfirm: 'Usar foto',
+      cropCancel: 'Cancelar',
+      invalidImageType: 'Selecione uma imagem (JPEG, PNG, WebP ou GIF).',
+      removeImage: 'Remover foto'
     },
     hero: {
       monitoring: 'Monitoramento em tempo real',
@@ -159,6 +167,13 @@ export const messages = {
     headerControls: {
       openSidebar: 'Abrir barra lateral',
       newAnalysis: 'Nova analise'
+    },
+    commandK: {
+      placeholder: 'Buscar por cidade ou data...',
+      noResults: 'Nenhuma análise encontrada',
+      empty: 'Nenhuma análise no histórico',
+      hintNavigate: '↑↓ navegar',
+      hintSelect: '↵ selecionar'
     },
     analysis: {
       coordinates: 'Coordenadas',
@@ -348,7 +363,15 @@ export const messages = {
       logout: 'Log out',
       termsOfUse: 'Terms of Use',
       privacyPolicy: 'Privacy Policy',
-      view: 'View'
+      view: 'View',
+      addImage: 'Add image',
+      changeImage: 'Change image',
+      imageTooBig: 'Image too large. Maximum 5 MB.',
+      cropImage: 'Adjust photo',
+      cropConfirm: 'Use photo',
+      cropCancel: 'Cancel',
+      invalidImageType: 'Please select an image (JPEG, PNG, WebP or GIF).',
+      removeImage: 'Remove photo'
     },
     hero: {
       monitoring: 'Real-time monitoring',
@@ -486,6 +509,13 @@ export const messages = {
     headerControls: {
       openSidebar: 'Open sidebar',
       newAnalysis: 'New analysis'
+    },
+    commandK: {
+      placeholder: 'Search by city or date...',
+      noResults: 'No analysis found',
+      empty: 'No analysis in history',
+      hintNavigate: '↑↓ navigate',
+      hintSelect: '↵ select'
     },
     analysis: {
       coordinates: 'Coordinates',
@@ -675,7 +705,15 @@ export const messages = {
       logout: 'Cerrar sesión',
       termsOfUse: 'Términos de Uso',
       privacyPolicy: 'Política de Privacidad',
-      view: 'Ver'
+      view: 'Ver',
+      addImage: 'Añadir imagen',
+      changeImage: 'Cambiar imagen',
+      imageTooBig: 'Imagen demasiado grande. Máximo 5 MB.',
+      cropImage: 'Ajustar foto',
+      cropConfirm: 'Usar foto',
+      cropCancel: 'Cancelar',
+      invalidImageType: 'Seleccione una imagen (JPEG, PNG, WebP o GIF).',
+      removeImage: 'Quitar foto'
     },
     hero: {
       monitoring: 'Monitoreo en tiempo real',
@@ -813,6 +851,13 @@ export const messages = {
     headerControls: {
       openSidebar: 'Abrir barra lateral',
       newAnalysis: 'Nueva análisis'
+    },
+    commandK: {
+      placeholder: 'Buscar por ciudad o fecha...',
+      noResults: 'Ningún análisis encontrado',
+      empty: 'Ningún análisis en el historial',
+      hintNavigate: '↑↓ navegar',
+      hintSelect: '↵ seleccionar'
     },
     analysis: {
       coordinates: 'Coordenadas',
