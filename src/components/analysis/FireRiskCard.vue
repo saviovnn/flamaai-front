@@ -132,12 +132,12 @@ const todayRiskLabel = computed(() => {
 
 const weeklyRiskLabel = computed(() => {
   const level = fireRiskResult.value?.risk_level
-  const labels = { 
-    baixo: t('analysis.weeklyBaixo'), 
-    regular: t('analysis.weeklyRegular'), 
-    medio: t('analysis.weeklyMedio'), 
-    alto: t('analysis.weeklyAlto'), 
-    critico: t('analysis.weeklyCritico') 
+  const labels = {
+    minimo: t('analysis.weeklyMinimo'),
+    baixo: t('analysis.weeklyBaixo'),
+    medio: t('analysis.weeklyMedio'),
+    alto: t('analysis.weeklyAlto'),
+    critico: t('analysis.weeklyCritico')
   }
   return labels[level] || '—'
 })

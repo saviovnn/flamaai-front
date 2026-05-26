@@ -90,8 +90,8 @@ const riscoTooltips = computed(() => ({
   critico: t('analysis.weeklyCritico'),
   alto: t('analysis.weeklyAlto'),
   medio: t('analysis.weeklyMedio'),
-  regular: t('analysis.weeklyRegular'),
   baixo: t('analysis.weeklyBaixo'),
+  minimo: t('analysis.weeklyMinimo'),
   undefined: t('sidebar.riskUndefined')
 }))
 
@@ -99,15 +99,15 @@ const globalStore = useGlobalStore()
 const authStore = useAuthStore()
 
 const mapRiskLevel = (riskLevel) => {
-  const normalized = ['baixo', 'regular', 'medio', 'alto', 'critico'].includes(riskLevel)
+  const normalized = ['minimo', 'baixo', 'medio', 'alto', 'critico'].includes(riskLevel)
     ? riskLevel
-    : { high: 'alto', regular: 'regular', low: 'baixo', 'N/A': 'undefined' }[riskLevel] ?? 'undefined'
+    : { high: 'alto', regular: 'baixo', low: 'minimo', 'N/A': 'undefined' }[riskLevel] ?? 'undefined'
   return normalized
 }
 
 const riscoRules = {
-  baixo: '< 20%',
-  regular: '20% - 40%',
+  minimo: '< 20%',
+  baixo: '20% - 40%',
   medio: '40% - 60%',
   alto: '60% - 80%',
   critico: '≥ 80%',

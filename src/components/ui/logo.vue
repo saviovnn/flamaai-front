@@ -23,7 +23,7 @@ import { computed } from 'vue'
 import { useGlobalStore } from '@/stores/global'
 
 const props = defineProps({
-  /** Nível de risco: 'critico' | 'alto' | 'medio' | 'baixo' | 'regular' | 'undefined' ou null (neutro) */
+  /** Nível de risco: 'critico' | 'alto' | 'medio' | 'baixo' | 'minimo' | 'undefined' ou null (neutro) */
   risk: {
     type: String,
     default: null
@@ -43,13 +43,13 @@ const BRAND_COLORS = {
   dark: { borda: '#FA5D19', dentro: '#342827' }
 }
 
-// Cores default
+// Cores default: minimo=azul, baixo=verde
 const LOGO_COLORS = {
   critico: { borda: '#e11d48', dentro: '#e11d4833' },
   alto: { borda: '#f97316', dentro: '#f9731633' },
   medio: { borda: '#f59e0b', dentro: '#f59e0b33' },
-  regular: { borda: '#10b981', dentro: '#10b98133' },
-  baixo: { borda: '#06b6d4', dentro: '#06b6d433' },
+  baixo: { borda: '#10b981', dentro: '#10b98133' },
+  minimo: { borda: '#06b6d4', dentro: '#06b6d433' },
   undefined: { borda: '#9ca3af', dentro: '#9ca3af33' }
 }
 

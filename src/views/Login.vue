@@ -411,7 +411,6 @@ const handleSubmit = async () => {
         console.warn('Response não contém user:', response);
       }
 
-      notifySuccess("Bem-vindo", "Conta criada com sucesso!");
       router.push("/dashboard");
     } catch (error) {
       console.error("Erro ao fazer registro:", error);

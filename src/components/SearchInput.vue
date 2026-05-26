@@ -224,7 +224,6 @@ const handleLocation = () => {
     console.error('Erro ao obter localização:', error)
     alert('Não foi possível obter sua localização. Verifique se a permissão de localização está habilitada.')
   }, {
-    timeout: 5000,
     maximumAge: 0,
     enableHighAccuracy: true
   })

@@ -132,13 +132,13 @@ const riscoTooltips = computed(() => ({
   alto: t('analysis.weeklyAlto'),
   medio: t('analysis.weeklyMedio'),
   baixo: t('analysis.weeklyBaixo'),
-  regular: t('analysis.weeklyRegular'),
+  minimo: t('analysis.weeklyMinimo'),
   undefined: t('sidebar.riskUndefined')
 }))
 
 const riscoRules = {
-  baixo: '< 20%',
-  regular: '20% - 40%',
+  minimo: '< 20%',
+  baixo: '20% - 40%',
   medio: '40% - 60%',
   alto: '60% - 80%',
   critico: '≥ 80%',
@@ -146,9 +146,9 @@ const riscoRules = {
 }
 
 const mapRiskLevel = (riskLevel) => {
-  const normalized = ['baixo', 'regular', 'medio', 'alto', 'critico'].includes(riskLevel)
+  const normalized = ['minimo', 'baixo', 'medio', 'alto', 'critico'].includes(riskLevel)
     ? riskLevel
-    : { high: 'alto', regular: 'regular', low: 'baixo', 'N/A': 'undefined' }[riskLevel] ?? 'undefined'
+    : { high: 'alto', regular: 'baixo', low: 'minimo', 'N/A': 'undefined' }[riskLevel] ?? 'undefined'
   return normalized
 }
 
@@ -158,10 +158,10 @@ const getRiscoTooltip = (riscoMedio) => {
   return rule !== '—' ? `${label} (${rule})` : label
 }
 
-/** Garante um nível de risco válido para o Logo (baixo|regular|medio|alto|critico|undefined) */
+/** Garante um nível de risco válido para o Logo (minimo|baixo|medio|alto|critico|undefined) */
 function getRiskForLogo(search) {
   const risk = search.data?.risco_medio ?? mapRiskLevel(search.data?.risk_level ?? search.rawData?.risk_level)
-  return risk && ['baixo', 'regular', 'medio', 'alto', 'critico'].includes(risk) ? risk : 'undefined'
+  return risk && ['minimo', 'baixo', 'medio', 'alto', 'critico'].includes(risk) ? risk : 'undefined'
 }
 
 function formatDate(dateObj) {
